@@ -1,3 +1,15 @@
+local surface = surface
+local vgui = vgui
+local Material = Material
+local killicon = killicon
+local ipairs = ipairs
+local type = type
+local pairs = pairs
+local draw = draw
+local team = team
+local tostring = tostring
+local CurTime = CurTime
+
 GM.NotifyFadeTime = 8
 
 local DefaultFont = "ZSHUDFontSmallest"

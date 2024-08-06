@@ -1,3 +1,10 @@
+local Material = Material
+local cam = cam
+local render = render
+local vgui = vgui
+local IsValid = IsValid
+local RealTime = RealTime
+
 local PANEL = {}
 
 function PANEL:SetModel(strModelName)

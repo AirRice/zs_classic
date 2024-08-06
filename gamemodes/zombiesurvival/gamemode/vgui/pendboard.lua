@@ -1,3 +1,11 @@
+local vgui = vgui
+local string = string
+local Color = Color
+local surface = surface
+local math = math
+local gamemode = gamemode
+
+
 function GM:AddHonorableMention(pl, mentionid, ...)
 	if not (pEndBoard and pEndBoard:Valid()) then
 		MakepEndBoard(ROUNDWINNER)

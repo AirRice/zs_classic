@@ -1,3 +1,17 @@
+local CreateClientConVar = CreateClientConVar
+local vgui = vgui
+local table = table
+local pairs = pairs
+local ipairs = ipairs
+local math = math
+local EasyButton = EasyButton
+local EasyLabel = EasyLabel
+local surface = surface
+local DisableClipping = DisableClipping
+local LocalPlayer = LocalPlayer
+local gamemode = gamemode
+local derma = derma
+
 CreateClientConVar("zs_bossclass", "", true, true)
 
 local Window

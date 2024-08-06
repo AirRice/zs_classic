@@ -1,3 +1,17 @@
+local math = math
+local Color = Color
+local LocalPlayer = LocalPlayer
+local draw = draw
+local IsValid = IsValid
+local ClientsideModel = ClientsideModel
+local FrameTime = FrameTime
+local CurTime = CurTime
+local FrameTime = FrameTime
+local Material = Material
+local Vector = Vector
+local render = render
+local cam = cam
+
 local PANEL = {}
 
 local colHealth = Color(0, 0, 0, 240)

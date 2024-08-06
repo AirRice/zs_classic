@@ -1,3 +1,10 @@
+local surface = surface
+local Color = Color
+local draw = draw
+local math = math
+local RealTime = RealTime
+local vgui = vgui
+
 local PANEL = {}
 
 PANEL.IdealPing = 50

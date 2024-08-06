@@ -1,3 +1,5 @@
+local surface = surface
+
 local PANEL = {}
 
 function PANEL:PaintAt( x, y, dw, dh )

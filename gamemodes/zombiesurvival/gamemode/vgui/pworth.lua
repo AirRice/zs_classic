@@ -1,3 +1,16 @@
+local hook = hook
+local RunConsoleCommand = RunConsoleCommand
+local surface = surface
+local timer = timer
+local unpack = unpack
+local file = file
+local table = table
+local string = string
+local ScrW = ScrW
+local ScrH = ScrH
+local CurTime = CurTime
+local tostring = tostring
+
 hook.Add("SetWave", "CloseWorthOnWave1", function(wave)
 	if wave > 0 then
 		if pWorth and pWorth:Valid() then

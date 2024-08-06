@@ -1,3 +1,8 @@
+local vgui = vgui
+local weapons = weapons
+local ipairs = ipairs
+local pairs = pairs
+
 local function WeaponButtonDoClick(self)
 	local swep = self.SWEP
 	if swep then

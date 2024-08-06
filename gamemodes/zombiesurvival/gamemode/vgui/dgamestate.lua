@@ -1,3 +1,11 @@
+local vgui = vgui
+local GetGlobalString = GetGlobalString
+local translate = translate
+local CurTime = CurTime
+local draw = draw
+local RealTime = RealTime
+local math = math
+
 local PANEL = {}
 
 function PANEL:Init()

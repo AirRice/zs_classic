@@ -1,3 +1,14 @@
+local ScrW = ScrW
+local ScrH = ScrH
+local RealTime = RealTime
+local timer = timer
+local gui = gui
+local surface = surface
+local table = table
+local ipairs = ipairs
+local pairs = pairs
+local vgui = vgui
+
 local PANEL = {}
 
 PANEL.Spacing = 8

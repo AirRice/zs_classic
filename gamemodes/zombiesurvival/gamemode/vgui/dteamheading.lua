@@ -1,3 +1,8 @@
+local RealTime = RealTime
+local vgui = vgui
+local team = team
+local surface = surface
+
 local PANEL = {}
 PANEL.m_Team = 0
 PANEL.NextRefresh = 0

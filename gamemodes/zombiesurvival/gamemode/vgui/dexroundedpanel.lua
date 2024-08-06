@@ -1,3 +1,8 @@
+local surface = surface
+local draw = draw
+local Color = Color
+local vgui = vgui
+
 surface.CreateFont("dexfont_med", {font = "impact", size = 19, weight = 0, antialias = false, shadow = false, outline = true})
 
 local PANEL = {}

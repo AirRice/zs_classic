@@ -1,3 +1,14 @@
+local surface = surface
+local hook = hook
+local math = math
+local gui = gui
+local vgui = vgui
+local timer = timer
+local ScrW = ScrW
+local ScrH = ScrH
+local pairs = pairs
+local ipairs = ipairs
+
 local function pointslabelThink(self)
 	local points = MySelf:GetPoints()
 	if self.m_LastPoints ~= points then

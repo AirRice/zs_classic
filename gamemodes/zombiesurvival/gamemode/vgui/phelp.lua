@@ -1,3 +1,11 @@
+local math = math
+local ScrW = ScrW
+local ScrH = ScrH
+local ipairs = ipairs
+local pairs = pairs
+local string = string
+local vgui = vgui
+
 GM.Help = {
 {Name = "help_cat_introduction",
 Content = "help_cont_introduction"},

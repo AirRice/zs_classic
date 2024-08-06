@@ -1,3 +1,8 @@
+local math = math
+local RealTime = RealTime
+local vgui = vgui
+local team = team
+
 local PANEL = {}
 
 PANEL.m_Team = 0

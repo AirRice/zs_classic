@@ -1,3 +1,17 @@
+local Derma_DrawBackgroundBlur = Derma_DrawBackgroundBlur
+local surface = surface
+local RunConsoleCommand = RunConsoleCommand
+local chat = chat
+local vgui = vgui
+local player_manager = player_manager
+local math = math
+local table = table
+local string = string
+local ScrW = ScrW
+local ScrH = ScrH
+local Color = Color
+local GetConVarString = GetConVarString
+
 local function HelpMenuPaint(self)
 	Derma_DrawBackgroundBlur(self, self.Created)
 	Derma_DrawBackgroundBlur(self, self.Created)

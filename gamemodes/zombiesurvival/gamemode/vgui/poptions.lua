@@ -1,3 +1,11 @@
+local vgui = vgui
+local math = math
+local ScrW = ScrW
+local ScrH = ScrH
+local RunConsoleCommand = RunConsoleCommand
+local pairs = pairs
+local ipairs = ipairs
+
 function MakepOptions()
 	PlayMenuOpenSound()
 

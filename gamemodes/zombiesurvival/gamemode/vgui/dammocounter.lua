@@ -1,3 +1,9 @@
+local RunConsoleCommand = RunConsoleCommand
+local Color = Color
+local vgui = vgui
+local draw = draw
+local RealTime = RealTime
+
 local PANEL = {}
 
 PANEL.NextRefresh = 0
