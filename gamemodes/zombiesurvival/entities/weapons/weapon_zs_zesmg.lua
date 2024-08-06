@@ -4,8 +4,8 @@ SWEP.Base = "weapon_zs_smg"
 
 SWEP.Primary.Damage = 75
 
-SWEP.ConeMax = 0.06
-SWEP.ConeMin = 0.04
+SWEP.ConeMax = 0.015
+SWEP.ConeMin = 0.003
 
 SWEP.WalkSpeed = SPEED_ZOMBIEESCAPE_SLOW
 

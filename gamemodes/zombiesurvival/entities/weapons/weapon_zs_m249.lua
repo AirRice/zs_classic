@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "'Chainsaw' M249"
-	SWEP.Description = "강력한 분대 지원 화기로, 앉아서 쏠 시 발사속도가 늘어난다."
+	SWEP.Description = "빠른 연사속도와 괴랄한 대미지를 입히는 강력한 분대 지원 화기. 앉아서 쏠 시 발사속도가 늘어난다."
 	SWEP.Slot = 3
 	SWEP.SlotPos = 0
 
@@ -27,7 +27,6 @@ SWEP.Primary.Sound = Sound("Weapon_m249.Single")
 SWEP.Primary.Damage = 10
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.06
-SWEP.Primary.Recoil = 10
 SWEP.Primary.KnockbackScale = 10
 
 SWEP.Primary.ClipSize = 200
@@ -39,10 +38,13 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
 
-SWEP.ConeMax = 0.353
-SWEP.ConeMin = 0.181
+SWEP.ConeMax = 0.09
+SWEP.ConeMin = 0.0095
+SWEP.Recoil = 0.6
 
 SWEP.WalkSpeed = 100
+SWEP.MaxConeAdder = 0.35
+GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
 SWEP.IronSightsPos = Vector(-4.46, 15, 0)
 SWEP.IronSightsAng = Vector(3.2, 0, 0)

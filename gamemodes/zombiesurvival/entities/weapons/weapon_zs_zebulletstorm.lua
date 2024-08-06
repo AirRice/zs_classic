@@ -3,6 +3,8 @@ AddCSLuaFile()
 SWEP.Base = "weapon_zs_bulletstorm"
 
 SWEP.Primary.Damage = 60
+SWEP.ConeMax = 0.015
+SWEP.ConeMin = 0.003
 
 SWEP.WalkSpeed = SPEED_ZOMBIEESCAPE_SLOW
 

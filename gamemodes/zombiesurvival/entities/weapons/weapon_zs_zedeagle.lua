@@ -33,8 +33,10 @@ SWEP.Primary.ClipSize = 7
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "pistol"
 
-SWEP.ConeMax = 0.06
-SWEP.ConeMin = 0.03
+SWEP.ConeMax = 0.015
+SWEP.ConeMin = 0.003
+
+SWEP.Recoil = 1.8
 
 
 SWEP.WalkSpeed = SPEED_ZOMBIEESCAPE_NORMAL

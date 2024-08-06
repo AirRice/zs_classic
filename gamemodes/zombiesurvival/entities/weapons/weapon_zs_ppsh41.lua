@@ -105,14 +105,14 @@ SWEP.WorldModel	= "models/weapons/w_grub_ppsh_stick.mdl"
 SWEP.UseHands = true
 SWEP.Primary.Damage = 18
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Delay = 0.09
+SWEP.Primary.Delay = 0.08
 SWEP.TracerName = "Tracer"
 SWEP.Primary.ClipSize = 35
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "smg1"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.BloodDecal = "Blood"
-SWEP.Primary.Recoil = 5
+SWEP.Recoil = 0.9
 
 SWEP.Secondary.ClipSize		= -1
 SWEP.Secondary.DefaultClip	= -1
@@ -129,8 +129,8 @@ SWEP.Primary.Sound = Sound("Weapon_PPSH.Single")
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
 
-SWEP.ConeMax = 0.2
-SWEP.ConeMin = 0.05
+SWEP.ConeMax = 0.02
+SWEP.ConeMin = 0.008
 
 SWEP.WalkSpeed = SPEED_NORMAL
 SWEP.ReloadSound = Sound("Grub_PPSH.Magout")
@@ -163,7 +163,7 @@ function SWEP:PrimaryAttack()
 	self:EmitFireSound()
 	self:TakeAmmo()
 	self:ShootBullets(self.Primary.Damage, self.Primary.NumShots, self:GetCone())
-	--self:MuzzleFlash()
+	self:MuzzleFlash()
 	self.IdleAnimation = CurTime() + self:SequenceDuration()
 end
 

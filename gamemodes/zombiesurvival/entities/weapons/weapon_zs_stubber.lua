@@ -26,7 +26,6 @@ SWEP.Primary.Sound = Sound("Weapon_Scout.Single")
 SWEP.Primary.Damage = 30
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 1.5
-SWEP.Primary.Recoil = 8.92
 SWEP.ReloadDelay = SWEP.Primary.Delay
 
 SWEP.Primary.ClipSize = 5
@@ -37,8 +36,10 @@ SWEP.Primary.DefaultClip = 25
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
 
-SWEP.ConeMax = 1
+SWEP.ConeMax = 0.03
 SWEP.ConeMin = 0
+
+SWEP.Recoil = 5
 
 SWEP.IronSightsPos = Vector(5.015, -8, 2.52)
 SWEP.IronSightsAng = Vector(0, 0, 0)
@@ -76,6 +77,17 @@ end
 SWEP.BulletCallback = BulletCallback
 
 if CLIENT then
+	local surface = surface
+	local RealTime = RealTime
+	local RunConsoleCommand = RunConsoleCommand
+	local math = math
+	local GetConVarNumber = GetConVarNumber
+	local GetGlobalBool = GetGlobalBool
+	local ScrW = ScrW
+	local ScrH = ScrH
+	local Material = Material
+	local draw = draw
+
 	SWEP.IronsightsMultiplier = 0.25
 
 	function SWEP:GetViewModelPosition(pos, ang)

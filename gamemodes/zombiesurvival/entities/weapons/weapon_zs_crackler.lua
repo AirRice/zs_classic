@@ -26,15 +26,15 @@ SWEP.Primary.Sound = Sound("Weapon_FAMAS.Single")
 SWEP.Primary.Damage = 12
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.3
-SWEP.Primary.Recoil = 3.2
 
 SWEP.Primary.ClipSize = 24
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "ar2"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.28
-SWEP.ConeMin = 0.15
+SWEP.ConeMax = 0.026
+SWEP.ConeMin = 0.016
+SWEP.Recoil = 0.74
 
 SWEP.WalkSpeed = SPEED_SLOW
 

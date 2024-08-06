@@ -24,10 +24,9 @@ SWEP.WorldModel = "models/weapons/w_rif_aug.mdl"
 SWEP.UseHands = true
 
 SWEP.Primary.Sound = Sound("Weapon_AUG.Single")
-SWEP.Primary.Damage = 18
+SWEP.Primary.Damage = 21
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.095
-SWEP.Primary.Recoil = 3.8
 
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.Automatic = true
@@ -37,8 +36,10 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_AR2
 
-SWEP.ConeMax = 0.21
-SWEP.ConeMin = 0.15
+SWEP.ConeMax = 0.021
+SWEP.ConeMin = 0.011
+
+SWEP.Recoil = 0.16
 
 SWEP.WalkSpeed = SPEED_SLOW
 
@@ -54,8 +55,7 @@ function SWEP:IsScoped()
 end
 
 if CLIENT then
-	SWEP.IronsightsMultiplier = 0.25
-
+SWEP.IronsightsMultiplier = 0.35
 	function SWEP:GetViewModelPosition(pos, ang)
 		if self:IsScoped() then
 			return pos + ang:Up() * 256, ang

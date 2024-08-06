@@ -30,12 +30,12 @@ SWEP.Primary.Damage = 47
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.32
 SWEP.Primary.KnockbackScale = 2
-SWEP.Primary.Recoil = 4.4
 
 SWEP.Primary.ClipSize = 7
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "pistol"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.454
-SWEP.ConeMin = 0.121
+SWEP.ConeMax = 0.1
+SWEP.ConeMin = 0.011
+SWEP.Recoil = 2

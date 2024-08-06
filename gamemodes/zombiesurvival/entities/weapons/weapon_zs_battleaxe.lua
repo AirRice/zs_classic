@@ -25,7 +25,6 @@ SWEP.Primary.Sound = Sound("Weapon_USP.Single")
 SWEP.Primary.Damage = 22
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.2
-SWEP.Primary.Recoil = 3
 
 SWEP.Primary.ClipSize = 12
 SWEP.Primary.Automatic = false
@@ -34,5 +33,7 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
 SWEP.IronSightsPos = Vector(-5.9, 12, 2.3)
 
-SWEP.ConeMax = 0.2754
-SWEP.ConeMin = 0.1051
+SWEP.ConeMax = 0.05
+SWEP.ConeMin = 0.015
+
+SWEP.Recoil = 1.25

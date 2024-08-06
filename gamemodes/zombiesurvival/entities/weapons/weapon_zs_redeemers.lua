@@ -24,16 +24,15 @@ SWEP.UseHands = true
 SWEP.Primary.Sound = Sound("Weapon_ELITE.Single")
 SWEP.Primary.Damage = 22
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Delay = 0.15
-SWEP.Primary.Recoil = 1.95
+SWEP.Primary.Delay = 0.125
 
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.DefaultClip = 150
 
-SWEP.ConeMax = 0.251
-SWEP.ConeMin = 0.08
+SWEP.ConeMax = 0.055
+SWEP.ConeMin = 0.005
 function SWEP:Deploy()
 	self:SetNextReload(0)
 	if server then

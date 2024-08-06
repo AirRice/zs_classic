@@ -49,17 +49,17 @@ SWEP.UseHands = true
 SWEP.WalkSpeed = SPEED_FASTER
 SWEP.ReloadSound = Sound("Weapon_AWP.ClipOut")
 SWEP.Primary.Sound = Sound("Weapon_Immortal.Single")
-SWEP.Primary.Damage = 60
+SWEP.Primary.Damage = 70
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.8
-SWEP.Primary.Recoil = 50
+SWEP.Recoil = 3
 SWEP.Primary.ClipSize = 4
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "pistol"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
-SWEP.TracerName = "Tracer"
-SWEP.ConeMax = 0.4
-SWEP.ConeMin = 0.1
+SWEP.TracerName = "AirboatGunHeavyTracer"
+SWEP.ConeMax = 0.003
+SWEP.ConeMin = 0.0005
 
 SWEP.IronSightsPos = Vector(-4.6, 0, -0.12)
 SWEP.IronSightsAng = Vector(0, 0, 0)
