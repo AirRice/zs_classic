@@ -18,6 +18,8 @@ end
 
 SWEP.Base = "weapon_zs_basemelee"
 
+-- SWEP.HoldType = "knife"
+
 SWEP.DamageType = DMG_SLASH
 
 SWEP.ViewModel = "models/weapons/c_crowbar.mdl"
@@ -28,9 +30,12 @@ SWEP.NoDroppedWorldModel = true
 SWEP.BoxPhysicsMin = Vector(-8, -1, -4)]]
 
 SWEP.MeleeDamage = 25
-SWEP.MeleeRange = 48
+SWEP.MeleeRange = 58
 SWEP.MeleeSize = 0.875
-SWEP.Primary.Delay = 0.4
+
+SWEP.WalkSpeed = SPEED_FASTEST
+
+SWEP.Primary.Delay = 0.44
 
 SWEP.WalkSpeed = SPEED_FAST
 

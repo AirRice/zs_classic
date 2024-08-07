@@ -1,7 +1,7 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "쿵푸 패스트 좀비"
+	SWEP.PrintName = "쿵-푸 패스트 좀비"
 end
 
 SWEP.Base = "weapon_zs_zombie"
@@ -9,7 +9,7 @@ SWEP.Base = "weapon_zs_zombie"
 SWEP.Primary.Delay = 1
 
 SWEP.MeleeDelay = 0.25
-SWEP.MeleeReach = 38
+SWEP.MeleeReach = 42
 SWEP.MeleeDamage = 13
 
 SWEP.DelayWhenDeployed = true

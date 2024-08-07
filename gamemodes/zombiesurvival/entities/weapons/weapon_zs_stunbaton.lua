@@ -1,11 +1,11 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "전기 충격기"
+	SWEP.PrintName = "스턴 바톤"
 
 	SWEP.ViewModelFOV = 50
 
-	SWEP.Description = "다른 무기에 비해 조금 약한 감이 있지만,\n좀비의 이동 속도를 현저히 느리게 만든다."
+	SWEP.Description = "다른 무기에 비해 직접적인 피해는 적지만,\n좀비에게 전기 충격을 가해 일시적으로 현저히 느려지게 만든다."
 end
 
 SWEP.Base = "weapon_zs_basemelee"

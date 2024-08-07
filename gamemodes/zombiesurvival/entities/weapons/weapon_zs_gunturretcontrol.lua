@@ -1,8 +1,8 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "적외선 타겟팅 터렛 컨트롤러"
-	SWEP.Description = "보유중인 터렛을 조종할 수 있게 해주는 컨트롤러."
+	SWEP.PrintName = "적외선 레이저 터렛 컨트롤러"
+	SWEP.Description = "보유중인 모든 적외선 레이저 터렛을 일제히 조종할 수 있다."
 
 	SWEP.ViewModelFOV = 50
 

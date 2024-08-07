@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "삽"
-	SWEP.Description = "넉다운된 좀비를 단숨에 처치할 수 있다."
+	SWEP.Description = "쓰러진 좀비를 단숨에 처치해 묻어버릴 수 있다."
 
 	SWEP.ViewModelFOV = 60
 
