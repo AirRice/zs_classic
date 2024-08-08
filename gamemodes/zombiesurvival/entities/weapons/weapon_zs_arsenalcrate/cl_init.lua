@@ -1,11 +1,13 @@
 include("shared.lua")
 
-SWEP.PrintName = "상점상자"
-SWEP.Description = " 상자가 없다면 그 누구도 살아남을 수 없다.\n대재앙 이전 부흥하던 인터넷 쇼핑몰의 기술을 이용해 무기, 탄약, 도구 등을 빠르게 공급한다.\n상자를 설치한 사람은 판매 금액의 7%를 추가 수수료로 얻을 수 있다.\n공격 1: 설치\n공격 2/재장전: 회전\n달리기 키(기본값:쉬프트): 회수\n사용 키(기본값:E):주인 없는 상자 가져가기\n생성할려고 하는 위치가 가능한 위치라면 초록색으로 표시된다."
+SWEP.PrintName = "상점 상자"
+SWEP.Description = "생존에 있어 매우 귀중한 상자. 새로운 무기, 도구, 탄약 및 기타 등등을 구입할 수 있다.\n소유자는 타인이 구입한 구매액의 7% 수수료를 받는다.\n주 공격 버튼으로 설치.\n보조 공격 버튼, 재장전 버튼으로 회전."
 SWEP.DrawCrosshair = false
 
 SWEP.Slot = 4
 SWEP.SlotPos = 0
+
+local GetConVarNumber = GetConVarNumber
 
 function SWEP:DrawHUD()
 	if GetConVarNumber("crosshair") ~= 1 then return end
@@ -34,11 +36,18 @@ function SWEP:Deploy()
 	return true
 end
 
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+
 local nextclick = 0
 function SWEP:RotateGhost(amount)
-	if nextclick <= RealTime() then
+	local realTime = RealTime()
+	if nextclick <= realTime then
 		surface.PlaySound("npc/headcrab_poison/ph_step4.wav")
-		nextclick = RealTime() + 0.3
+		nextclick = realTime + 0.3
 	end
 
 	RunConsoleCommand("_zs_ghostrotation", math.NormalizeAngle(GetConVarNumber("_zs_ghostrotation") + amount))
