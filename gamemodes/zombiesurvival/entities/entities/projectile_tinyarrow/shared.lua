@@ -1,4 +1,6 @@
 ENT.Type = "anim"
+ENT.m_IsProjectile = true
+
 function ENT:ShouldNotCollide(ent)
 	return ent:IsPlayer() and self.Owner:IsPlayer() and ent:Team() == self.Owner:Team()
 end
