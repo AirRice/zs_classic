@@ -1,3 +1,5 @@
+
+
 CLASS.Name = "Flesh Creeper"
 CLASS.TranslationName = "class_flesh_creeper"
 CLASS.Description = "description_flesh_creeper"
@@ -10,7 +12,7 @@ CLASS.Health = 100
 CLASS.SWEP = "weapon_zs_fleshcreeper"
 CLASS.Model = Model("models/antlion.mdl")
 CLASS.Speed = 175
-CLASS.JumpPower = 300
+CLASS.JumpPower = 250
 
 CLASS.Points = 4
 
@@ -19,21 +21,24 @@ CLASS.VoicePitch = 0.55
 CLASS.PainSounds = {Sound("npc/barnacle/barnacle_pull1.wav"), Sound("npc/barnacle/barnacle_pull2.wav"), Sound("npc/barnacle/barnacle_pull3.wav"), Sound("npc/barnacle/barnacle_pull4.wav")}
 CLASS.DeathSounds = {Sound("npc/barnacle/barnacle_die1.wav"), Sound("npc/barnacle/barnacle_die2.wav")}
 
-CLASS.ModelScale = 0.65
+CLASS.ModelScale = 0.8
 --[[CLASS.ModelScale = 0.6324555
 CLASS.ClientsideModelScale = 0.4 / CLASS.ModelScale]]
 
-CLASS.Hull = {Vector(-16, -16, 0), Vector(16, 16, 48)}
-CLASS.HullDuck = {Vector(-16, -16, 0), Vector(16, 16, 48)}
+local hvSz = 10
+local hgt = 30
 
-CLASS.Hull[1].x = -16
-CLASS.Hull[2].x = 16
-CLASS.Hull[1].y = -16
-CLASS.Hull[2].y = 16
-CLASS.HullDuck[1].x = -16
-CLASS.HullDuck[2].x = 16
-CLASS.HullDuck[1].y = -16
-CLASS.HullDuck[2].y = 16
+CLASS.Hull = {Vector(-hvSz, -hvSz, 0), Vector(hvSz, hvSz, hgt)}
+CLASS.HullDuck = {Vector(-hvSz, -hvSz, 0), Vector(hvSz, hvSz, hgt)}
+
+CLASS.Hull[1].x = -hvSz
+CLASS.Hull[2].x = hvSz
+CLASS.Hull[1].y = -hvSz
+CLASS.Hull[2].y = hvSz
+CLASS.HullDuck[1].x = -hvSz
+CLASS.HullDuck[2].x = hvSz
+CLASS.HullDuck[1].y = -hvSz
+CLASS.HullDuck[2].y = hvSz
 
 CLASS.ViewOffset = Vector(0, 0, 40)
 CLASS.ViewOffsetDucked = Vector(0, 0, 10)
@@ -182,7 +187,7 @@ end
 
 if not CLIENT then return end
 
-CLASS.Icon = "zombiesurvival/killicons/fleshcreeper"
+--CLASS.Icon = "zombiesurvival/killicons/flesh_creeper"
 
 local matFlesh = Material("models/flesh")
 function CLASS:PrePlayerDraw(pl)

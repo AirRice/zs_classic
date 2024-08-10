@@ -201,23 +201,6 @@ if SERVER then
 		pl:CreateAmbience("butcherambience")
 	end
 
-	local function MakeButcherKnife(pos)
-		local ent = ents.Create("prop_weapon")
-		if ent:IsValid() then
-			ent:SetPos(pos)
-			ent:SetAngles(AngleRand())
-			ent:SetWeaponType("weapon_zs_butcherknife")
-			ent:Spawn()
-
-			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then
-				phys:Wake()
-				phys:SetVelocityInstantaneous(VectorRand():GetNormalized() * math.Rand(24, 100))
-				phys:AddAngleVelocity(VectorRand() * 200)
-			end
-		end
-	end
-
 	function CLASS:OnKilled(pl, attacker, inflictor, suicide, headshot, dmginfo, assister)
 		local pos = pl:LocalToWorld(pl:OBBCenter())
 		timer.Simple(0, function()
@@ -230,6 +213,7 @@ end
 
 if not CLIENT then return end
 
+--CLASS.Icon = "zombiesurvival/killicons/butcher"
 
 function CLASS:PrePlayerDraw(pl)
 	render.SetColorModulation(1, 0.5, 0.5)
@@ -238,5 +222,3 @@ end
 function CLASS:PostPlayerDraw(pl)
 	render.SetColorModulation(1, 1, 1)
 end
-
-CLASS.Icon = "zombiesurvival/killicons/butcher"

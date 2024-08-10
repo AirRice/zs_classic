@@ -94,8 +94,8 @@ CLASS.TranslationName = "class_ghoul"
 CLASS.Description = "description_ghoul"
 CLASS.Help = "controls_ghoul"
 
-CLASS.Wave = 2 / 6
-CLASS.Unlocked = false
+CLASS.Wave = 0
+CLASS.Unlocked = true
 
 CLASS.Health = 215
 CLASS.Speed = 160

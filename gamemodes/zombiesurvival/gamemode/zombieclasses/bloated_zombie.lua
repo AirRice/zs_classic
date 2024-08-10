@@ -96,9 +96,9 @@ CLASS.Help = "controls_bloated_zombie"
 
 CLASS.Wave = 3 / 6
 
-CLASS.Health = 325
-CLASS.Speed = 120
-CLASS.JumpPower = 150
+CLASS.Health = 350
+CLASS.Speed = 140
+CLASS.JumpPower = 175
 CLASS.Mass = DEFAULT_MASS * 2
 
 CLASS.CanTaunt = true
@@ -114,7 +114,7 @@ CLASS.DeathSounds = {"npc/ichthyosaur/water_growl5.wav"}
 CLASS.VoicePitch = 0.6
 
 CLASS.CanFeignDeath = true
-
+CLASS.GasDamageRadius = 65
 sound.Add({
 	name = "fatty.footstep",
     channel = CHAN_BODY,
@@ -144,8 +144,20 @@ local ACT_HL2MP_RUN_ZOMBIE = ACT_HL2MP_RUN_ZOMBIE
 
 function CLASS:PlayPainSound(pl)
 	pl:EmitSound("npc/zombie_poison/pz_idle"..math.random(2, 3)..".wav", 72, math.Rand(75, 85))
-
+	
 	return true
+end
+function CLASS:OnZombieHurt(pl, attacker, healthremaining, damage)
+	local pos = pl:LocalToWorld(pl:OBBCenter())
+	local effectdata = EffectData()
+		effectdata:SetOrigin(pos)
+		effectdata:SetNormal(pl:SyncAngles():Forward())
+	util.Effect("gas", effectdata, true)
+	for _, ent in pairs(ents.FindInSphere(pos, self.GasDamageRadius)) do
+		if ent and ent:IsValid() and ent:IsNailed() then
+			ent:TakeSpecialDamage(math.max(math.floor(damage/10),1), DMG_SLASH, pl, pl:GetActiveWeapon())
+		end
+	end
 end
 
 local mathrandom = math.random
@@ -257,6 +269,7 @@ if SERVER then
 				ent:SetPos(pos)
 				ent:SetOwner(pl)
 				ent:Spawn()
+				ent.TwisterDamagePercentage = 0.045
 
 				local phys = ent:GetPhysicsObject()
 				if phys:IsValid() then
@@ -277,5 +290,5 @@ if SERVER then
 end
 
 if CLIENT then
-	CLASS.Icon = "zombiesurvival/killicons/bloatedzombie"
+	CLASS.Icon = "zombiesurvival/killicons/zombie"
 end

@@ -166,6 +166,11 @@ end
 
 function CLASS:ProcessDamage(pl, dmginfo)
 	local attacker = dmginfo:GetAttacker()
+	
+	if attacker.BuffHolyLight and attacker:Team() == TEAM_HUMAN then
+		dmginfo:ScaleDamage(1.50)
+	end
+	
 	if not SHADEFLASHLIGHTDAMAGE and attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN then
 		dmginfo:SetDamage(0)
 		dmginfo:ScaleDamage(0)
@@ -205,7 +210,7 @@ end
 
 if not CLIENT then return end
 
-CLASS.Icon = "zombiesurvival/killicons/shade"
+--CLASS.Icon = "zombiesurvival/killicons/shade"
 
 local ToZero = {"ValveBiped.Bip01_L_Thigh", "ValveBiped.Bip01_R_Thigh", "ValveBiped.Bip01_L_Calf", "ValveBiped.Bip01_R_Calf", "ValveBiped.Bip01_L_Foot", "ValveBiped.Bip01_R_Foot"}
 function CLASS:BuildBonePositions(pl)

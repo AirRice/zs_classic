@@ -12,7 +12,7 @@ CLASS.Speed = 60
 CLASS.JumpPower = 230
 CLASS.VoicePitch = 0.5
 CLASS.FearPerInstance = 3
-CLASS.ModelScale = 2.2
+CLASS.ModelScale = 2.3
 
 CLASS.PainSounds = {"npc/scanner/cbot_servoscared.wav"}
 CLASS.DeathSounds = {"npc/combine_gunship/see_enemy.wav"}
@@ -21,8 +21,8 @@ CLASS.Unlocked = true
 CLASS.Hidden = true
 CLASS.Boss = true
 
-CLASS.Hull = {Vector(-6.6, -6.6, 0), Vector(6.6, 6.6, 9)}
---CLASS.HullDuck = {Vector(-7, -7, 0), Vector(7, 7, 8)}
+CLASS.Hull = {Vector(-8, -8, 0), Vector(8, 8, 10)}
+CLASS.HullDuck = {Vector(-8, -8, 0), Vector(8, 8, 10)}
 CLASS.ViewOffset = Vector(0,0,8)
 CLASS.ViewOffsetDucked = Vector(0,0,8)
 CLASS.CrouchedWalkSpeed = 3
@@ -65,6 +65,10 @@ function CLASS:CalcMainActivity(pl, velocity)
 end
 
 function CLASS:UpdateAnimation(pl, velocity, maxseqgroundspeed)
+	local wep = pl:GetActiveWeapon()
+	if wep:IsValid() and wep.IsPecking and wep:IsPecking() then
+		pl:SetPlaybackRate(2)	
+	end
 	pl:FixModelAngles(velocity)
 	pl:SetPlaybackRate(1)
 	return true
