@@ -30,13 +30,11 @@ function ENT:Think()
 		end
 	end
 
-
 	self:NextThink(CurTime() + 0.5)
 	return true
 end
 
 function ENT:RenderInfo(pos, ang, owner)
-
 	local time = CurTime()
 	local remain = math.max(0, NextUse - time)
 	local calc = math.Clamp(remain / 30, 0, 1)
@@ -44,11 +42,14 @@ function ENT:RenderInfo(pos, ang, owner)
 	cam.Start3D2D(pos, ang, 0.075)
 	
 		draw.RoundedBox(32, -192, -50, 384, 160, color_black_alpha90)
-		
+
 		draw.SimpleText(string.FormattedTime(remain, "%02i:%02i'%02i"), "ZS3D2DFont2", 0, -80, textcolor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		draw.SimpleText(translate.Get("resupply_box"), "ZS3D2DFont2", 0, 0, textcolor, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 		if owner:IsValid() and owner:IsPlayer() then
 			draw.SimpleText("("..owner:ClippedName()..")", "ZS3D2DFont2Small", 0, 40, owner == MySelf and COLOR_BLUE or COLOR_GRAY, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
+		end
+		if (NextUse >= CurTime()) then
+			draw.SimpleText("탄약 준비됨!", "ZS3D2DFont2Small", 0, 80, COLOR_GREEN, TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM)
 		end
 
 	cam.End3D2D()
@@ -64,12 +65,6 @@ function ENT:Draw()
 
 	self:RenderInfo(self:LocalToWorld(vOffset), ang, owner)
 	self:RenderInfo(self:LocalToWorld(vOffset2), self:LocalToWorldAngles(aOffset2), owner)
-
-	cam.Start3D2D(self:LocalToWorld(vOffsetEE), ang, 0.01)
-
-		draw.SimpleText("ur a faget", "ZS3D2DFont2", 0, 0, color_white, TEXT_ALIGN_CENTER)
-
-	cam.End3D2D()
 end
 
 net.Receive("zs_nextresupplyuse", function(length)

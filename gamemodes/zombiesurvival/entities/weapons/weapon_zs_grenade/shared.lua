@@ -18,6 +18,9 @@ SWEP.ThrowPowerMul = 1
 
 SWEP.WalkSpeed = SPEED_FAST
 
+SWEP.GrenadeDamage = 384
+SWEP.GrenadeRadius = 256
+
 function SWEP:Initialize()
 	self:SetWeaponHoldType("grenade")
 	self:SetDeploySpeed(1.1)
@@ -62,7 +65,7 @@ function SWEP:PrimaryAttack()
 			if phys:IsValid() then
 				phys:Wake()
 				phys:AddAngleVelocity(VectorRand() * 5)
-				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 800 * self.ThrowPowerMul)
+				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 800 * (owner.buffPitcher and 1.4 or 1) * self.ThrowPowerMul)
 			end
 		end
 	end

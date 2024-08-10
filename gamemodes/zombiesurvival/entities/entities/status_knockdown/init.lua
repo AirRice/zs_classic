@@ -9,8 +9,9 @@ function ENT:PlayerSet(pPlayer, bExists)
 
 	pPlayer:DrawWorldModel(false)
 	pPlayer:DrawViewModel(false)
-
-	self:SetDTFloat(0, self.DieTime)
+	
+	self:SetDTFloat(0, self.DieTime * (pPlayer.BuffSparta and 0.2 or 1))
+	
 	if not bExists then
 		pPlayer:CreateRagdoll()
 	end
