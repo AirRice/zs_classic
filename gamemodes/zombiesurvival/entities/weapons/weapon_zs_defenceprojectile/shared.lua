@@ -1,18 +1,18 @@
 SWEP.ViewModel = "models/weapons/v_pistol.mdl"
-SWEP.WorldModel = "models/roller.mdl"
+SWEP.WorldModel = Model("models/roller.mdl")
 
 SWEP.AmmoIfHas = true
 
 SWEP.Primary.ClipSize = 1
 SWEP.Primary.DefaultClip = 3
-SWEP.Primary.Automatic = true
+SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "defenceprojectile"
-SWEP.Primary.Delay = 2
+SWEP.Primary.Delay = 0.3
 
-SWEP.Secondary.ClipSize = -1
-SWEP.Secondary.DefaultClip = -1
+SWEP.Secondary.ClipSize = 1
+SWEP.Secondary.DefaultClip = 1
 SWEP.Secondary.Automatic = false
-SWEP.Secondary.Ammo = "none"
+SWEP.Secondary.Ammo = "dummy"
 
 SWEP.WalkSpeed = SPEED_NORMAL
 SWEP.FullWalkSpeed = SPEED_SLOWEST

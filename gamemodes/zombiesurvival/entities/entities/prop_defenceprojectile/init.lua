@@ -3,26 +3,40 @@ AddCSLuaFile("shared.lua")
 
 include("shared.lua")
 
-ENT.Radius = 225
-ENT.InterceptRadius = ENT.Radius * 0.3
-ENT.Gravity = 1500
-ENT.MinGravity = ENT.Gravity / 5
-
-ENT.Projectiles = {}
+local function RefreshTwisterOwners(pl)
+	for _, ent in pairs(ents.FindByClass("prop_twister")) do
+		if ent:IsValid() and ent:GetObjectOwner() == pl then
+			ent:SetObjectOwner(NULL)
+		end
+	end
+end
+hook.Add("PlayerDisconnected", "Twister.PlayerDisconnected", RefreshTwisterOwners)
+hook.Add("OnPlayerChangedTeam", "Twister.OnPlayerChangedTeam", RefreshTwisterOwners)
 
 function ENT:Initialize()
 	self:SetModel("models/roller.mdl")
-	self:SetMaterial("models/effects/comball_sphere")
 	self:PhysicsInit(SOLID_VPHYSICS)
+	self:SetUseType(SIMPLE_USE)
+	self:SetPlaybackRate(1)
 
 	local phys = self:GetPhysicsObject()
 	if phys:IsValid() then
 		phys:EnableMotion(false)
-		phys:Wake()
 	end
 
-	self:SetMaxObjectHealth(300)
+	self:SetMaxObjectHealth(self.MaxHealth)
 	self:SetObjectHealth(self:GetMaxObjectHealth())
+end
+
+function ENT:SetObjectHealth(health)
+	self:SetDTFloat(0, health)
+	if health <= 0 and not self.Destroyed then
+		self.Destroyed = true
+		
+		local ed = EffectData()
+		ed:SetOrigin(self:GetPos())
+		util.Effect("explosion", ed)
+	end
 end
 
 function ENT:OnTakeDamage(dmginfo)
@@ -30,19 +44,8 @@ function ENT:OnTakeDamage(dmginfo)
 
 	local attacker = dmginfo:GetAttacker()
 	if not (attacker:IsValid() and attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN) then
+		self:SetObjectHealth(self:GetObjectHealth() - math.max(1, dmginfo:GetDamage() / 8))
 		self:ResetLastBarricadeAttacker(attacker, dmginfo)
-		self:SetObjectHealth(self:GetObjectHealth() - dmginfo:GetDamage())
-	end
-end
-
-function ENT:SetObjectHealth(health)
-	self:SetDTFloat(0, health)
-	if health <= 0 and not self.Destroyed then
-		self.Destroyed = true
-
-		local e = EffectData()
-		e:SetOrigin(self:GetPos())
-		util.Effect("Explosion", e)
 	end
 end
 
@@ -50,9 +53,19 @@ function ENT:AltUse(activator, tr)
 	self:PackUp(activator)
 end
 
+function ENT:PhysicsCollide(data, collider)
+	if (IsValid(data.HitEntity)) then
+		local ent = data.HitEntity
+		if (ent:IsProjectile() and !ent.IgnoreProjDefense and ent.__Twister = self) then
+			ent:Remove()
+			self:SetObjectHealth(math.max(self:GetObjectHealth() - self:GetMaxObjectHealth() * (ent.TwisterDamagePercentage or self.DamagePercentage), 0))
+		end
+	end
+end
+
 function ENT:OnPackedUp(pl)
-	pl:GiveEmptyWeapon("weapon_zs_defenceprojectile")
-	pl:GiveAmmo(1, "defenceprojectile")
+	pl:GiveEmptyWeapon("weapon_zs_twister")
+	pl:GiveAmmo(1, "twister")
 
 	pl:PushPackedItem(self:GetClass(), self:GetObjectHealth())
 
@@ -61,14 +74,13 @@ end
 
 function ENT:DefenceProjectiles()
 	local center = self:LocalToWorld(self:OBBCenter())
-	
-	-- local allent = ents.FindInSphere(center, self.Radius)
-	local allproj = ents.FindByClass("projectile_*")
-	
-	local td = {}
-	td.start = center
-	td.filter = {self}
-	
+	local curTime = CurTime()
+	if self.LastAttack + self.AttackCooldown >= curTime then return end
+	local projs = {}
+	local attacked = 0
+
+	local allent = ents.FindInSphere(center, self.SearchRadius)
+		
 	-- local sz = 7
 	-- td.mins = Vector(-sz, -sz, -sz)
 	-- td.maxs = Vector(sz, sz, sz)
@@ -76,120 +88,76 @@ function ENT:DefenceProjectiles()
 	table.Add(td.filter, game.GetWorld())
 	td.mask = MASK_SHOT
 	
-	for _, v in pairs(allproj) do
-		local projpos = v:GetPos()
-		if projpos:Distance(self:GetPos()) <= self.Radius then
-			td.endpos = projpos
-			
-			local trace = util.TraceLine(td)
-			
-			if trace.HitPos == td.endpos then
-				trace.Hit = true
-				trace.Entity = v
-			end
-			
-			if trace.Entity == v and !v.defproj then
-				if !table.HasValue(self.Projectiles, v) then
-					local class = v:GetClass()
-					if self:GetOwner().twisterOS and !(string.find(class, "bonemesh") or string.find(class, "poison") or string.find(class, "siegeball")) then
-						continue
-					end
-					table.Add(self.Projectiles, {v})	
-					self:SetObjectHealth(self:GetObjectHealth() - self:GetMaxObjectHealth() * 0.003)
-				end
-				if !table.HasValue(td.filter, v) then
-					table.Add(td.filter, {v})
-				end
-				-- v.defproj = true
-				local e = EffectData()
-					e:SetOrigin(self:GetPos())
-					e:SetScale(v:GetPos():Distance(self:GetPos()))
-				util.Effect("defenceprojectile", e)
-			end
+	for _, ent in pairs(allent) do
+		if (attacked >= self.AttackLimit) then
+			break
 		end
+
+		if (ent != self and ent:IsProjectile() and !ent.IgnoreProjDefense) and
+		(TrueVisibleFilters(center, ent:GetPos(), self, ent, self.Owner)) and
+		(!ent.__Twister or ent.__Twister == nil or !IsValid(ent.__Twister) or ent.__Twister == self) then
+			ent.__Twister = self
+			
+			self:Attack(ent)
+			
+			attacked = attacked + 1
+		end
+	end
+	
+	if (attacked > 0) then
+		self.LastAttack = curTime
+	end
+
 	end
 end
 
-function ENT:PhysicsCollide(data, collider)
-	local ent = data.HitEntity
-	if IsValid(ent) and string.find(ent:GetClass(), "^projectile_") then
-		local e = EffectData()
-			e:SetOrigin(self:GetPos())
-			e:SetScale(ent:GetPos():Distance(self:GetPos()))
-		util.Effect("defenceprojectile", e)
-		self:EmitSound("npc/scanner/scanner_electric" .. math.random(1, 2) .. ".wav", 100, 100)
-		timer.Simple(0, function()
-			ent:Remove()
-		end)
+function ENT:Attack(proj)
+	if !IsValid(proj) then return end
+	local phys = proj:GetPhysicsObject()
+	local projcenter = proj:GetPos()
+	local center = self:LocalToWorld(self:OBBCenter())
+	local angvec = (center - proj:GetPos()):GetNormal()
+	local mul = 1 - (center:Distance(projcenter) / self.SearchRadius)
+	if (IsValid(phys)) then
+		phys:EnableMotion(true)
+		proj.OriginalGravity = phys:IsGravityEnabled()
+		phys:EnableGravity(false)
+		phys:SetVelocityInstantaneous(Vector(0, 0, 0))
+		phys:AddVelocity((center - projcenter):GetNormal() * (math.max(self.Gravity * mul, self.MinGravity)))
+		phys:AddAngleVelocity(angvec * math.max(self.Gravity * mul, self.MinGravity))
+	else
+		proj:Remove()
 	end
+
+	local percentage = self.DragPercentage
+	
+	if (proj.TwisterDamagePercentage and proj.TwisterDamagePercentage > 0) then
+		percentage = proj.TwisterDamagePercentage * 0.05
+	end
+	
+	self:SetObjectHealth(math.max(self:GetObjectHealth() - self:GetMaxObjectHealth() * percentage, 1))
+	
+	local e = EffectData()
+		e:SetOrigin(proj:GetPos())
+		e:SetEntity(self)
+	util.Effect("twister_attack", ed)
+	local e = EffectData()
+		e:SetOrigin(self:GetPos())
+		e:SetScale(v:GetPos():Distance(self:GetPos()))
+	util.Effect("defenceprojectile", e)
 end
 
-function ENT:ProcessProjectiles()
-	local projectiles = self.Projectiles
-	local start = self:LocalToWorld(self:OBBCenter())
-	for i, v in pairs(projectiles) do
-		if IsValid(v) then
-			v:SetParent(NULL)
-			
-			local pos = v:GetPos()
-			local dist = start:Distance(pos)
-			local phys = v:GetPhysicsObject()
-			local angvec = (self:GetPos() - v:GetPos()):GetNormal()
-			
-			if dist <= self.Radius then
-				local mul = 1 - (dist / self.Radius)
-				
-				if v.Explode and self:GetOwner().pointGravity then
-					if self:GetOwner().twisterOS then
-						local class = v:GetClass()
-						if string.find(class, "poison") or string.find(class, "bonemesh") or string.find(class, "siegeball") then
-							v.Explode = function(self) end
-						end
-					else
-						v.Explode = function(self) end
-					end
-				end
-				
-				if IsValid(phys) then
-					timer.Create("defproj_" .. tostring(v:EntIndex()), (v.LifeTime and v.LifeTime or 10), 1, function()
-						v.Explode = function(self) 
-							self:Remove()
-						end
-					end)
-					v:SetGravity(0)
-					phys:EnableMotion(true)
-					v.OriginalGravity = phys:IsGravityEnabled()
-					phys:EnableGravity(false)
-					phys:AddVelocity((start - pos):GetNormal() * (math.max(self.Gravity * mul, self.MinGravity)))
-					phys:AddAngleVelocity(angvec * math.max(self.Gravity * mul, self.MinGravity))
-				end
-			else
-				if IsValid(phys) then
-					phys:EnableGravity(v.OriginalGravity or true)
-				end
-				table.remove(self.Projectiles, i)
-			end
-		else
-			table.remove(self.Projectiles, i)
-		end
-	end
-end
 
 function ENT:Think()
+	local curTime = CurTime()
 	self:DefenceProjectiles()
-	self:ProcessProjectiles()
+
 	if self.Destroyed then
-		for _, v in pairs(self.Projectiles) do
-			if IsValid(v) then
-				local phys = v:GetPhysicsObject()
-				
-				if IsValid(phys) then
-					v:SetGravity(1)
-					phys:EnableGravity(true)
-				end
-			end
-		end
 		self:Remove()
+	elseif self.Close and curTime >= self.Close then
+		self.Close = nil
+		self:ResetSequence("open")
+		self:EmitSound("items/ammocrate_close.wav")
 	end
-	self:NextThink(CurTime())
+	
 end

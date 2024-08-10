@@ -57,7 +57,6 @@ function SWEP:PrimaryAttack()
 		ent:SetPos(pos)
 		ent:SetAngles(ang)
 		ent:Spawn()
-		ent:SetOwner(owner)
 
 		ent:SetObjectOwner(owner)
 
