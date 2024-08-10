@@ -193,8 +193,8 @@ GM.EndRound = false
 GM.StartingWorth = 200
 GM.ZombieVolunteers = {}
 
-team.SetUp(TEAM_ZOMBIE, "The Undead", Color(0, 255, 0, 255))
-team.SetUp(TEAM_SURVIVORS, "Survivors", Color(0, 160, 255, 255))
+team.SetUp(TEAM_ZOMBIE, "좀비", Color(0, 255, 0, 255))
+team.SetUp(TEAM_SURVIVORS, "생존자", Color(0, 160, 255, 255))
 
 local validmodels = player_manager.AllValidModels()
 validmodels["tf01"] = nil
@@ -206,7 +206,7 @@ vector_tiny = Vector(0.001, 0.001, 0.001)
 GM.SoundDuration = {
 	["zombiesurvival/music_win.ogg"] = 33.149,
 	["zombiesurvival/music_lose.ogg"] = 45.714,
-	["zombiesurvival/surften1.ogg"] = 148.203,
+	["zombiesurvival/lasthuman.ogg"] = 120.503,
 
 	["zombiesurvival/beats/defaulthuman/1.ogg"] = 7.111,
 	["zombiesurvival/beats/defaulthuman/2.ogg"] = 7.111,
@@ -275,12 +275,12 @@ function GM:ShouldRestartRound()
 
 	local roundlimit = self.RoundLimit
 	if self.ZombieEscape and roundlimit > 0 then
-		roundlimit = math.ceil(roundlimit * 1.5)
+		-- roundlimit = math.ceil(roundlimit * 1.5)
 	end
 
 	local timelimit = self.TimeLimit
 	if self.ZombieEscape and timelimit > 0 then
-		timelimit = timelimit * 1.5
+		-- timelimit = timelimit * 1.5
 	end
 
 	if timelimit > 0 and CurTime() >= timelimit or roundlimit > 0 and self.CurrentRound >= roundlimit then return false end
@@ -405,8 +405,8 @@ function GM:GetDynamicSpawnsOld(pl)
 	return tab
 end
 
-GM.DynamicSpawnDist = 250
-GM.DynamicSpawnDistBuild = 300
+GM.DynamicSpawnDist = 400
+GM.DynamicSpawnDistBuild = 450
 function GM:DynamicSpawnIsValid(nest, humans, allplayers)
 	if self:ShouldUseAlternateDynamicSpawn() then
 		return self:DynamicSpawnIsValidOld(nest, humans, allplayers)
@@ -496,16 +496,20 @@ end
 
 function GM:Move(pl, move)
 	if pl:Team() == TEAM_HUMAN then
-		-- if pl:GetBarricadeGhosting() then
-			-- move:SetMaxSpeed(36)
-			-- move:SetMaxClientSpeed(36)
-		-- elseif move:GetForwardSpeed() < 0 then
-		if move:GetForwardSpeed() < 0 and !pl.buffBalSense then
-			move:SetMaxSpeed(move:GetMaxSpeed() * 0.5)
-			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * 0.5)
-		elseif move:GetForwardSpeed() == 0 and !pl.buffBalSense then
-			move:SetMaxSpeed(move:GetMaxSpeed() * 0.85)
-			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * 0.85)
+		local sBalanceMult = pl.BuffSBalance and 0.5 or 1
+		if pl:GetBarricadeGhosting() then
+			move:SetMaxSpeed(36 * (pl.BuffGhost and 2 or 1))
+			move:SetMaxClientSpeed(36 * (pl.BuffGhost and 2 or 1))
+		elseif move:GetForwardSpeed() < 0 then
+			move:SetMaxSpeed(move:GetMaxSpeed() * (1 - (0.5 * sBalanceMult)))
+			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * (1 - (0.5 * sBalanceMult)))
+		elseif move:GetForwardSpeed() == 0 then
+			move:SetMaxSpeed(move:GetMaxSpeed() * (1 - (0.15 * sBalanceMult)))
+			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * (1 - (0.15 * sBalanceMult)))
+		end
+		
+		if (SERVER and pl.BuffImAGroot and move:GetVelocity():Length() >= pl:GetWalkSpeed()) then
+			pl.BuffImAGroot = CurTime()
 		end
 	elseif pl:CallZombieFunction("Move", move) then
 		return
@@ -525,7 +529,7 @@ function GM:OnPlayerHitGround(pl, inwater, hitfloater, speed)
 	local isundead = pl:Team() == TEAM_UNDEAD
 
 	if isundead then
-		if pl:GetZombieClassTable().NoFallDamage then return true end
+		if pl.GetZombieClassTable and pl:GetZombieClassTable().NoFallDamage then return true end
 	elseif SERVER then
 		pl:PreventSkyCade()
 	end
@@ -536,24 +540,17 @@ function GM:OnPlayerHitGround(pl, inwater, hitfloater, speed)
 
 	local damage = (0.1 * (speed - 525)) ^ 1.45
 	if hitfloater then damage = damage / 2 end
-	if pl.buffBeliefJump and pl:Team() == TEAM_HUMAN then
-		damage = damage * 0.75
-	end
 
 	if math.floor(damage) > 0 then
-		if damage >= 5 and (not isundead or not pl:GetZombieClassTable().NoFallSlowdown) then
+		if damage >= (pl.BuffStrongShoes and 20 or 5) and (not isundead or not pl:GetZombieClassTable().NoFallSlowdown) then
 			pl:RawCapLegDamage(CurTime() + math.min(2, damage * 0.038))
 		end
 
 		if SERVER then
-			local mul = 1
-			if pl:Team() == TEAM_HUMAN and pl.buffBeliefJump then
-				mul = 1.25
-			end
-			if damage >= 30 * mul and damage < pl:Health() then
+			if damage >= 30 and damage < pl:Health() then
 				pl:KnockDown(damage * 0.05)
 			end
-			pl:TakeSpecialDamage(damage, DMG_FALL, game.GetWorld(), game.GetWorld(), pl:GetPos())
+			pl:TakeSpecialDamage(damage * (pl.BuffBeliefJump and 2/3 or 1), DMG_FALL, game.GetWorld(), game.GetWorld(), pl:GetPos())
 			pl:EmitSound("player/pl_fallpain"..(math.random(2) == 1 and 3 or 1)..".wav")
 		end
 	end
@@ -562,7 +559,7 @@ function GM:OnPlayerHitGround(pl, inwater, hitfloater, speed)
 end
 
 function GM:PlayerCanBeHealed(pl)
-	if pl.buffVampire or pl.Cannibalistic then
+	if pl:IsValid() and pl:IsPlayer() and pl:Alive() and pl:Team() == TEAM_HUMAN and (pl.buffVampire or pl.buffCannibal) then
 		return false
 	end
 	return true
@@ -574,7 +571,8 @@ end
 
 local TEAM_SPECTATOR = TEAM_SPECTATOR
 function GM:PlayerCanHearPlayersVoice(listener, talker)
-	return !table.HasValue((listener.muted or {}), talker)
+	return true
+	-- return listener:IsValid() and talker:IsValid() and listener:Team() == talker:Team() or listener:Team() == TEAM_SPECTATOR
 	--[[if self:GetEndRound() then return true, false end
 
 	if listener:Team() == talker:Team() then
@@ -817,9 +815,9 @@ function GM:IsSpecialPerson(pl, image)
 	if pl:SteamID() == "STEAM_0:1:3307510" then
 		img = "VGUI/steam/games/icon_sourcesdk"
 		tooltip = "JetBoom\nCreator of Zombie Survival!"
-	elseif pl:SteamID() == "STEAM_0:1:41282672" then
+	elseif pl:SteamID() == "STEAM_0:1:41282672" or pl:SteamID() == "STEAM_0:1:26452044" then
 		img = "VGUI/steam/games/icon_sourcesdk"
-		tooltip = "RICE\n 이 서버의 주력 개발자"
+		tooltip = "현재 파일 주력 개발진"
 	elseif pl:IsAdmin() then
 		img = "VGUI/servers/icon_robotron"
 		tooltip = "Admin"
@@ -883,7 +881,7 @@ end
 
 if not FixedSoundDuration then
 FixedSoundDuration = true
-local OldSoundDuration = OldSoundDuration or SoundDuration
+local OldSoundDuration = SoundDuration
 function SoundDuration(snd)
 	if snd then
 		local ft = string.sub(snd, -4)
