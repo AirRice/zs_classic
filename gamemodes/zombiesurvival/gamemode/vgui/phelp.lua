@@ -96,7 +96,7 @@ function MakepHelp()
 	Window:SetCursor("pointer")
 	pHelp = Window
 
-	local label = EasyLabel(Window, "Help", "ZSHUDFont", color_white)
+	local label = EasyLabel(Window, "도움말", "ZSHUDFont", color_white)
 	label:CenterHorizontal()
 	label:AlignTop(8)
 
@@ -151,9 +151,8 @@ function MakepHelp()
 	Window:Center()
 	Window:MakePopup()
 
-	local button = EasyButton(Window, "Credits", 8, 4)
+	local button = EasyButton(Window, "제작진", 8, 4)
 	button:SetPos(wide - button:GetWide() - 12, tall - button:GetTall() - 12)
-	button:SetText("제작진")
 	button.DoClick = function(btn) MakepCredits() end
 
 	gamemode.Call("BuildHelpMenu", Window, propertysheet)

@@ -14,7 +14,7 @@ local function pointslabelThink(self)
 	if self.m_LastPoints ~= points then
 		self.m_LastPoints = points
 
-		self:SetText("사용 가능 포인트: "..points)
+		self:SetText("남은 포인트: "..points)
 		self:SizeToContents()
 	end
 end
@@ -159,7 +159,7 @@ function GM:OpenPointsShop()
 
 	local title = EasyLabel(topspace, "포인트 샵", "ZSHUDFontSmall", COLOR_WHITE)
 	title:CenterHorizontal()
-	local subtitle = EasyLabel(topspace, "좀비 대재앙에서 살아남기 위한 모든 것!", "ZSHUDFontTiny", COLOR_WHITE)
+	local subtitle = EasyLabel(topspace, "좀비 대재앙에서 살아남기 위해 필요한 모든 것!", "ZSHUDFontTiny", COLOR_WHITE)
 	subtitle:CenterHorizontal()
 	subtitle:MoveBelow(title, 4)
 
@@ -175,7 +175,7 @@ function GM:OpenPointsShop()
 	tt:SetMouseInputEnabled(true)
 	tt:SetTooltip("이 샵은 좀비의 기습에 대비한 시스템을 갖췄습니다.\n마우스를 상점 밖으로 이동해 빠르게 닫을 수 있습니다!")
 
-	local wsb = EasyButton(topspace, "시작 자금 무기창", 8, 4)
+	local wsb = EasyButton(topspace, "시작 전 자본 상점", 8, 4)
 	wsb:AlignRight(8)
 	wsb:AlignTop(8)
 	wsb.DoClick = worthmenuDoClick
@@ -184,7 +184,7 @@ function GM:OpenPointsShop()
 	local bottomspace = vgui.Create("DPanel", frame)
 	bottomspace:SetWide(topspace:GetWide())
 
-	local pointslabel = EasyLabel(bottomspace, "사용할 자금: 0", "ZSHUDFontTiny", COLOR_GREEN)
+	local pointslabel = EasyLabel(bottomspace, "남은 포인트: 0", "ZSHUDFontTiny", COLOR_GREEN)
 	pointslabel:AlignTop(4)
 	pointslabel:AlignLeft(8)
 	pointslabel.Think = pointslabelThink
@@ -260,18 +260,29 @@ function GM:OpenPointsShop()
 					namelab:SetPos(42, itempan:GetTall() * 0.5 - namelab:GetTall() * 0.5)
 					itempan.m_NameLabel = namelab
 
-					local pricelab = EasyLabel(itempan, tostring(math.ceil(tab.Worth * (!GAMEMODE:GetWaveActive() and 0.8 or 1))).." 포인트", "ZSHUDFontTiny")
-					pricelab:SetPos(itempan:GetWide() - 25 - pricelab:GetWide(), 4)
+					local mul = 1
+					
+					if (!GAMEMODE:GetWaveActive()) then
+						mul = mul - GAMEMODE.ArsenalCrateMultiplier
+					end
+					
+					local pricelab = EasyLabel(itempan, tostring(math.ceil(tab.Worth * mul)) .." 포인트", "ZSHUDFontTiny")
+					pricelab:SetPos(itempan:GetWide() - 20 - pricelab:GetWide(), 4)
 					pricelab.Think = function(self)
-						self:SetText(tostring(math.ceil(tab.Worth * (!GAMEMODE:GetWaveActive() and 0.8 or 1))).." 포인트")
+						local mul = 1
+					
+						if (!GAMEMODE:GetWaveActive()) then
+							mul = mul - (1 - GAMEMODE.ArsenalCrateMultiplier)
+						end
+						self:SetText(tostring(math.ceil(tab.Worth * mul)) .." 포인트", "ZSHUDFontTiny")
 					end
 					itempan.m_PriceLabel = pricelab
 
 					local button = vgui.Create("DImageButton", itempan)
 					button:SetImage("icon16/lorry_add.png")
 					button:SizeToContents()
-					button:SetPos(itempan:GetWide() - 25 - button:GetWide(), itempan:GetTall() - 20)
-					button:SetTooltip(name.. " 구매")
+					button:SetPos(itempan:GetWide() - 20 - button:GetWide(), itempan:GetTall() - 20)
+					button:SetTooltip("Purchase "..name)
 					button.ID = itempan.ID
 					button.DoClick = PurchaseDoClick
 					itempan.m_BuyButton = button
@@ -284,7 +295,7 @@ function GM:OpenPointsShop()
 							ammobutton:SizeToContents()
 							ammobutton:CopyPos(button)
 							ammobutton:MoveLeftOf(button, 2)
-							ammobutton:SetTooltip("탄약 구매")
+							ammobutton:SetTooltip("탄약 구매 (달리기 키를 누르고 있으면 10회 구매)")
 							ammobutton.AmmoType = ammonames[ammotype]
 							ammobutton.DoClick = BuyAmmoDoClick
 						end

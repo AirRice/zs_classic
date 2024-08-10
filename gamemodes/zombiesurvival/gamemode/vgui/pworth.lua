@@ -64,7 +64,7 @@ local function CartDoClick(self, silent, force)
 		WorthRemaining = WorthRemaining - tab.Worth
 	end
 
-	pWorth.WorthLab:SetText("시작 자금: ".. WorthRemaining)
+	pWorth.WorthLab:SetText("자본금: ".. WorthRemaining)
 	if WorthRemaining <= 0 then
 		pWorth.WorthLab:SetTextColor(COLOR_RED)
 		pWorth.WorthLab:InvalidateLayout()
@@ -237,7 +237,7 @@ function MakepWorth()
 	help.DoClick = helpDoClick
 	
 	local list = vgui.Create("DPanelList", propertysheet)
-	propertysheet:AddSheet("Favorites", list, "icon16/heart.png", false, false)
+	propertysheet:AddSheet("즐겨찾기", list, "icon16/heart.png", false, false)
 	list:EnableVerticalScrollbar(true)
 	list:SetWide(propertysheet:GetWide() - 16)
 	list:SetSpacing(2)
@@ -266,7 +266,7 @@ function MakepWorth()
 			defimage:SetImage("icon16/heart.png")
 			defimage:SizeToContents()
 			defimage:SetMouseInputEnabled(true)
-			defimage:SetTooltip("이것이 보통 구매 목록이다.\n자금 상점에서 구매를 하지 못하면 자동으로 이 목록의 물품이 사지게 된다.")
+			defimage:SetTooltip("이 구매 목록은 기본으로 정해졌다.\n라운드 전 자금으로 구매를 못 하더라도 자동으로 이 목록의 물품이 사지게 된다.")
 			defimage:SetPos(x, cartpan:GetTall() * 0.5 - defimage:GetTall() * 0.5)
 			x = x + defimage:GetWide() + 4
 		end
@@ -298,9 +298,9 @@ function MakepWorth()
 		defaultbutton:SetImage("icon16/heart.png")
 		defaultbutton:SizeToContents()
 		if cartname == defaultcart then
-			defaultbutton:SetTooltip("보통 구매 목록에서 지정 취소.")
+			defaultbutton:SetTooltip("기본 구매 목록 지정 취소.")
 		else
-			defaultbutton:SetTooltip("이 목록을 보통 구매 목록으로 지정한다.")
+			defaultbutton:SetTooltip("이 목록을 기본 구매 목록으로 지정한다.")
 		end
 		x = x - defaultbutton:GetWide() - 8
 		defaultbutton:SetPos(x, cartpan:GetTall() * 0.5 - defaultbutton:GetTall() * 0.5)
@@ -310,7 +310,7 @@ function MakepWorth()
 		local deletebutton = vgui.Create("DImageButton", cartpan)
 		deletebutton:SetImage("icon16/bin.png")
 		deletebutton:SizeToContents()
-		deletebutton:SetTooltip("이 목록을 삭제한다.")
+		deletebutton:SetTooltip("구매 목록 삭제.")
 		x = x - deletebutton:GetWide() - 8
 		deletebutton:SetPos(x, cartpan:GetTall() * 0.5 - loadbutton:GetTall() * 0.5)
 		deletebutton.ID = i
@@ -346,20 +346,20 @@ function MakepWorth()
 	checkout:SetFont("ZSHUDFontSmall")
 	checkout:SetText("구매!")
 	checkout:SizeToContents()
-	checkout:SetSize(140, 30)
+	checkout:SetSize(130, 30)
 	checkout:AlignBottom(8)
 	checkout:CenterHorizontal()
 	checkout.DoClick = CheckoutDoClick
 
 	local randombutton = vgui.Create("DButton", frame)
-	randombutton:SetText("랜덤 사기")
+	randombutton:SetText("랜덤 지급")
 	randombutton:SetSize(64, 16)
 	randombutton:AlignBottom(8)
 	randombutton:AlignRight(8)
 	randombutton.DoClick = RandDoClick
 
 	local clearbutton = vgui.Create("DButton", frame)
-	clearbutton:SetText("전체 지우기")
+	clearbutton:SetText("목록 초기화")
 	clearbutton:SetSize(64, 16)
 	clearbutton:AlignRight(8)
 	clearbutton:MoveAbove(randombutton, 8)
@@ -473,7 +473,7 @@ function PANEL:SetWorthID(id)
 	end
 
 	if tab.Worth then
-		self.PriceLabel:SetText(tostring(tab.Worth).." Worth")
+		self.PriceLabel:SetText(tostring(tab.Worth).." 자금")
 	else
 		self.PriceLabel:SetText("")
 	end

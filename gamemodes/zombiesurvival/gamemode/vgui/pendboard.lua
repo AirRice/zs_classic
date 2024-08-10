@@ -52,9 +52,9 @@ function MakepEndBoard(winner)
 
 	local subheading
 	if localwin then
-		subheading = EasyLabel(frame, "인간들은 삶을 다시 이어갈 수 있다...", "ZSHUDFontSmall", COLOR_WHITE)
+		subheading = EasyLabel(frame, "이 순간을 위해 버텨왔다.", "ZSHUDFontSmall", COLOR_WHITE)
 	else
-		subheading = EasyLabel(frame, "인류에게는 이제 희망이 없다", "ZSHUDFontSmall", COLOR_LIMEGREEN)
+		subheading = EasyLabel(frame, "좀비 군단은 더욱 강력해졌다.", "ZSHUDFontSmall", COLOR_LIMEGREEN)
 	end
 	subheading:SetPos(wid * 0.5 - subheading:GetWide() * 0.5, y)
 	y = y + subheading:GetTall() + 8

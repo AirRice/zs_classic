@@ -22,10 +22,11 @@ function PANEL:Init()
 end
 
 function PANEL:Think()
-	if self.CloseTime and RealTime() >= self.CloseTime then
+	local realTime = RealTime()
+	if self.CloseTime and realTime >= self.CloseTime then
 		self.CloseTime = nil
 		self:SetVisible(false)
-	elseif self.StartChecking and RealTime() >= self.StartChecking and not MySelf:KeyDown(GAMEMODE.MenuKey) then
+	elseif self.StartChecking and realTime >= self.StartChecking and not MySelf:KeyDown(GAMEMODE.MenuKey) then
 		self:CloseMenu()
 	end
 end
@@ -35,7 +36,8 @@ function PANEL:RefreshSize()
 end
 
 function PANEL:OpenMenu()
-	if self.StartChecking and RealTime() < self.StartChecking then return end
+	local realTime = RealTime()
+	if self.StartChecking and realTime < self.StartChecking then return end
 
 	self.CloseTime = nil
 
@@ -43,7 +45,7 @@ function PANEL:OpenMenu()
 	self:SetPos(ScrW() - self:GetWide(), 0, self.SlideTime, 0, self.SlideTime * 0.8) --self:MoveTo(ScrW() - self:GetWide(), 0, self.SlideTime, 0, self.SlideTime * 0.8)
 	self:SetVisible(true)
 	self:MakePopup()
-	self.StartChecking = RealTime() + 0.1
+	self.StartChecking = realTime + 0.1
 
 	timer.Simple(0, function() gui.SetMousePos(ScrW() - self:GetWide() * 0.5, ScrH() * 0.5) end)
 end

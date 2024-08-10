@@ -172,8 +172,9 @@ end
 function PANEL:Think()
 	local lp = LocalPlayer()
 	if lp:IsValid() then
+		local frameTime = FrameTime()
 		self.Health = math.Clamp(lp:Health() / lp:GetMaxHealthEx(), 0, 1)
-		self.BarricadeGhosting = math.Approach(self.BarricadeGhosting, lp:IsBarricadeGhosting() and 1 or 0, FrameTime() * 5)
+		self.BarricadeGhosting = math.Approach(self.BarricadeGhosting, lp:IsBarricadeGhosting() and 1 or 0, frameTime * 5)
 
 		local model = lp:GetModel()
 		local ent = self.Entity
@@ -211,8 +212,8 @@ function PANEL:Think()
 			ent:SetCycle(lp:GetCycle())
 
 			local modellow, modelhigh = LowestAndHighest(ent)
-			self.ModelLow = math.Approach(self.ModelLow, modellow, FrameTime() * 256)
-			self.ModelHigh = math.Approach(self.ModelHigh, modelhigh, FrameTime() * 256)
+			self.ModelLow = math.Approach(self.ModelLow, modellow, frameTime * 256)
+			self.ModelHigh = math.Approach(self.ModelHigh, modelhigh, frameTime * 256)
 			self.ModelHigh = math.max(self.ModelLow + 1, self.ModelHigh)
 		end
 	end
@@ -267,8 +268,8 @@ function PANEL:Paint()
 
 	cam.Start3D(campos, ang, self.fFOV, x, y, w, h, 5, 4096)
 
-	-- render.SetMaterial(matShadow)
-	-- render.DrawQuadEasy(entpos, Vector(0, 0, 1), 45, 90, colShadow)
+	render.SetMaterial(matShadow)
+	render.DrawQuadEasy(entpos, Vector(0, 0, 1), 45, 90, colShadow)
 
 	render.SetLightingOrigin(entpos)
 	render.ResetModelLighting(0.2, 0.2, 0.2)

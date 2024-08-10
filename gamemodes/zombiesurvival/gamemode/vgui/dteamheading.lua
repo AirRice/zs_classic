@@ -20,8 +20,10 @@ function PANEL:Init()
 end
 
 function PANEL:Think()
-	if RealTime() >= self.NextRefresh then
-		self.NextRefresh = RealTime() + self.RefreshTime
+	local realTime = RealTime()
+	
+	if realTime >= self.NextRefresh then
+		self.NextRefresh = realTime + self.RefreshTime
 		self:Refresh()
 	end
 end
