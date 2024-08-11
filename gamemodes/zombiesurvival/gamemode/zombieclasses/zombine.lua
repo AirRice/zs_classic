@@ -23,7 +23,7 @@ CLASS.SWEP = "weapon_zs_zombine"
 
 CLASS.Model = Model("models/zombie/zombie_soldier.mdl")
 
-CLASS.DeathSounds = {"npc/zombine/zombine_die1.wav","npc/zombine/zombine_die2.wav"}
+CLASS.DeathSounds = {"zombiesurvival/zombine/zombine_die1.wav","zombiesurvival/zombine/zombine_die2.wav"}
 
 CLASS.VoicePitch = 1
 
@@ -37,7 +37,7 @@ local ACT_HL2MP_WALK_CROUCH_ZOMBIE_01 = ACT_HL2MP_WALK_CROUCH_ZOMBIE_01
 local ACT_HL2MP_RUN_ZOMBIE = ACT_HL2MP_RUN_ZOMBIE
 
 function CLASS:PlayPainSound(pl)
-	pl:EmitSound("npc/zombine/zombine_pain"..math.random(2, 3)..".wav", 72, math.Rand(100, 110))
+	pl:EmitSound("zombiesurvival/zombine/zombine_pain"..math.random(2, 3)..".wav", 72, math.Rand(100, 110))
 	return true
 end
 

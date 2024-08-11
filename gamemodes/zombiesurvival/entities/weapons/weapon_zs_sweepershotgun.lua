@@ -138,5 +138,3 @@ SWEP.BulletCallback = function(attacker, tr, dmginfo)
 		end
 	end
 end
-	
-end

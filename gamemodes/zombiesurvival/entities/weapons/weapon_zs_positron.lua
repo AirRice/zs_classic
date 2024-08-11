@@ -171,7 +171,7 @@ function SWEP:Think()
 				end
 				if ent:IsValid() then
 					local owner = self:GetOwner()
-					ent:TakeSpecialDamage(self.Primary.Damage, DMG_DISSOLVE, owner, self,)
+					ent:TakeSpecialDamage(self.Primary.Damage, DMG_DISSOLVE, owner, self)
 					self.NextHurt = CurTime()+self.Primary.Delay
 				end
 			end

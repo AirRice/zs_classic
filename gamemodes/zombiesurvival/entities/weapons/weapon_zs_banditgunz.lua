@@ -1,12 +1,25 @@
 AddCSLuaFile()
 
-SWEP.Base = "weapon_zs_banditgun"
+if CLIENT then
+	SWEP.PrintName = "'Bandit' G3SG1"
+	SWEP.Slot = 3
+	SWEP.SlotPos = 0
+
+	SWEP.ViewModelFlip = false
+	SWEP.ViewModelFOV = 60
+
+	SWEP.HUD3DBone = "v_weapon.g3sg1_Parent"
+	SWEP.HUD3DPos = Vector(-2, -5, -6)
+	SWEP.HUD3DAng = Angle(0, 0, 0)
+	SWEP.HUD3DScale = 0.03
+end
+
+SWEP.Base = "weapon_zs_base"
 SWEP.ZombieOnly = true
 SWEP.Primary.Damage = 10
 SWEP.AlertDelay = 1
 SWEP.Primary.Delay = 1
 SWEP.HoldType = "ar2"
-SWEP.ViewModel = "models/weapons/v_snip_g3sg1.mdl"
 SWEP.MaxCharged = 25
 SWEP.PlayCharging = nil
 SWEP.CannotCharged = false
@@ -18,6 +31,24 @@ if CLIENT then
 	SWEP.ViewModelFlip = true
 end
 SWEP.LastGave = 0
+
+SWEP.ViewModel = Model( "models/weapons/v_snip_g3sg1.mdl" )
+SWEP.WorldModel = Model( "models/weapons/w_snip_g3sg1.mdl" )
+SWEP.UseHands = true
+SWEP.ReloadSound = Sound("Weapon_AWP.ClipOut")
+SWEP.Primary.Sound = "weapons/flaregun/fire.wav"
+
+SWEP.Primary.NumShots = 1
+
+SWEP.Primary.ClipSize = 5
+SWEP.Primary.Automatic = true
+SWEP.Primary.Ammo = "dummy"
+SWEP.ConeMax = 0.053
+SWEP.ConeMin = 0.001
+
+SWEP.Recoil = 2.2
+
+SWEP.nextreloadfinish = 0
 
 function SWEP:SetupDataTables()
 	self:NetworkVar("Float", 0, "Charged")
@@ -36,6 +67,7 @@ function SWEP:Initialize()
 	if SERVER then
 		self.Weapon:SetMaterial('models/Flesh')
 	end
+	self:SetClip1(self:GetMaxClip1())
 	self.BaseClass.BaseClass.Initialize(self)
 end
 
@@ -67,45 +99,46 @@ function SWEP:DoAlert()
 end
 
 function SWEP:PlayAlertSound()
-	self.Owner:EmitSound("npc/zombine/zombine_alert"..math.random(1,7)..".wav",75,100)
+	self.Owner:EmitSound("zombiesurvival/zombine/zombine_alert"..math.random(1,7)..".wav",75,100)
 end
 
 function SWEP:PlayIdleSound()
-	self.Owner:EmitSound("npc/zombine/zombine_idle"..math.random(4)..".wav")
+	self.Owner:EmitSound("zombiesurvival/zombine/zombine_idle"..math.random(4)..".wav")
 end
 
 function SWEP:Reload()
-	if self.Owner:IsHolding() then return end
-
-	if self:GetIronsights() then
-		self:SetIronsights(false)
+	if self:GetDTBool(0) then
+		self:SetDTBool(0, false)
 	end
-	if self:GetNextReload() <= CurTime() and self:Clip1() != 25 then
+	if self.reloading then return end
+	local curtime = CurTime()
+
+	if self:GetNextReload() <= curtime and self:Clip1() < self.Primary.ClipSize then
 		self.Owner:GetViewModel():SetPlaybackRate(0.5)
-		self.IdleAnimation = CurTime() + self:SequenceDuration()*2+0.3
+		self.IdleAnimation = curtime + self:SequenceDuration()*2+0.3
 		self:SetNextPrimaryFire(self.IdleAnimation)
+		self.Owner:EmitSound("zombiesurvival/zombine/zombine_readygrenade2.wav",75,100)
+		self.reloading = true
+		self:SendWeaponAnim(ACT_VM_RELOAD)
+		self:GetOwner():RestartGesture(ACT_HL2MP_GESTURE_RELOAD_CROSSBOW)
+		self:GetOwner():DoReloadEvent()
+		self.nextreloadfinish = CurTime() + self:SequenceDuration()
 		self:SetNextReload(self.IdleAnimation)
-		self.Owner:EmitSound("npc/zombine/zombine_readygrenade2.wav",75,100)
-		self:DefaultReload(ACT_VM_RELOAD)
-		self.Owner:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_CROSSBOW)
-		self:ResetConeAdder()
 	end
 end
 
 function SWEP:Think()
 	local owner = self.Owner
 	local curTime = CurTime()
-	if SERVER then
-	if (self.LastGave or 0) + 10 <= curTime then
-		if (IsValid(owner)) then
-			owner:GiveAmmo(10, "ar2")
-			self.LastGave = curTime
-		end
-	end
-	end	
 	if self:GetNextReload() + 0.3 > CurTime() then
 		self:SetCharged(0)
 		return
+	end
+	local nextreloadfinish = self.nextreloadfinish
+	if nextreloadfinish ~= 0 and nextreloadfinish < CurTime() then
+		self:SetClip1(self:GetMaxClip1())
+		self.nextreloadfinish = 0
+		self.reloading = false
 	end
 	if owner:KeyPressed(IN_SPEED) and self.NextCharge <= CurTime() and self:Clip1() >= 5 then	
 		self:EmitSound("npc/combine_gunship/see_enemy.wav")
@@ -182,16 +215,29 @@ end
 
 if CLIENT then
 
-function SWEP:ViewModelDrawn()
-	render.ModelMaterialOverride(0)
-end
+	function SWEP:AdjustMouseSensitivity()
+		if self:GetDTBool(0) then return GAMEMODE.FOVLerp end
+	end
 
-local matSheet = Material("Models/flesh")
-function SWEP:PreDrawViewModel(vm)
-	render.ModelMaterialOverride(matSheet)
-end
+	function SWEP:TranslateFOV( fov )
+		if self:GetDTBool(0) then
+			return fov - 40	
+		else
+			return fov
+		end
+	end
 
-function SWEP:DrawHUD()
+	function SWEP:PostDrawViewModel(vm)
+		render.ModelMaterialOverride(0)
+	end
+
+	local matSheet = Material("Models/flesh")
+	function SWEP:PreDrawViewModel(vm)
+		render.ModelMaterialOverride(matSheet)
+	end
+
+	function SWEP:DrawHUD()
+		self:DrawCrosshair()
 		if self.CannotCharged then
 			surface.SetDrawColor(255, 0, 0, 120)
 			surface.DrawOutlinedRect(ScrW() / 2 - 100, ScrH() / 2 + 32, 200, 32)
@@ -214,7 +260,13 @@ function SWEP:DrawHUD()
 				surface.DrawOutlinedRect(ScrW() / 2 - 103, ScrH() / 2 + 29, 206, 38)
 			end
 		end
-		self.BaseClass.DrawHUD(self)
+
+		local screenscale = BetterScreenScale()
+		local wid, hei = 180 * screenscale, 64 * screenscale
+		local x, y = ScrW() - wid - screenscale * 128, ScrH() - hei - screenscale * 72
+		local spare = self:Ammo1()
+		draw.RoundedBox(16, x, y, wid, hei, COLOR_DARKGRAY)
+		draw.SimpleTextBlurry(self:Clip1(), "ZSHUDFontBig", x + wid * 0.5, y + hei * 0.5, COLOR_DARKRED, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+
 	end
-	
 end

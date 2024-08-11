@@ -81,7 +81,7 @@ function SWEP:Reload()
 		self:SetNWInt("MovementMode",1)
 	end
 
-	self.Owner:EmitSound("npc/zombine/zombine_charge"..math.random(2)..".wav",75,120)
+	self.Owner:EmitSound("zombiesurvival/zombine/zombine_charge"..math.random(2)..".wav",75,120)
 	self.Owner:EmitSound("npc/combine_soldier/die"..math.random(3)..".wav",75,70)
 	timer.Simple(1.3, 
 	function() if self.Owner:IsValid() and self.Owner:Alive() and self:IsValid() then self.DuringModeChange = false end self:SetNextPrimaryFire(CurTime()) end)
@@ -92,18 +92,18 @@ function SWEP:SecondaryAttack()
 	local owner = self.Owner
 	self:SetNextSecondaryFire(CurTime() + 15)
 	self.DuringShieldUp = true
-	self.Owner:EmitSound("npc/zombine/zombine_readygrenade2.wav",75,120)
+	self.Owner:EmitSound("zombiesurvival/zombine/zombine_readygrenade2.wav",75,120)
 	self.Owner:EmitSound("npc/combine_soldier/die"..math.random(3)..".wav",75,120)
 	timer.Simple(2, 
 	function() if self.Owner:IsValid() and self.Owner:Alive() and self:IsValid() then self.DuringShieldUp = false self:SetShieldTime(CurTime() + 5) end end)
 end
 
 function SWEP:PlayAlertSound()
-	self.Owner:EmitSound("npc/zombine/zombine_alert"..math.random(1,7)..".wav")
+	self.Owner:EmitSound("zombiesurvival/zombine/zombine_alert"..math.random(1,7)..".wav")
 end
 
 function SWEP:PlayIdleSound()
-	self.Owner:EmitSound("npc/zombine/zombine_idle"..math.random(4)..".wav")
+	self.Owner:EmitSound("zombiesurvival/zombine/zombine_idle"..math.random(4)..".wav")
 end
 function SWEP:PlayAttackSound()
 	self.Owner:EmitSound("npc/zombie/zo_attack"..math.random(2)..".wav",90, 90)

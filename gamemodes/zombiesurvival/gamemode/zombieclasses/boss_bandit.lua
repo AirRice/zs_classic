@@ -23,7 +23,7 @@ CLASS.Model = Model("models/player/arctic.mdl")
 
 CLASS.VoicePitch = 0.6
 
-CLASS.DeathSounds = {"npc/zombine/zombine_die1.wav","npc/zombine/zombine_die2.wav"}
+CLASS.DeathSounds = {"zombiesurvival/zombine/zombine_die1.wav","zombiesurvival/zombine/zombine_die2.wav"}
 
 --[[
 local ACT_HL2MP_SWIM_MELEE = ACT_HL2MP_SWIM_MELEE
@@ -118,15 +118,6 @@ if SERVER then
 			effectdata:SetNormal(pl:GetForward())
 			effectdata:SetEntity(pl)
 		util.Effect("chemzombieexplode", effectdata, nil, true)
-		return true
-	end
-
-	function CLASS:PostOnKilled(pl, attacker, inflictor, suicide, headshot, dmginfo)
-		pl:SetZombieClass(GAMEMODE.DefaultZombieClass)
-		local pos = pl:LocalToWorld(pl:OBBCenter())
-		timer.Simple(0, function()
-			attacker:Give("weapon_zs_banditgun")
-		end)
 	end
 end
 
@@ -173,7 +164,7 @@ function CLASS:BuildBonePositions(pl)
 	for _, bone in pairs(ArmBones) do
 		local spineid = pl:LookupBone(bone)
 		if spineid and spineid > 0 then
-			pl:ManipulateBoneScale(spineid, Vector(1.2, 0.8, 0.5))
+			pl:ManipulateBoneScale(spineid, Vector(1.5, 0.3, 0.5))
 		end
 	end
 end
