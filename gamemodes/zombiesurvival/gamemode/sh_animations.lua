@@ -144,7 +144,7 @@ function GM:CalcMainActivity(pl, velocity)
 	end]]
 	if pl:Team() == TEAM_UNDEAD then
 		local tab = pl:GetZombieClassTable()
-		if tab.CalcMainActivity and tab:CalcMainActivity(pl, velocity) then
+		if tab and tab.CalcMainActivity and tab:CalcMainActivity(pl, velocity) then
 			return pl.CalcIdeal, pl.CalcSeqOverride
 		end
 	end

@@ -240,8 +240,9 @@ end
 
 function meta:MeleeViewPunch(damage)
 	local maxpunch = (damage + 25) * 0.5
+	local mult = (self.BuffSparta and self:Team() == TEAM_HUMAN) and 0.1 or 1
 	local minpunch = -maxpunch
-	self:ViewPunch(Angle(math.Rand(minpunch, maxpunch), math.Rand(minpunch, maxpunch), math.Rand(minpunch, maxpunch)))
+	self:ViewPunch(Angle(math.Rand(minpunch, maxpunch) * mult, math.Rand(minpunch, maxpunch) * mult, math.Rand(minpunch, maxpunch) * mult))
 end
 
 function meta:NearArsenalCrate()
@@ -398,7 +399,7 @@ function meta:ProcessDamage(dmginfo)
 end
 
 function meta:KnockDown(time)
-	if self:Team() ~= TEAM_UNDEAD then
+	if self:Team() == TEAM_HUMAN then
 		self:GiveStatus("knockdown", time or 3)
 	end
 end
@@ -415,7 +416,7 @@ end
 function meta:CallZombieFunction(funcname, ...)
 	if self:Team() == TEAM_UNDEAD then
 		local tab = self:GetZombieClassTable()
-		if tab[funcname] then
+		if tab and tab[funcname] then
 			return tab[funcname](tab, self, ...)
 		end
 	end
@@ -506,6 +507,25 @@ function meta:ResetSpeed(noset, health)
 	return speed
 end
 
+function meta:RunChicken()
+	local curTime = CurTime()
+	
+	if (self.LastChicken and self.LastChicken + 60 > curTime) then
+		return
+	end
+	
+	self:SetHumanSpeed(self:ResetSpeed(true) * 2)
+	
+	local id = "ResetChicken" .. self:EntIndex()
+	
+	if (!timer.Exists(id)) then
+		timer.Create(id, 10, 1, function()
+			self:ResetSpeed()
+			self.LastChicken = curTime
+		end)
+	end
+end
+
 function meta:ResetJumpPower(noset)
 	local power = DEFAULT_JUMP_POWER
 
@@ -558,13 +578,19 @@ function meta:ShouldBarricadeGhostWith(ent)
 end
 
 function meta:BarricadeGhostingThink()
-	if self:KeyDown(IN_ZOOM) or self:ActiveBarricadeGhosting() then return end
-
+	if self:KeyDown(IN_ZOOM) or self:ActiveBarricadeGhosting() then 
+		if self.FirstGhostThink then 
+			self:SetLocalVelocity( Vector( 0, 0, 0 ) ) 
+			self.FirstGhostThink = false 
+		end
+		return 
+	end
+	self.FirstGhostThink = true
 	self:SetBarricadeGhosting(false)
 end
 
 function meta:ShouldNotCollide(ent)
-	if ent:IsValid() then
+	if IsValid(ent) then
 		if ent:IsPlayer() then
 			return self:Team() == ent:Team() or self.NoCollideAll or ent.NoCollideAll
 		end
@@ -606,7 +632,7 @@ function meta:TemporaryNoCollide(force)
 	self:SetCollisionGroup(COLLISION_GROUP_PLAYER)
 end
 
-meta.OldSetHealth = FindMetaTable("Entity").SetHealth
+meta.OldSetHealth = meta.OldSetHealth or FindMetaTable("Entity").SetHealth
 function meta:SetHealth(health)
 	self:OldSetHealth(health)
 	if self:Team() == TEAM_HUMAN and 1 <= health then
@@ -703,7 +729,7 @@ function meta:GetHolding()
 end
 
 function meta:GetMaxZombieHealth()
-	return self:GetZombieClassTable().Health
+	return (self.GetZombieClassTable and self:GetZombieClassTable().Health or 0)
 end
 
 local oldmaxhealth = FindMetaTable("Entity").GetMaxHealth
@@ -716,7 +742,7 @@ function meta:GetMaxHealth()
 end
 
 if not meta.OldAlive then
-	meta.OldAlive = meta.Alive
+	meta.OldAlive = meta.OldAlive or meta.Alive
 	function meta:Alive()
 		return self:GetObserverMode() == OBS_MODE_NONE and not self.NeverAlive and self:OldAlive()
 	end

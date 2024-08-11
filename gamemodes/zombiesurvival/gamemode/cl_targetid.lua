@@ -166,7 +166,7 @@ function GM:DrawTargetID(ent, fade)
 		if holding:IsValid() then
 			local mdl = holding:GetModel()
 			local name = string.match(mdl, ".*/(.+)%.mdl") or "object"
-			draw.SimpleTextBlur("Carrying ["..name.."]", "ZSHUDFontTiny", x, y, colTemp, TEXT_ALIGN_CENTER)
+			draw.SimpleTextBlur("소지 중: ["..name.."]", "ZSHUDFontTiny", x, y, colTemp, TEXT_ALIGN_CENTER)
 		else
 			local wep = ent:GetActiveWeapon()
 			if wep:IsValid() then
@@ -177,6 +177,8 @@ function GM:DrawTargetID(ent, fade)
 end
 
 function GM:HUDDrawTargetID(teamid)
+	local curTime = CurTime()
+
 	local start = EyePos()
 	trace.start = start
 	trace.endpos = start + EyeAngles():Forward() * 2048
@@ -187,12 +189,12 @@ function GM:HUDDrawTargetID(teamid)
 
 	local entity = util.TraceHull(trace).Entity
 	if entity:IsValid() and entity:IsPlayer() and (entity:Team() == teamid or isspectator) then
-		entitylist[entity] = CurTime()
+		entitylist[entity] = curTime
 	end
 
 	for ent, time in pairs(entitylist) do
-		if ent:IsValid() and ent:IsPlayer() and (ent:Team() == teamid or isspectator) and CurTime() < time + 2 then
-			self:DrawTargetID(ent, 1 - math.Clamp((CurTime() - time) / 2, 0, 1))
+		if ent:IsValid() and ent:IsPlayer() and (ent:Team() == teamid or isspectator) and curTime < time + 2 then
+			self:DrawTargetID(ent, 1 - math.Clamp((curTime - time) / 2, 0, 1))
 		else
 			entitylist[ent] = nil
 		end

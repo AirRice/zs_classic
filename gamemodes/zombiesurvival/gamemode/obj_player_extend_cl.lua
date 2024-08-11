@@ -241,12 +241,15 @@ function meta:DoHulls(classid, teamid)
 				self:SetJumpPower(DEFAULT_JUMP_POWER)
 			end
 
-			if classtab.ClientsideModelScale then
-				self.ClientsideModelScale = Vector(1, 1, 1) * classtab.ClientsideModelScale
+			--[[if classtab.ModelScale then
+				self.ClientsideModelScale = Vector(1, 1, 1) * classtab.ModelScale
 				local m = Matrix()
 				m:Scale(self.ClientsideModelScale)
 				self:EnableMatrix("RenderMultiply", m)
-			end
+			elseif self.ClientsideModelScale then
+				self.ClientsideModelScale = nil
+				self:DisableMatrix("RenderMultiply")
+			end]]
 			self.NoCollideAll = classtab.NoCollideAll
 			self.AllowTeamDamage = classtab.AllowTeamDamage
 			self.NeverAlive = classtab.NeverAlive

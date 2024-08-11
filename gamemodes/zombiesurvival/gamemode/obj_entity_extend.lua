@@ -164,10 +164,10 @@ function meta:ClipHullTraceHull(distance, size, start, dir)
 end
 
 function meta:ClipHullMeleeTrace(distance, size, filter, start)
-	local cliphullpretrace = self:ClipHullTraceHull(distance, size, start)
-	if cliphullpretrace and LASTHITCLIPHULL and cliphullpretrace.Entity ~= prehit then
-		return cliphullpretrace
-	end
+	-- local cliphullpretrace = self:ClipHullTraceHull(distance, size, start)
+	-- if cliphullpretrace and LASTHITCLIPHULL then
+		-- return cliphullpretrace
+	-- end
 
 	self:LagCompensation(true)
 	local t = self:MeleeTrace(distance, size, filter, start)
@@ -520,7 +520,7 @@ if CLIENT then
 	end
 end
 
-local OldSequenceDuration = meta.OldSequenceDuration or meta.SequenceDuration
+local OldSequenceDuration = meta.SequenceDuration
 function meta:SequenceDuration(seqid)
 	return OldSequenceDuration(self, seqid) or 0
 end

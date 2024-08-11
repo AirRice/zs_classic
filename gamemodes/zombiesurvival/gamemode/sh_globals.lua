@@ -46,25 +46,25 @@ DIR_LEFT = 3
 
 DEFAULT_VIEW_OFFSET = Vector(0, 0, 64)
 DEFAULT_VIEW_OFFSET_DUCKED = Vector(0, 0, 28)
-DEFAULT_JUMP_POWER = 205
+DEFAULT_JUMP_POWER = 215
 DEFAULT_STEP_SIZE = 18
 DEFAULT_MASS = 80
 DEFAULT_MODELSCALE = 1
 
 -- Humans can not carry OR drag anything heavier than this (in kg.)
-CARRY_MAXIMUM_MASS = 300
+CARRY_MAXIMUM_MASS = 350
 -- Humans can not carry anything with a volume more than this (OBBMins():Length() + OBBMaxs():Length()).
-CARRY_MAXIMUM_VOLUME = 150
+CARRY_MAXIMUM_VOLUME = 180
 -- Objects with more mass than this will be dragged instead of carried.
-CARRY_DRAG_MASS = 145
+CARRY_DRAG_MASS = 165
 -- Anything bigger than this is dragged regardless of mass.
-CARRY_DRAG_VOLUME = 120
+CARRY_DRAG_VOLUME = 135
 -- Humans are slowed by this amount per kg carried...
-CARRY_SPEEDLOSS_PERKG = 1.3
+CARRY_SPEEDLOSS_PERKG = 1.10
 -- but can never be slower than this.
-CARRY_SPEEDLOSS_MINSPEED = 88
+CARRY_SPEEDLOSS_MINSPEED = 80
 
-GM.MaxLegDamage = 3
+GM.MaxLegDamage = 3.25
 
 GM.UtilityKey = IN_SPEED
 GM.MenuKey = IN_WALK -- I would use the spawn menu but it has no IN_ key assignment.
@@ -88,16 +88,16 @@ SPEED_ZOMBIEESCAPE_SLOW = 240
 SPEED_ZOMBIEESCAPE_NORMAL = 250
 SPEED_ZOMBIEESCAPE_ZOMBIE = 280
 
-ZE_KNOCKBACKSCALE = 0.1
+ZE_KNOCKBACKSCALE = 5
 
 MASK_HOVER = bit.bor(CONTENTS_OPAQUE, CONTENTS_GRATE, CONTENTS_HITBOX, CONTENTS_DEBRIS, CONTENTS_SOLID, CONTENTS_WATER, CONTENTS_SLIME, CONTENTS_WINDOW, CONTENTS_LADDER, CONTENTS_PLAYERCLIP, CONTENTS_MOVEABLE, CONTENTS_DETAIL, CONTENTS_TRANSLUCENT)
 
-GM.BarricadeHealthMin = 50
-GM.BarricadeHealthMax = 1100
-GM.BarricadeHealthMassFactor = 3
-GM.BarricadeHealthVolumeFactor = 4
+GM.BarricadeHealthMin = 75
+GM.BarricadeHealthMax = 1850
+GM.BarricadeHealthMassFactor = 4.25
+GM.BarricadeHealthVolumeFactor = 6.85
 
-GM.BossZombiePlayersRequired = 10
+GM.BossZombiePlayersRequired = 6
 
 GM.HumanGibs = {
 Model("models/gibs/HGIBS.mdl"),
@@ -123,22 +123,22 @@ GM.CleanupFilter = {
 
 GM.AmmoNames = {}
 GM.AmmoNames["ar2"] = "5.56"
-GM.AmmoNames["pistol"] = "권총"
+GM.AmmoNames["pistol"] = "권총탄"
 GM.AmmoNames["smg1"] = "SMG"
-GM.AmmoNames["357"] = "소총"
-GM.AmmoNames["xbowbolt"] = "크로스보우 화살"
-GM.AmmoNames["buckshot"] = "샷건 탄약"
+GM.AmmoNames["357"] = "소총탄"
+GM.AmmoNames["xbowbolt"] = "석궁 볼트"
+GM.AmmoNames["buckshot"] = "샷건탄"
 GM.AmmoNames["sniperround"] = "판자"
-GM.AmmoNames["grenade"] = "슈류탄"
-GM.AmmoNames["thumper"] = "터렛"
-GM.AmmoNames["battery"] = "메디컬 에너지"
+GM.AmmoNames["grenade"] = "수류탄"
+GM.AmmoNames["thumper"] = "적외선 레이저 터렛"
+GM.AmmoNames["battery"] = "의약품"
 GM.AmmoNames["gaussenergy"] = "못"
-GM.AmmoNames["combinecannon"] = "우라늄 탄환"
-GM.AmmoNames["airboatgun"] = "상점상자"
-GM.AmmoNames["striderminigun"] = "비컨"
+GM.AmmoNames["combinecannon"] = "열화우라늄 탄환"
+GM.AmmoNames["airboatgun"] = "상점 상자"
+GM.AmmoNames["striderminigun"] = "비콘"
 GM.AmmoNames["gravity"] = "M249"
-GM.AmmoNames["spotlamp"] = "램프"
-GM.AmmoNames["stone"] = "짱돌"
+GM.AmmoNames["spotlamp"] = "스팟 램프"
+GM.AmmoNames["stone"] = "돌멩이"
 GM.AmmoNames["smg1_grenade"] = "화염병"
 GM.AmmoNames["pulse"] = "펄스 에너지"
 

@@ -262,11 +262,14 @@ local redview = 0
 local fear = 0
 local matTankGlass = Material("models/props_lab/Tank_Glass001")
 function GM:_RenderScreenspaceEffects()
+	local frameTime = FrameTime()
+	local curTime = CurTime()
+	
 	if MySelf.Confusion and MySelf.Confusion:IsValid() then
 		MySelf.Confusion:RenderScreenSpaceEffects()
 	end
 
-	fear = math_Approach(fear, self:CachedFearPower(), FrameTime())
+	fear = math_Approach(fear, self:CachedFearPower(), frameTime)
 
 	if not self.PostProcessingEnabled then return end
 
@@ -287,14 +290,14 @@ function GM:_RenderScreenspaceEffects()
 	if self.ColorModEnabled then
 		if not MySelf:Alive() and MySelf:GetObserverMode() ~= OBS_MODE_CHASE then
 			if not MySelf:HasWon() then
-				tColorModDead["$pp_colour_colour"] = (1 - math_min(1, CurTime() - self.LastTimeAlive)) * 0.5
+				tColorModDead["$pp_colour_colour"] = (1 - math_min(1, curTime - self.LastTimeAlive)) * 0.5
 				DrawColorModify(tColorModDead)
 			end
 		elseif MySelf:Team() == TEAM_UNDEAD then
 			if self.m_ZombieVision then
 				DrawColorModify(tColorModZombieVision)
 			else
-				tColorModZombie["$pp_colour_colour"] = math_min(1, 0.25 + math_min(1, (CurTime() - self.LastTimeDead) * 0.5) * 1.75 * fear)
+				tColorModZombie["$pp_colour_colour"] = math_min(1, 0.25 + math_min(1, (curTime - self.LastTimeDead) * 0.5) * 1.75 * fear)
 
 				DrawColorModify(tColorModZombie)
 			end
@@ -303,13 +306,13 @@ function GM:_RenderScreenspaceEffects()
 			local health = MySelf:Health()
 			if health <= 50 then
 				--tColorModHuman["$pp_colour_addr"] = math_min(0.3 - health * 0.006, curr + FrameTime() * 0.055)
-				redview = math_Approach(redview, 1 - health / 50, FrameTime() * 0.2)
+				redview = math_Approach(redview, 1 - health / 50, frameTime * 0.2)
 			elseif 0 < curr then
 				--tColorModHuman["$pp_colour_addr"] = math_max(0, curr - FrameTime() * 0.1)
-				redview = math_Approach(redview, 0, FrameTime() * 0.2)
+				redview = math_Approach(redview, 0, frameTime * 0.2)
 			end
 
-			tColorModHuman["$pp_colour_addr"] = redview * (0.035 + math_abs(math.sin(CurTime() * 2)) * 0.14)
+			tColorModHuman["$pp_colour_addr"] = redview * (0.035 + math_abs(math.sin(curTime * 2)) * 0.14)
 			tColorModHuman["$pp_colour_brightness"] = fear * -0.045
 			tColorModHuman["$pp_colour_contrast"] = 1 + fear * 0.15
 			tColorModHuman["$pp_colour_colour"] = 1 - fear * 0.725 --0.85
