@@ -9,7 +9,7 @@ CLASS.SWEP = "weapon_zs_cremated"
 CLASS.Wave = 3 / 6
 CLASS.Threshold = 0
 CLASS.Unlocked = false
-CLASS.Hidden = true
+CLASS.Hidden = false
 
 CLASS.Health = 125
 CLASS.Speed = 160

@@ -9,7 +9,8 @@ ENT.AttackLimit = 10000
 ENT.MaxHealth = 330
 ENT.LastAttack = 0
 ENT.AttackCooldown = 0
-ENT.PullSpeed = 180
+ENT.Gravity = 360
+ENT.MinGravity = ENT.Gravity / 5
 ENT.DragPercentage = 0.0005
 
 ENT.DamagePercentage = 0.01

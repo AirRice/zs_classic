@@ -56,7 +56,7 @@ end
 function ENT:PhysicsCollide(data, collider)
 	if (IsValid(data.HitEntity)) then
 		local ent = data.HitEntity
-		if (ent:IsProjectile() and !ent.IgnoreProjDefense and ent.__Twister = self) then
+		if (ent:IsProjectile() and !ent.IgnoreProjDefense and ent.__Twister == self) then
 			ent:Remove()
 			self:SetObjectHealth(math.max(self:GetObjectHealth() - self:GetMaxObjectHealth() * (ent.TwisterDamagePercentage or self.DamagePercentage), 0))
 		end
@@ -80,13 +80,6 @@ function ENT:DefenceProjectiles()
 	local attacked = 0
 
 	local allent = ents.FindInSphere(center, self.SearchRadius)
-		
-	-- local sz = 7
-	-- td.mins = Vector(-sz, -sz, -sz)
-	-- td.maxs = Vector(sz, sz, sz)
-	table.Add(td.filter, player.GetAll())
-	table.Add(td.filter, game.GetWorld())
-	td.mask = MASK_SHOT
 	
 	for _, ent in pairs(allent) do
 		if (attacked >= self.AttackLimit) then
@@ -106,8 +99,6 @@ function ENT:DefenceProjectiles()
 	
 	if (attacked > 0) then
 		self.LastAttack = curTime
-	end
-
 	end
 end
 
@@ -132,18 +123,17 @@ function ENT:Attack(proj)
 	local percentage = self.DragPercentage
 	
 	if (proj.TwisterDamagePercentage and proj.TwisterDamagePercentage > 0) then
-		percentage = proj.TwisterDamagePercentage * 0.05
+		percentage = proj.TwisterDamagePercentage * 0.005
 	end
 	
-	self:SetObjectHealth(math.max(self:GetObjectHealth() - self:GetMaxObjectHealth() * percentage, 1))
+	self:SetObjectHealth(math.max(self:GetObjectHealth() - self:GetMaxObjectHealth() * percentage , 0))
 	
 	local e = EffectData()
 		e:SetOrigin(proj:GetPos())
 		e:SetEntity(self)
-	util.Effect("twister_attack", ed)
-	local e = EffectData()
+	util.Effect("twister_attack", e)
 		e:SetOrigin(self:GetPos())
-		e:SetScale(v:GetPos():Distance(self:GetPos()))
+		e:SetScale(proj:GetPos():Distance(self:GetPos()))
 	util.Effect("defenceprojectile", e)
 end
 
