@@ -156,6 +156,12 @@ function MakepOptions()
 	check:SizeToContents()
 	list:AddItem(check)
 
+	local check = vgui.Create("DCheckBoxLabel", Window)
+	check:SetText("잡고 있는 프롭 각도 기억")
+	check:SetConVar("zs_keepproprot")
+	check:SizeToContents()
+	list:AddItem(check)
+
 	list:AddItem(EasyLabel(Window, "무기 HUD 표시 스타일", "DefaultFontSmall", color_white))
 	local dropdown = vgui.Create("DComboBox", Window)
 	dropdown:SetMouseInputEnabled(true)

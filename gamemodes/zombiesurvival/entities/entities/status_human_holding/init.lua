@@ -117,8 +117,8 @@ concommand.Add("_zs_rotateang", function(sender, command, arguments)
 	local y = tonumbersafe(arguments[2])
 
 	if x and y then
-		sender.InputMouseX = math.Clamp(x * 0.08, -180, 180)
-		sender.InputMouseY = math.Clamp(y * 0.08, -180, 180)
+		sender.InputMouseX = math.Clamp(x * 0.15, -180, 180)
+		sender.InputMouseY = math.Clamp(y * 0.15, -180, 180)
 	end
 end)
 
@@ -168,7 +168,7 @@ function ENT:Think()
 		objectphys:ApplyForceOffset(objectphys:GetMass() * frametime * 450 * (pullpos - hingepos):GetNormalized(), hingepos)
 	elseif owner:KeyDown(IN_ATTACK2) and not owner:GetActiveWeapon().NoPropThrowing then
 		owner:ConCommand("-attack2")
-		local vel = objectphys:GetMass() * math.Clamp(1.25 - math.min(1, (object:OBBMins():Length() + object:OBBMaxs():Length()) / CARRY_DRAG_VOLUME), 0.25, 1) * 500 * owner:GetAimVector() * (owner.buffPitcher and 2 or 1)
+		local vel = objectphys:GetMass() * math.Clamp(1.25 - math.min(1, (object:OBBMins():Length() + object:OBBMaxs():Length()) / CARRY_DRAG_VOLUME), 0.25, 1) * 500 * owner:GetAimVector() * (owner.buffPitcher and 1.4 or 1)
 		objectphys:ApplyForceCenter(vel)
 		object:SetPhysicsAttacker(owner)
 
@@ -182,11 +182,9 @@ function ENT:Think()
 			objectpos = objectpos - obbcenter.y * object:GetRight()
 			objectpos = objectpos - obbcenter.x * object:GetForward()
 			self.ObjectPosition = objectpos
-			-- if not self.ObjectAngles then
-			if not owner:KeyDown(IN_WALK) then
+			if not self.ObjectAngles or owner:GetInfo("zs_keepproprot") != 1 then
 				self.ObjectAngles = object:GetAngles()
 			end
-			-- end
 		end
 
 		if owner:KeyDown(IN_SPEED) then
