@@ -629,7 +629,10 @@ function GM:_Think()
 		if pl:Team() == TEAM_UNDEAD then
 			local tab = pl:GetZombieClassTable()
 			if tab.BuildBonePositions then
-				pl.WasBuildingBonePositions = true
+				if not pl.WasBuildingBonePositions then
+					pl.BuildingBones = pl:GetBoneCount() - 1
+					pl.WasBuildingBonePositions = true
+				end
 				pl:ResetBones()
 				tab.BuildBonePositions(tab, pl)
 			elseif pl.WasBuildingBonePositions then

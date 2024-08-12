@@ -89,9 +89,9 @@ local Vector = Vector
 local VectorRand = VectorRand
 
 
-CLASS.Hidden = true
-CLASS.Disabled = true
-CLASS.Unlocked = true
+CLASS.Hidden = false
+CLASS.Disabled = false
+CLASS.Unlocked = false
 
 CLASS.Name = "Burster"
 CLASS.TranslationName = "class_burster"
@@ -248,7 +248,7 @@ if SERVER then
 			effectdata:SetMagnitude(magnitude)
 		util.Effect("chemzombieexplode", effectdata, true)
 
-		util.PoisonBlastDamage(inflictor, pl, pos, magnitude * 128, magnitude * 85, true)
+		util.PoisonBlastDamage(inflictor, pl, pos, 28 + magnitude * 100, 10 + magnitude * 50, true)
 		for i=1, math.random(1,4) do
 		local ent = ents.CreateLimited("prop_playergib")
 		if ent:IsValid() then
