@@ -278,7 +278,6 @@ end
 
 		local pos = pl:WorldSpaceCenter()
 
-		pl:Gib(dmginfo)
 		if wep.CanExplode then
 			timer.Simple(0, function() DoExplode(pl, pos, magnitude) end)
 		end
