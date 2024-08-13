@@ -67,10 +67,11 @@ function SWEP:PrimaryAttack()
 	if ent and ent:IsValid() and ent:IsPlayer() and ent:Team() == owner:Team() and ent:Alive() and gamemode.Call("PlayerCanBeHealed", ent) then
 		local health, maxhealth = ent:Health(), ent:GetMaxHealth()
 		local multiplier = owner.HumanHealMultiplier or 1
+		multiplier = multiplier * (ent.ReceivedHealMultiplier or 1)
 		local toheal = math.min(self:GetPrimaryAmmoCount(), math.ceil(math.min(self.Primary.Heal * multiplier, maxhealth - health)))
 		local totake = math.ceil(toheal / multiplier)
 		if toheal > 0 then
-			self:SetNextCharge(CurTime() + self.Primary.Delay * math.min(1, toheal / self.Primary.Heal) * (self.Owner.buffMedic and 0.75 or 1))
+			self:SetNextCharge(CurTime() + self.Primary.Delay * math.min(1, toheal / self.Primary.Heal) * (owner.HumanHealDelayMultiplier and owner.HumanHealDelayMultiplier or 1))
 			owner.NextMedKitUse = self:GetNextCharge()
 
 			self:TakeCombinedPrimaryAmmo(totake)
@@ -94,10 +95,11 @@ function SWEP:SecondaryAttack()
 
 	local health, maxhealth = owner:Health(), owner:GetMaxHealth()
 	local multiplier = owner.HumanHealMultiplier or 1
+	multiplier = multiplier * (owner.ReceivedHealMultiplier or 1)
 	local toheal = math.min(self:GetPrimaryAmmoCount(), math.ceil(math.min(self.Secondary.Heal * multiplier, maxhealth - health)))
 	local totake = math.ceil(toheal / multiplier)
 	if toheal > 0 then
-		self:SetNextCharge(CurTime() + self.Secondary.Delay * math.min(1, toheal / self.Secondary.Heal) * (self.Owner.buffMedic and 0.75 or 1))
+		self:SetNextCharge(CurTime() + self.Secondary.Delay * math.min(1, toheal / self.Secondary.Heal) * (owner.HumanHealDelayMultiplier and owner.HumanHealDelayMultiplier or 1))
 		owner.NextMedKitUse = self:GetNextCharge()
 
 		self:TakeCombinedPrimaryAmmo(totake)

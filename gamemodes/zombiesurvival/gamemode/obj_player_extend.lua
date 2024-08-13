@@ -343,6 +343,21 @@ function meta:GetLegDamage()
 	return math.max(0, base - CurTime())
 end
 
+function meta:SetBodyArmor(armor)
+	self.BodyArmor = armor
+	if SERVER then
+		self:UpdateBodyArmor()
+	end
+end
+
+function meta:AddBodyArmor(armor)
+	self:SetBodyArmor(math.Clamp(self:GetBodyArmor()+armor,0,GAMEMODE.MaxBodyArmor))
+end
+
+function meta:GetBodyArmor()
+	return math.max(0, (self.BodyArmor or 0))
+end
+
 function meta:WouldDieFrom(damage, hitpos)
 	return self:Health() <= damage * GAMEMODE:GetZombieDamageScale(hitpos, self)
 end
@@ -358,11 +373,19 @@ function meta:ProcessDamage(dmginfo)
 		if self ~= attacker then
 			dmginfo:SetDamage(dmginfo:GetDamage() * GAMEMODE:GetZombieDamageScale(dmginfo:GetDamagePosition(), self))
 		end
-
+		if (self:IsHeadcrab() and IsValid(inflictor) and inflictor == attacker:GetActiveWeapon() and inflictor.IsMelee) then
+			dmginfo:SetDamage(dmginfo:GetDamage() * 2)
+		end
 		return self:CallZombieFunction("ProcessDamage", dmginfo)
 	elseif attacker:IsValid() and attacker:IsPlayer() and attacker:Team() == TEAM_UNDEAD and inflictor:IsValid() and inflictor == attacker:GetActiveWeapon() then
 		local damage = dmginfo:GetDamage()
-
+		local dmgtype = dmginfo:GetDamageType()
+		local iszombiedamage = (dmgtype == 0 
+			or bit.band(dmgtype, DMG_SLASH) ~= 0 
+			or bit.band(dmgtype, DMG_CLUB) ~= 0 
+			or bit.band(dmgtype, DMG_BULLET) ~= 0
+			or bit.band(dmgtype, DMG_BUCKSHOT) ~= 0
+			or bit.band(dmgtype, DMG_CRUSH) ~= 0)
 		local scale = inflictor.SlowDownScale or 1
 		if damage >= 40 or scale > 1 then
 			local dolegdamage = true
@@ -377,21 +400,17 @@ function meta:ProcessDamage(dmginfo)
 				self:RawCapLegDamage(self:GetLegDamage() + CurTime() + damage * 0.04 * (inflictor.SlowDownScale or 1))
 			end
 		end
-
-		if self:GetHemophilia() and damage >= 5 then
-			local dmgtype = dmginfo:GetDamageType()
-			if dmgtype == 0
-				or bit.band(dmgtype, DMG_SLASH) ~= 0
-				or bit.band(dmgtype, DMG_CLUB) ~= 0
-				or bit.band(dmgtype, DMG_BULLET) ~= 0
-				or bit.band(dmgtype, DMG_BUCKSHOT) ~= 0
-				or bit.band(dmgtype, DMG_CRUSH) ~= 0 then
-				local bleed = self:GiveStatus("bleed")
-				if bleed and bleed:IsValid() then
-					bleed:AddDamage(damage * 0.2)
-					if attacker:IsValid() and attacker:IsPlayer() then
-						bleed.Damager = attacker
-					end
+		if self:GetBodyArmor() and self:GetBodyArmor() > 0 and iszombiedamage then
+			local ratio = 0.3
+			dmginfo:ScaleDamage(1 - ratio)
+			self:AddBodyArmor(dmginfo:GetDamage()*-ratio)
+		end
+		if self:GetHemophilia() and damage >= 5 and iszombiedamage then
+			local bleed = self:GiveStatus("bleed")
+			if bleed and bleed:IsValid() then
+				bleed:AddDamage(damage * 0.2)
+				if attacker:IsValid() and attacker:IsPlayer() then
+					bleed.Damager = attacker
 				end
 			end
 		end
@@ -462,6 +481,22 @@ function meta:SetHumanSpeed(speed)
 	if self:Team() == TEAM_HUMAN then self:SetSpeed(speed) end
 end
 
+function meta:CalcHumanMaxHealth(noheal)
+	if not self:IsValid() then return end
+
+	if self:Team() != TEAM_HUMAN then return end
+	local maxhealth = 100
+	if self.HumanHealthAdder and self:Team() == TEAM_HUMAN then
+		maxhealth = maxhealth + self.HumanHealthAdder
+	end
+
+	self:SetMaxHealth(maxhealth)
+	if not noheal then
+		self:SetHealth(maxhealth)
+	end
+	return maxhealth
+end
+
 function meta:ResetSpeed(noset, health)
 	if not self:IsValid() then return end
 
@@ -513,15 +548,22 @@ function meta:RunChicken()
 	if (self.LastChicken and self.LastChicken + 60 > curTime) then
 		return
 	end
-	
-	self:SetHumanSpeed(self:ResetSpeed(true) * 2)
+	self.LastChicken = curTime
+	self.HumanSpeedAdder = (self.HumanSpeedAdder or 0)
+	local tempAddedSpeed = self.HumanSpeedAdder + self:GetMaxSpeed()
+	self.HumanSpeedAdder = self.HumanSpeedAdder + tempAddedSpeed
+	self.TempChickenSpeed = tempAddedSpeed
+	self:EmitSound("player/suit_sprint.wav", 100)
+	self:ResetSpeed()
 	
 	local id = "ResetChicken" .. self:EntIndex()
 	
 	if (!timer.Exists(id)) then
 		timer.Create(id, 10, 1, function()
-			self:ResetSpeed()
-			self.LastChicken = curTime
+			if (self:Alive() and self:Team() == TEAM_HUMAN) then
+				self.HumanSpeedAdder = self.HumanSpeedAdder - self.TempChickenSpeed
+				self:ResetSpeed()
+			end
 		end)
 	end
 end

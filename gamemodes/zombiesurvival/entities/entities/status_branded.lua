@@ -15,7 +15,6 @@ function ENT:Initialize()
 	self:SetModel(self.Model)
 	self:DrawShadow(false)
 	if SERVER then
-		hook.Add("PlayerCanBeHealed", self, self.PlayerCanBeHealed)
 		hook.Add("Move", self, self.Move)
 		hook.Add("PostPlayerDeath",self,self.PostPlayerDeath)
 		self:EmitSound("ambient/energy/whiteflash.wav", 85, 120)
@@ -41,13 +40,10 @@ function ENT:Move(pl, move)
 		move:SetMaxClientSpeed(move:GetMaxClientSpeed()*0.5)
 	end
 end
+
 function ENT:PostPlayerDeath(pl)
 	if pl ~= self:GetOwner() then return end
 	self:Remove()
-end
-function ENT:PlayerCanBeHealed(pl)
-	if pl ~= self:GetOwner() then return end
-	return false
 end
 
 if not CLIENT then return end

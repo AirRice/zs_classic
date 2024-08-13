@@ -332,7 +332,7 @@ function meta:PackUp(pl)
 	local status = pl:GiveStatus("packup")
 	if status:IsValid() then
 		status:SetPackUpEntity(self)
-		status:SetEndTime(CurTime() + (self.PackUpTime or 4) * (pl.buffBlueprint and 0.3 or 1))
+		status:SetEndTime(CurTime() + (self.PackUpTime or 4) * (pl.PackupTimeMult and pl.PackupTimeMult or 1))
 
 		if self.GetObjectOwner then
 			local owner = self:GetObjectOwner()

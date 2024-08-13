@@ -177,6 +177,7 @@ include("sh_zombieclasses.lua")
 include("sh_animations.lua")
 include("sh_sigils.lua")
 include("sh_channel.lua")
+include("sh_perks.lua")
 
 -- include("noxapi/noxapi.lua")
 
@@ -496,20 +497,17 @@ end
 
 function GM:Move(pl, move)
 	if pl:Team() == TEAM_HUMAN then
-		local sBalanceMult = pl.BuffSBalance and 0.5 or 1
+		local backWalkMult = pl.BackwardsWalkMult and pl.BackwardsWalkMult or 1
+		local barriSpeedMult = pl.BarriSpeedMult and pl.BarriSpeedMult or 1
 		if pl:GetBarricadeGhosting() then
-			move:SetMaxSpeed(36 * (pl.BuffGhost and 2 or 1))
-			move:SetMaxClientSpeed(36 * (pl.BuffGhost and 2 or 1))
+			move:SetMaxSpeed(36 * barriSpeedMult)
+			move:SetMaxClientSpeed(36 * barriSpeedMult)
 		elseif move:GetForwardSpeed() < 0 then
-			move:SetMaxSpeed(move:GetMaxSpeed() * (1 - (0.5 * sBalanceMult)))
-			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * (1 - (0.5 * sBalanceMult)))
+			move:SetMaxSpeed(move:GetMaxSpeed() * (1 - (0.5 * backWalkMult)))
+			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * (1 - (0.5 * backWalkMult)))
 		elseif move:GetForwardSpeed() == 0 then
-			move:SetMaxSpeed(move:GetMaxSpeed() * (1 - (0.15 * sBalanceMult)))
-			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * (1 - (0.15 * sBalanceMult)))
-		end
-		
-		if (SERVER and pl.BuffImAGroot and move:GetVelocity():Length() >= pl:GetWalkSpeed()) then
-			pl.BuffImAGroot = CurTime()
+			move:SetMaxSpeed(move:GetMaxSpeed() * (1 - (0.15 * backWalkMult)))
+			move:SetMaxClientSpeed(move:GetMaxClientSpeed() * (1 - (0.15 * backWalkMult)))
 		end
 	elseif pl:CallZombieFunction("Move", move) then
 		return
@@ -542,6 +540,7 @@ function GM:OnPlayerHitGround(pl, inwater, hitfloater, speed)
 	if hitfloater then damage = damage / 2 end
 
 	if math.floor(damage) > 0 then
+		damage = damage * (pl.BuffBeliefJump and 2/3 or 1)
 		if damage >= (pl.BuffStrongShoes and 20 or 5) and (not isundead or not pl:GetZombieClassTable().NoFallSlowdown) then
 			pl:RawCapLegDamage(CurTime() + math.min(2, damage * 0.038))
 		end
@@ -550,7 +549,7 @@ function GM:OnPlayerHitGround(pl, inwater, hitfloater, speed)
 			if damage >= 30 and damage < pl:Health() then
 				pl:KnockDown(damage * 0.05)
 			end
-			pl:TakeSpecialDamage(damage * (pl.BuffBeliefJump and 2/3 or 1), DMG_FALL, game.GetWorld(), game.GetWorld(), pl:GetPos())
+			pl:TakeSpecialDamage(damage, DMG_FALL, game.GetWorld(), game.GetWorld(), pl:GetPos())
 			pl:EmitSound("player/pl_fallpain"..(math.random(2) == 1 and 3 or 1)..".wav")
 		end
 	end
@@ -559,8 +558,13 @@ function GM:OnPlayerHitGround(pl, inwater, hitfloater, speed)
 end
 
 function GM:PlayerCanBeHealed(pl)
-	if pl:IsValid() and pl:IsPlayer() and pl:Alive() and pl:Team() == TEAM_HUMAN and (pl.buffVampire or pl.buffCannibal) then
-		return false
+	if pl:IsValid() and pl:IsPlayer() and pl:Alive() and pl:Team() == TEAM_HUMAN then
+		local status = pl:GetStatus("branded")
+		if status and status:IsValid() then
+			return false
+		elseif(pl.PreventHeal) then
+			return false
+		end
 	end
 	return true
 end
@@ -589,7 +593,6 @@ function GM:ScalePlayerDamage(pl, hitgroup, dmginfo)
 	if hitgroup == HITGROUP_HEAD and dmginfo:IsBulletDamage() then
 		pl.m_LastHeadShot = CurTime()
 	end
-
 	if not pl:CallZombieFunction("ScalePlayerDamage", hitgroup, dmginfo) then
 		if hitgroup == HITGROUP_HEAD then
 			dmginfo:SetDamage(dmginfo:GetDamage() * 2)

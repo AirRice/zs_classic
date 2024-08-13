@@ -84,7 +84,7 @@ function ENT:StartTouch(ent)
 			self.DieTime = 0
 			ent:SetHealth(math.min(ent:GetMaxZombieHealth(), ent:Health() + 10))
 			self:EmitSound("physics/body/body_medium_break"..math.random(2, 4)..".wav")
-		elseif ent:Team() == TEAM_HUMANS and ent.buffCannibal and ent:Health() < ent:GetMaxHealth() then
+		elseif ent:Team() == TEAM_HUMANS and ent.BuffCannibal and ent:Health() < ent:GetMaxHealth() then
 			self.DieTime = 0
 			ent:SetHealth(math.min(ent:GetMaxHealth(), ent:Health() + math.random(3,5)))
 			self:EmitSound("items/medshot4.wav")

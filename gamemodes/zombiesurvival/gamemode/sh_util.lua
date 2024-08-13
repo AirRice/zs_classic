@@ -273,7 +273,9 @@ function util.BlastDamageEx(inflictor, attacker, epicenter, radius, damage, dama
 	for _, ent in pairs(ents.FindInSphere(epicenter, radius)) do
 		if ent and ent:IsValid() then
 			local nearest = ent:NearestPoint(epicenter)
-			if TrueVisibleFilters(epicenter, nearest, inflictor, ent) then
+			if TrueVisibleFilters(epicenter, nearest, inflictor, ent) 				
+				or TrueVisibleFilters(epicenter, ent:EyePos(), inflictor, attacker, ent)
+				or TrueVisibleFilters(epicenter, ent:WorldSpaceCenter(), inflictor, attacker, ent) then
 				ent:TakeSpecialDamage(((radius - nearest:Distance(epicenter)) / radius) * damage, damagetype, attacker, inflictor, nearest)
 			end
 		end
@@ -304,7 +306,7 @@ function util.PoisonBlastDamage(inflictor, attacker, epicenter, radius, damage, 
 			if TrueVisibleFilters(epicenter, nearest, inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:EyePos(), inflictor, attacker, ent)
 				or TrueVisibleFilters(epicenter, ent:WorldSpaceCenter(), inflictor, attacker, ent) then
-				ent:PoisonDamage(((radius - nearest:Distance(epicenter)) / radius) * damage, attacker, inflictor, nil, noreduce)
+				ent:PoisonDamage(((radius - nearest:Distance(epicenter)) / radius) * damage, attacker, inflictor, nil, noreduce, true)
 			end
 		end
 	end

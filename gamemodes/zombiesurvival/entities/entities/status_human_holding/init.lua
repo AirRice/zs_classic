@@ -168,7 +168,7 @@ function ENT:Think()
 		objectphys:ApplyForceOffset(objectphys:GetMass() * frametime * 450 * (pullpos - hingepos):GetNormalized(), hingepos)
 	elseif owner:KeyDown(IN_ATTACK2) and not owner:GetActiveWeapon().NoPropThrowing then
 		owner:ConCommand("-attack2")
-		local vel = objectphys:GetMass() * math.Clamp(1.25 - math.min(1, (object:OBBMins():Length() + object:OBBMaxs():Length()) / CARRY_DRAG_VOLUME), 0.25, 1) * 500 * owner:GetAimVector() * (owner.buffPitcher and 1.4 or 1)
+		local vel = objectphys:GetMass() * math.Clamp(1.25 - math.min(1, (object:OBBMins():Length() + object:OBBMaxs():Length()) / CARRY_DRAG_VOLUME), 0.25, 1) * 500 * owner:GetAimVector() * (owner.BuffPitcher and 1.4 or 1)
 		objectphys:ApplyForceCenter(vel)
 		object:SetPhysicsAttacker(owner)
 

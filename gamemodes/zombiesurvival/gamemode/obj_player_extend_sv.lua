@@ -425,6 +425,16 @@ function meta:UpdateLegDamage()
 	net.Send(self)
 end
 
+function meta:UpdateBodyArmor()
+	net.Start("zs_bodyarmor")
+		net.WriteFloat(self.BodyArmor)
+	net.Send(self)
+end
+
+function meta:CanBuyBodyArmor()
+	return (self:GetBodyArmor() < GAMEMODE.MaxBodyArmor) and not self.BodyArmorProhibited
+end
+
 function meta:SendHint()
 end
 
@@ -1004,7 +1014,7 @@ function meta:Gib()
 
 	self.Gibbed = CurTime()
 
-	timer.Simple(0, function() GAMEMODE:CreateGibs(pos, pos2) end)
+	timer.Simple(0, function() GAMEMODE:CreateGibs(pos, headoffset) end)
 end
 
 function meta:GetLastAttacker()

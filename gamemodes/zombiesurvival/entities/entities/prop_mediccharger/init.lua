@@ -110,13 +110,14 @@ function ENT:Use(activator, caller)
 		return
 		end
 
-		NextUse[myuid] = CurTime() + 10* (self.Owner.buffMedic and 0.75 or 1)
+		NextUse[myuid] = CurTime() + 10* (owner.HumanHealDelayMultiplier and owner.HumanHealDelayMultiplier or 1)
 
 		net.Start("zs_nextchargeruse")
 			net.WriteFloat(NextUse[myuid])
 		net.Send(activator)
 		local health, maxhealth = activator:Health(), activator:GetMaxHealth()
 		local multiplier = owner.HumanHealMultiplier or 1
+		multiplier = multipler * (activator.ReceivedHealMultiplier or 1)
 		local toheal = math.min(self:GetAmmoCount(), math.ceil(math.min(15 * multiplier, maxhealth - health)))
 		activator:SetHealth(health + toheal)
 		self:SetAmmoCount(self:GetAmmoCount() - toheal*2,0)

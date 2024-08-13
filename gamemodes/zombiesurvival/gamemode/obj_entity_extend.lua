@@ -415,7 +415,12 @@ function meta:ThrowFromPositionSetZ(pos, force, zmul, noknockdown)
 	if force == 0 or self:IsProjectile() or self.NoThrowFromPosition then return false end
 	zmul = zmul or 0.7
 
-	if self:IsPlayer() and self:ActiveBarricadeGhosting() then return false end
+	if self:IsPlayer() then
+		if self:ActiveBarricadeGhosting() then return false end
+		if (self:Team() == TEAM_HUMAN and hitent.KnockBackResistScale) then
+			force = force * hitent.KnockBackResistScale
+		end
+	end
 
 	if self:GetMoveType() == MOVETYPE_VPHYSICS then
 		local phys = self:GetPhysicsObject()
@@ -451,7 +456,7 @@ end
 util.PrecacheSound("player/pl_pain5.wav")
 util.PrecacheSound("player/pl_pain6.wav")
 util.PrecacheSound("player/pl_pain7.wav")
-function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction)
+function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction, isblast)
 	damage = damage or 1
 
 	local dmginfo = DamageInfo()
@@ -462,7 +467,9 @@ function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction)
 		if self.BuffResistant then
 			damage = damage / 2
 		end
-
+		if self.ExplosiveResistance and isblast then
+			damage = damage * (1 - self.ExplosiveResistance)
+		end
 		self:ViewPunch(Angle(math.random(-10, 10), math.random(-10, 10), math.random(-20, 20)))
 		self:EmitSound("player/pl_pain"..math.random(5, 7)..".wav")
 

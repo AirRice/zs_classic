@@ -72,7 +72,7 @@ function ENT:Hit(vHitPos, vHitNormal, eHitEntity, vOldVelocity)
 			eHitEntity:GiveStatus("healdartboost").DieTime = CurTime() + 10
 
 			local oldhealth = eHitEntity:Health()
-			local newhealth = math.min(oldhealth + self.Heal, eHitEntity:GetMaxHealth())
+			local newhealth = math.min(oldhealth + (self.Heal * (eHitEntity.ReceivedHealMultiplier or 1)), eHitEntity:GetMaxHealth())
 			if oldhealth ~= newhealth then
 				eHitEntity:SetHealth(newhealth)
 				if owner:IsPlayer() then

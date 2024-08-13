@@ -111,6 +111,7 @@ include("vgui/dmodelpanelex.lua")
 include("vgui/dammocounter.lua")
 include("vgui/dteamheading.lua")
 include("vgui/dmodelkillicon.lua")
+include("vgui/dtooltip.lua")
 
 include("vgui/dexroundedpanel.lua")
 include("vgui/dexroundedframe.lua")

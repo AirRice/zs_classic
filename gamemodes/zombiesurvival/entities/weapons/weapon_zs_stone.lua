@@ -92,7 +92,7 @@ function SWEP:PrimaryAttack()
 			if phys:IsValid() then
 				phys:Wake()
 				phys:AddAngleVelocity(VectorRand() * 360)
-				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 900 * (owner.buffPitcher and 1.4 or 1))
+				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 900 * (owner.BuffPitcher and 1.4 or 1))
 			end
 		end
 
