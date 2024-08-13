@@ -213,7 +213,7 @@ function MakepWorth()
 	local maxworth = GAMEMODE.StartingWorth
 	WorthRemaining = maxworth
 
-	local wid, hei = math.min(ScrW(), 720), ScrH() * 0.7
+	local wid, hei = math.min(ScrW(), 920), ScrH() * 0.7
 
 	local frame = vgui.Create("DFrame")
 	pWorth = frame

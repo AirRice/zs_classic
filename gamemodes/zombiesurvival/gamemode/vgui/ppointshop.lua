@@ -139,7 +139,7 @@ function GM:OpenPointsShop()
 		return
 	end
 
-	local wid, hei = 600, math.max(ScrH() * 0.5, 540)
+	local wid, hei = math.min(ScrW(), 920), math.max(ScrH() * 0.5, 540)
 
 	local frame = vgui.Create("DFrame")
 	frame:SetSize(wid, hei)
