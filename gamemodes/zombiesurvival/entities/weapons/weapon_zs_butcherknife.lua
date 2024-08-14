@@ -61,7 +61,7 @@ function SWEP:PlayHitFleshSound()
 end
 
 function SWEP:PostOnMeleeHit(hitent, hitflesh, tr)
-	if (hitent:IsValid() and hitent:IsPlayer() and hitent:Health() <= 0) and (self.Owner.buffCannibal == true or self.Owner:Team() == TEAM_UNDEAD) then
+	if (hitent:IsValid() and hitent:IsPlayer() and hitent:Health() <= 0) and (self.Owner.BuffCannibal == true or self.Owner:Team() == TEAM_UNDEAD) then
 		self.Owner:SetHealth(math.min(self.Owner:GetMaxHealth(), self.Owner:Health() + math.random(20))) 
 		if SERVER then
 		for i=1, 7 do

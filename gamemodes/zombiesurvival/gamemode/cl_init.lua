@@ -662,7 +662,7 @@ function GM:PlayBeats(teamid, fear)
 		NextBeat = RealTime() + (self.SoundDuration[snd] or SoundDuration(self.LastHumanSound)) - 0.025
 		return
 	end
-
+	
 	if fear <= 0 or not self.BeatsEnabled then return end
 
 	local beats = self.Beats[teamid == TEAM_HUMAN and self.BeatSetHuman or self.BeatSetZombie]
@@ -1004,8 +1004,8 @@ function surface.CreateLegacyFont(font, size, weight, antialias, additive, name,
 end
 
 function GM:CreateFonts()
-	local fontfamily = "Typenoksidi"
-	local fontfamily3d = "hidden"
+	local fontfamily = "Typenoksidi_v2"
+	local fontfamily3d = "hidden_v2"
 	local fontweight = 0
 	local fontweight3D = 0
 	local fontaa = true
@@ -1902,7 +1902,7 @@ net.Receive("zs_wavestart", function(length)
 end)
 
 net.Receive("zs_classunlock", function(length)
-	GAMEMODE:CenterNotify(COLOR_GREEN, net.ReadString())
+	GAMEMODE:CenterNotify(COLOR_GREEN, translate.Format("x_unlocked", net.ReadString()))
 end)
 
 net.Receive("zs_waveend", function(length)

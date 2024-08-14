@@ -83,13 +83,7 @@ local function PurchaseDoClick(self)
 end
 
 local function BuyAmmoDoClick(self)
-	if MySelf:KeyDown(IN_SPEED )  then
-		for i=1, 10, 1 do
-			RunConsoleCommand("zs_pointsshopbuy", "ps_"..self.AmmoType)
-		end
-	else
-		RunConsoleCommand("zs_pointsshopbuy", "ps_"..self.AmmoType)
-	end
+	RunConsoleCommand("zs_pointsshopbuy", "ps_"..self.AmmoType)
 end
 
 local function worthmenuDoClick()
@@ -282,7 +276,7 @@ function GM:OpenPointsShop()
 					button:SetImage("icon16/lorry_add.png")
 					button:SizeToContents()
 					button:SetPos(itempan:GetWide() - 20 - button:GetWide(), itempan:GetTall() - 20)
-					button:SetTooltip("Purchase "..name)
+					button:SetTooltip(name.." 구매")
 					button.ID = itempan.ID
 					button.DoClick = PurchaseDoClick
 					itempan.m_BuyButton = button
@@ -295,7 +289,7 @@ function GM:OpenPointsShop()
 							ammobutton:SizeToContents()
 							ammobutton:CopyPos(button)
 							ammobutton:MoveLeftOf(button, 2)
-							ammobutton:SetTooltip("탄약 구매 (달리기 키를 누르고 있으면 10회 구매)")
+							ammobutton:SetTooltip("탄약 구매")
 							ammobutton.AmmoType = ammonames[ammotype]
 							ammobutton.DoClick = BuyAmmoDoClick
 						end

@@ -254,20 +254,20 @@ end
 
 function meta:ResetBones(onlyscale)
 	local v = Vector(1, 1, 1)
+	local bcount = self.BuildingBones or self:GetBoneCount() - 1
 	if onlyscale then
 		for i=0, self:GetBoneCount() - 1 do
 			self:ManipulateBoneScale(i, v)
 		end
 	else
 		local a = Angle(0, 0, 0)
-		for i=0, self:GetBoneCount() - 1 do
+		for i=0, bcount do
 			self:ManipulateBoneScale(i, v)
 			self:ManipulateBoneAngles(i, a)
 			self:ManipulateBonePosition(i, vector_origin)
 		end
 	end
 end
-
 function meta:SetBarricadeHealth(m)
 	self:SetDTFloat(1, m)
 end
@@ -417,8 +417,8 @@ function meta:ThrowFromPositionSetZ(pos, force, zmul, noknockdown)
 
 	if self:IsPlayer() then
 		if self:ActiveBarricadeGhosting() then return false end
-		if (self:Team() == TEAM_HUMAN and hitent.KnockBackResistScale) then
-			force = force * hitent.KnockBackResistScale
+		if (self:Team() == TEAM_HUMAN and self.KnockBackResistScale) then
+			force = force * self.KnockBackResistScale
 		end
 	end
 

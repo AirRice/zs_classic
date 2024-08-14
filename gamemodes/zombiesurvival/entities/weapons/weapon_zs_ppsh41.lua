@@ -87,10 +87,10 @@ if CLIENT then
 	SWEP.SlotPos = 0
 
 	SWEP.ViewModelFlip = false
-	SWEP.ViewModelFOV = 75
+	SWEP.ViewModelFOV = 80
 	
 	SWEP.HUD3DBone = "sov_ppsh"
-	SWEP.HUD3DPos = Vector(14.215, -1.484, 1.562)
+	SWEP.HUD3DPos = Vector(11, -2, 1.8)
 	SWEP.HUD3DAng = Angle(0, -90, 90)
 	SWEP.HUD3DScale = 0.025
 end
@@ -155,6 +155,7 @@ function SWEP:Reload()
 		end
 	end
 end
+
 function SWEP:PrimaryAttack()
 	self:SetHoldType( self.HoldType ) 
 	if not self:CanPrimaryAttack() then return end
@@ -171,18 +172,24 @@ function SWEP:SecondaryAttack()
 	if not self.Owner:KeyDown(IN_ATTACK) then 
 	self:SetHoldType( self.MeleeHoldType ) 
 	self.IsMelee = true
-	self.Owner:DoAttackEvent()
-	timer.Create( "holdtypereset", 1, 1, function() if self.Owner:IsValid() then self:SetHoldType( self.HoldType ) end end )
+	local owner = self.Owner
+	owner:DoAttackEvent()
+	timer.Create( "holdtypereset", 1, 1, function() 
+		if (IsValid(owner) and owner:IsPlayer() and owner:Alive()) then
+			self:SetHoldType( self.HoldType ) 
+		end 
+	end )
 	self:SetNextSecondaryFire(CurTime() + self.Secondary.Delay)
 	self:SetNextPrimaryFire(CurTime() + self.Secondary.Delay*0.5)
 	self:EmitSound("Weapon_PPSH.MeleeSwing")
-	self.Owner:GetViewModel():SetPlaybackRate(2)
+	owner:GetViewModel():SetPlaybackRate(2)
 	self.Weapon:SendWeaponAnim( ACT_IDLE_ANGRY_MELEE )
-	local owner = self.Owner
+	
 	local filter = owner:GetMeleeFilter()
 	owner:LagCompensation(true)
 	timer.Create( "dohit", 0.41, 1, function()
-	local tr = owner:MeleeTrace(self.MeleeRange, self.MeleeSize, filter)
+	if !(IsValid(owner) and owner:IsPlayer() and owner:Alive()) then return end
+	local tr = owner:ClipHullMeleeTrace(self.MeleeRange, self.MeleeSize, filter)
 	if tr.Hit then
 		local damagemultiplier = (owner.BuffMuscular and owner:Team()==TEAM_HUMAN) and 1.2 or 1
 		local damage = self.Secondary.Damage * damagemultiplier
@@ -204,7 +211,7 @@ function SWEP:SecondaryAttack()
 		end
 
 		if self.OnMeleeHit and self:OnMeleeHit(hitent, hitflesh, tr) then
-			owner:LagCompensation(false)
+			--owner:LagCompensation(false)
 			return
 		end
 
@@ -221,12 +228,11 @@ function SWEP:SecondaryAttack()
 				dmginfo:SetDamageType(DMG_CLUB)
 				if hitent:IsPlayer() then
 					hitent:MeleeViewPunch(damage)
-					if hitent:IsHeadcrab() then
-						damage = damage * 2
-						dmginfo:SetDamage(damage)
-					end
 					gamemode.Call("ScalePlayerDamage", hitent, tr.HitGroup, dmginfo)
 					hitent:ThrowFromPositionSetZ(tr.HitPos, self.MeleeKnockBack, nil, true)
+					if hitent:IsPlayer() and hitent:WouldDieFrom(damage, dmginfo:GetDamagePosition()) then
+						dmginfo:SetDamageForce(2000 * owner:GetAimVector())
+					end
 				end
 
 				if hitent:IsPlayer() then
@@ -251,6 +257,7 @@ function SWEP:SecondaryAttack()
 				end
 			end
 		end
+
 		if self.PostOnMeleeHit then self:PostOnMeleeHit(hitent, hitflesh, tr) end
 	else
 		self.IdleAnimation = CurTime() + self:SequenceDuration()

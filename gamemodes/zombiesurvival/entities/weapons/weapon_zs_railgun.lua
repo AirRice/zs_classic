@@ -66,7 +66,7 @@ SWEP.ConeMax = 0.02
 SWEP.ConeMin = 0
 SWEP.Recoil = 1.51
 
-SWEP.IronSightsPos = Vector(5.559, -8.633, 0)
+SWEP.IronSightsPos = Vector(-4.2, -5, 1.74)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 
 
@@ -83,7 +83,6 @@ function SWEP:EmitFireSound()
 	self:EmitSound("npc/sniper/echo1.wav", 75, 120,1, CHAN_AUTO + 21)
 	self:EmitSound("Weapon_Railgun.Single")
 end
-
 local temp_vel_ents = {}
 
 function SWEP:PrimaryAttack()
@@ -103,11 +102,14 @@ function SWEP:PrimaryAttack()
 	owner:DoAttackEvent()
 	local railgun_filter = team.GetPlayers(TEAM_HUMAN)
 	table.insert(railgun_filter, self)
-	local tr = owner:GetEyeTrace()
+	local pretrace = util.GetPlayerTrace( owner )
+	pretrace.mask = MASK_SHOT
+	local tr = util.TraceLine(pretrace)
 	if !tr.HitWorld and !tr.HitSky then
 		local tracer = { 
 			start = tr.HitPos + tr.Normal * 1000,
 			endpos = tr.HitPos,
+			mask = MASK_SHOT,
 			ignoreworld = true 
 		}
 		backtr = util.TraceLine(tracer)
@@ -121,6 +123,7 @@ function SWEP:PrimaryAttack()
 			backtr = util.TraceLine(tracer)
 		end
 		local pierceOrder = table.Reverse(Hitlist)
+		local validtargets = 0
 		for i, ent in ipairs(pierceOrder) do
 			local bullet_trace = util.GetPlayerTrace( owner )
 			local hittrace_filter = table.Copy(pierceOrder)
@@ -131,18 +134,20 @@ function SWEP:PrimaryAttack()
 
 			// Dispatch trace attack to pierced zombies
 			// Make dmginfo first
-			local dmg = math.Clamp(self.Primary.Damage * (0.8 ^ (i-1)), 1, self.Primary.Damage)
-			print(ent)
-			print(dmg)
-			local damageinfo = DamageInfo()
-				damageinfo:SetDamageType(DMG_BULLET)
-				damageinfo:SetDamage(dmg)
-				damageinfo:SetDamagePosition(bullet_tr.HitPos)
-				damageinfo:SetAttacker(owner)
-				damageinfo:SetInflictor(self)
-				damageinfo:SetDamageForce(dmg * 70 * bullet_tr.Normal)
+			
+
 
 			if IsValid(ent) then
+				if ent:IsPlayer() and IsValid(owner) and owner:IsPlayer() and ent:Team() == owner:Team() then continue end
+				local dmg = math.Clamp(self.Primary.Damage * (0.8 ^ (validtargets)), 1, self.Primary.Damage)
+				local damageinfo = DamageInfo()
+					damageinfo:SetDamageType(DMG_BULLET)
+					damageinfo:SetDamage(dmg)
+					damageinfo:SetDamagePosition(bullet_tr.HitPos)
+					damageinfo:SetAttacker(owner)
+					damageinfo:SetInflictor(self)
+					damageinfo:SetDamageForce(dmg * 70 * bullet_tr.Normal)
+				validtargets = validtargets + 1
 				if ent:IsPlayer() then
 					temp_vel_ents[ent] = temp_vel_ents[ent] or ent:GetVelocity()
 					if SERVER then
@@ -154,7 +159,6 @@ function SWEP:PrimaryAttack()
 						ent:SetPhysicsAttacker(owner)
 					end
 				end
-
 				ent:DispatchTraceAttack(damageinfo, bullet_tr, bullet_tr.Normal)
 			end
 		end
@@ -180,12 +184,14 @@ function SWEP:PrimaryAttack()
 			util.Effect("cball_bounce", hitw)
 			local effectdata = EffectData()
 				effectdata:SetOrigin(worldtr.HitPos)
-				effectdata:SetStart(owner:GetShootPos())
+				effectdata:SetStart(worldtr.StartPos)
 				effectdata:SetNormal(worldtr.HitNormal)
-			if not worldtr.HitSky and worldtr.Fraction < 1 then
+				util.Effect("RagdollImpact", effectdata)
+			if not worldtr.HitSky then
 				effectdata:SetSurfaceProp(worldtr.SurfaceProps)
 				effectdata:SetDamageType(DMG_BULLET)
 				effectdata:SetHitBox(worldtr.HitBox)
+				effectdata:SetEntity(worldtr.Entity)
 				util.Effect("Impact", effectdata)
 			end
 			if owner:IsPlayer() and IsValid(self) then
@@ -195,7 +201,7 @@ function SWEP:PrimaryAttack()
 				effectdata:SetScale(5000) -- Tracer travel speed
 				util.Effect("tracer_railgun", effectdata)
 			end
-			util.Decal("ExplosiveGunshot", worldloc, worldloc + worldnorm)
+			util.Decal("FadingScorch", worldloc -  worldnorm, worldloc + worldnorm)
 		end
 	end
 

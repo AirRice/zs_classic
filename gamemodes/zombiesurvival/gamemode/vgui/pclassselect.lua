@@ -212,7 +212,7 @@ function PANEL:DoClick()
 	if self.ClassTable then
 		if self.ClassTable.Boss then
 			RunConsoleCommand("zs_bossclass", self.ClassTable.Name)
-			GAMEMODE:CenterNotify(translate.Format("boss_class_select", self.ClassTable.Name))
+			GAMEMODE:CenterNotify(translate.Format("boss_class_select", translate.Get(self.ClassTable.TranslationName)))
 		else
 			RunConsoleCommand("zs_class", self.ClassTable.Name, GAMEMODE.SuicideOnChangeClass and "1" or "0")
 		end

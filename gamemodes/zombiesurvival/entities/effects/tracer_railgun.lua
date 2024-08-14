@@ -8,7 +8,7 @@ function EFFECT:Init( data )
 	self.StartPos = self:GetTracerShootPos(self.Position, self.WeaponEnt, self.Attachment)
 	self.EndPos = data:GetOrigin()
 
-	self.DieTime = CurTime() + 3
+	self.DieTime = CurTime() + 0.5
 
 	self:SetRenderBoundsWS( self.StartPos, self.EndPos )
 
@@ -30,7 +30,7 @@ function EFFECT:Init( data )
 end
 
 function EFFECT:Think( )
-	self.Delta = math.Clamp((self.DieTime - CurTime())/3,0,1)
+	self.Delta = math.Clamp((self.DieTime - CurTime())/0.5,0,1)
 	return CurTime() < self.DieTime
 end
 
@@ -45,7 +45,7 @@ function EFFECT:Render()
 	if self.Delta > 0.9 then
 		local particle = emitter:Add("sprites/heatwave", self.EndPos - (self.EndPos - self.StartPos) * math.Clamp(self.Delta-0.9,0,0.1)*10)
 		local vel = Vector( 0, 0, 1 )
-		particle:SetDieTime(1)
+		particle:SetDieTime(1.5)
 		particle:SetColor(66, 197, 255)
 		particle:SetStartAlpha(255)
 		particle:SetEndAlpha(0)

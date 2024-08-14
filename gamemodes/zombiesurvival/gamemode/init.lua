@@ -169,6 +169,7 @@ AddCSLuaFile("cl_floatingscore.lua")
 AddCSLuaFile("cl_dermaskin.lua")
 AddCSLuaFile("cl_hint.lua")
 
+
 AddCSLuaFile("obj_vector_extend.lua")
 AddCSLuaFile("obj_player_extend.lua")
 AddCSLuaFile("obj_player_extend_cl.lua")
@@ -293,8 +294,8 @@ function GM:TryHumanPickup(pl, entity)
 end
 
 function GM:AddResources()
-	resource.AddFile("resource/fonts/typenoksidi.ttf")
-	resource.AddFile("resource/fonts/hidden.ttf")
+	resource.AddFile("resource/fonts/typenoksidi_v2.ttf")
+	resource.AddFile("resource/fonts/hidden_v2.ttf")
 
 	for _, filename in pairs(file.Find("materials/zombiesurvival/*.vmt", "GAME")) do
 		resource.AddFile("materials/zombiesurvival/"..filename)
@@ -349,7 +350,7 @@ function GM:AddResources()
 	resource.AddFile("materials/killicon/zs_plank.vmt")
 	resource.AddFile("materials/killicon/zs_hammer.vmt")
 	resource.AddFile("materials/killicon/zs_shovel.vmt")
-	resource.AddFile("materials/killicon/killico_ppsh_stick.vmt")
+
 	resource.AddFile("models/weapons/v_zombiearms.mdl")
 	resource.AddFile("materials/models/weapons/v_zombiearms/zombie_classic_sheet.vmt")
 	resource.AddFile("materials/models/weapons/v_zombiearms/zombie_classic_sheet.vtf")
@@ -420,9 +421,6 @@ function GM:AddResources()
 
 	resource.AddFile("models/vinrax/player/doll_player.mdl")
 	
-	resource.AddFile("models/weapons/w_mach_m249para.mdl")
-	resource.AddFile("models/weapons/v_mach_m249para.mdl")
-
 	resource.AddFile("sound/weapons/melee/golf club/golf_hit-01.ogg")
 	resource.AddFile("sound/weapons/melee/golf club/golf_hit-02.ogg")
 	resource.AddFile("sound/weapons/melee/golf club/golf_hit-03.ogg")
@@ -444,7 +442,26 @@ function GM:AddResources()
 	resource.AddFile("sound/weapons/melee/keyboard/keyboard_hit-03.ogg")
 	resource.AddFile("sound/weapons/melee/keyboard/keyboard_hit-04.ogg")
 	resource.AddFile("sound/weapons/melee/keyboard/keyboard_hit-04.ogg")
-	resource.AddFile("sound/grub_ppsh/ppsh41_shoot1.wav")
+	
+	resource.AddFile("materials/models/v_models/residualgrub/ppsh/ppsh_stickmag_diff.vmt")
+	resource.AddFile("materials/models/v_models/residualgrub/ppsh/sov_ppsh_diff.vmt")
+	resource.AddFile("materials/models/v_models/residualgrub/ppsh/ppsh_stickmag_diff.vtf")
+	resource.AddFile("materials/models/v_models/residualgrub/ppsh/sov_ppsh_diff.vtf")
+	resource.AddFile("materials/models/v_models/residualgrub/ppsh/ppsh_stickmag_norm.vtf")
+	resource.AddFile("materials/models/v_models/residualgrub/ppsh/sov_ppsh_norm.vtf")
+	resource.AddFile("materials/killicon/killico_ppsh_stick.vmt")
+	resource.AddFile("materials/killicon/killico_ppsh_stick.vtf")
+	resource.AddFile("models/weapons/c_ppsh_stick.mdl")
+	resource.AddFile("models/weapons/w_grub_ppsh_stick.mdl")
+
+	for _, filename in pairs(file.Find("sound/grub_ppsh/*.wav", "GAME")) do
+		resource.AddFile("sound/grub_ppsh/"..string.lower(filename))
+	end
+	
+	for _, filename in pairs(file.Find("sound/zombiesurvival/zombine/*.wav", "GAME")) do
+		resource.AddFile("sound/zombiesurvival/zombine/"..string.lower(filename))
+	end
+
 	resource.AddFile("materials/noxctf/sprite_bloodspray1.vmt")
 	resource.AddFile("materials/noxctf/sprite_bloodspray2.vmt")
 	resource.AddFile("materials/noxctf/sprite_bloodspray3.vmt")
@@ -832,7 +849,7 @@ function GM:PlayerSelectSpawn(pl)
 	if pl.m_PreRedeem and teamid == TEAM_HUMAN and #self.RedeemSpawnPoints >= 1 then
 		tab = self.RedeemSpawnPoints
 	elseif teamid == TEAM_UNDEAD then
-		if pl.GetZombieClassTable and pl:GetZombieClassTable().Boss and (not pl.DeathClass or self.ZombieClasses[pl.DeathClass].Boss) and #self.BossSpawnPoints >= 1 then
+		if isfunction(pl.GetZombieClassTable) and pl:GetZombieClassTable().Boss and (not pl.DeathClass or self.ZombieClasses[pl.DeathClass].Boss) and #self.BossSpawnPoints >= 1 then
 			tab = self.BossSpawnPoints
 		elseif self.DynamicSpawning --[[and CurTime() >= self:GetWaveStart() + 1]] then -- If we're a bit in the wave then we can spawn on top of heavily dense groups with no humans looking at us.
 			if self:ShouldUseAlternateDynamicSpawn() then
