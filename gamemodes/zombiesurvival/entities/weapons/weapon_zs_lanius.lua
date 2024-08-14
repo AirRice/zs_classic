@@ -1,5 +1,7 @@
 AddCSLuaFile()
 
+SWEP.ViewModel = "models/weapons/v_crowbar.mdl"
+SWEP.WorldModel = "models/weapons/w_crowbar.mdl"
 SWEP.Base = "weapon_zs_crow"
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.DefaultClip = -1
@@ -37,7 +39,8 @@ sound.Add( {
 	pitch = 80,
 	sound = "npc/stalker/breathing3.wav"
 } )
-function SWEP:DoGas()
+
+function SWEP:DoEgg()
 if CLIENT then return end
 	local ent = ents.Create("projectile_poisonegg") 
 	if ent:IsValid() then
@@ -61,7 +64,7 @@ function SWEP:SecondaryAttack()
 	if self.Owner:Team() ~= TEAM_UNDEAD then self.Owner:Kill() return end
 	self.Owner:EmitSound("npc/combine_gunship/gunship_pain.wav",75,120)
 	timer.Simple(0.7, 
-	function() if self.Owner:IsValid() and self.Owner:Alive() then self:DoGas() end end)
+	function() if self.Owner:IsValid() and self.Owner:Alive() then self:DoEgg() end end)
 end
 
 function SWEP:PrimaryAttack()
@@ -127,7 +130,7 @@ function SWEP:Think()
 				ent:TakeSpecialDamage(5, DMG_SLASH, owner, self)
 			else
 				local phys = ent:GetPhysicsObject()
-				ent:TakeSpecialDamage(math.random(4,8), DMG_SLASH, owner, self)
+				ent:TakeSpecialDamage(math.random(5,8), DMG_SLASH, owner, self)
 			end
 		else if ent:Team() == TEAM_HUMAN then
 			ent:TakeSpecialDamage(2, DMG_SLASH, owner, self)
