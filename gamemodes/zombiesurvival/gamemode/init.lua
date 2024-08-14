@@ -1619,8 +1619,13 @@ function GM:EndRound(winner)
 		timer.Simple(self.EndGameTime - 3, function() gamemode.Call("PreRestartRound") end)
 		timer.Simple(self.EndGameTime, function() gamemode.Call("RestartRound") end)
 	else
-		--MapVote.Start(30, false, 50, {"zs_"})
-		timer.Simple(self.EndGameTime, function() gamemode.Call("LoadNextMap") end)
+		if math.random(5) >= 4 then
+			MapVote.Start(30, false, 50, {"zs_", "ze_", "zm_"})
+		else
+			MapVote.Start(30, false, 50, {"zs_"})
+		end
+		
+		--timer.Simple(self.EndGameTime, function() gamemode.Call("LoadNextMap") end)
 	end
 
 	-- Get rid of some lag.
@@ -2174,12 +2179,7 @@ concommand.Add("zs_pointsshopbuy", function(sender, command, arguments)
 	end
 
 	if itemtab.Callback then
-		local callback = itemtab.Callback
-		if itemtab.Signature == "ps_bodyarmor" and sender.buffVampire then
-			cost = 0
-			callback = function() end
-		end
-		callback(sender)
+		itemtab.Callback(sender)
 	elseif itemtab.SWEP then
 		if sender:HasWeapon(itemtab.SWEP) then
 			local stored = weapons.GetStored(itemtab.SWEP)
@@ -2751,7 +2751,6 @@ function GM:OnPlayerChangedTeam(pl, oldteam, newteam)
 		pl:SetPoints(0)
 		pl.DamagedBy = {}
 		pl:SetBarricadeGhosting(false)
-		self:setBodyArmor(pl, 0)
 		self.CheckedOut[pl:UniqueID()] = true
 	elseif newteam == TEAM_HUMAN then
 		self.PreviouslyDied[pl:UniqueID()] = nil
@@ -2965,6 +2964,7 @@ end
 function GM:PlayerHurt(victim, attacker, healthremaining, damage)
 	if 0 < healthremaining then
 		victim:PlayPainSound()
+		victim:CallZombieFunction("OnZombieHurt",attacker, healthremaining, damage)
 	end
 
 	if victim:Team() == TEAM_HUMAN then
@@ -3666,7 +3666,7 @@ function GM:PlayerSpawn(pl)
 	pl.SpawnedTime = CurTime()
 
 	pl:ShouldDropWeapon(false)
-
+	pl:SetBodyArmor(0)
 	pl:SetLegDamage(0)
 	pl:SetLastAttacker()
 

@@ -204,6 +204,12 @@ function meta:GetCoupledHeadcrab()
 	return status and status:IsValid() and status:GetPartner() or NULL
 end
 
+function meta:WearBodyArmor()
+	self:SetBodyArmor(100)
+	self:EmitSound("npc/combine_soldier/gear"..math.random(6)..".wav")
+	return true
+end
+
 function meta:GetPoisonDamage()
 	return self.PoisonRecovery and self.PoisonRecovery:IsValid() and self.PoisonRecovery:GetDamage() or 0
 end

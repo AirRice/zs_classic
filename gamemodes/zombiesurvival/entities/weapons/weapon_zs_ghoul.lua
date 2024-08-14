@@ -6,31 +6,19 @@ end
 
 SWEP.Base = "weapon_zs_zombie"
 
-SWEP.MeleeDamage = 12
+SWEP.MeleeDamage = 15
 SWEP.MeleeForceScale = 3.5
 SWEP.SlowDownScale = 2
 SWEP.MeleeDelay = 0.74
 SWEP.Primary.Delay = 1.2
---SWEP.MeleeForceScale = 0.1
---SWEP.SlowDownScale = 2.25
-SWEP.SlowDownImmunityTime = 2
+--[[SWEP.MeleeForceScale = 0.1
+SWEP.SlowDownScale = 2.25
+SWEP.SlowDownImmunityTime = 2]]
 
 function SWEP:ApplyMeleeDamage(ent, trace, damage)
 	ent:PoisonDamage(damage, self.Owner, self, trace.HitPos)
 	if SERVER and ent:IsPlayer() then
 		ent:GiveStatus("ghoultouch", 10)
-		if (ent:Team() == TEAM_HUMAN) then
-			ent:SetJumpPower(1)
-		
-			timer.Simple(1, function()
-				ent:ResetJumpPower()
-			end)
-			
-			local rand = math.random(1, 10000)
-			if (rand > 5000 && rand <= 6000) then
-				ent:GiveStatus("knockdown", 1 * (self.buffStrong and 0.2 or 1))
-			end
-		end
 	end
 end
 
@@ -65,6 +53,7 @@ local function DoFleshThrow(pl, wep)
 					ent:SetPos(startpos)
 					ent:SetOwner(pl)
 					ent:Spawn()
+					ent.TwisterDamagePercentage = 0.04
 
 					local phys = ent:GetPhysicsObject()
 					if phys:IsValid() then
@@ -101,6 +90,33 @@ function SWEP:SecondaryAttack()
 end
 
 if not CLIENT then return end
+
+local Color = Color
+local render = render
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local ScrW = ScrW
+local ScrH = ScrH
+local cam = cam
+local GetGlobalBool = GetGlobalBool
+local Material = Material
+local draw = draw
+local IsValid = IsValid
+local pairs = pairs
+local ipairs = ipairs
+local table = table
+local type = type
+local Matrix = Matrix
+local Vector = Vector
+local Angle = Angle
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local ClientsideModel = ClientsideModel
+local tostring = tostring
+local tonumber = tonumber
 
 function SWEP:ViewModelDrawn()
 	render.ModelMaterialOverride(0)

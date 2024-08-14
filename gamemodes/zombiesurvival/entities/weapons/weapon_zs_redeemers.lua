@@ -33,6 +33,8 @@ SWEP.Primary.DefaultClip = 150
 
 SWEP.ConeMax = 0.055
 SWEP.ConeMin = 0.005
+SWEP.Recoil = 0.255
+
 function SWEP:Deploy()
 	self:SetNextReload(0)
 	if server then
