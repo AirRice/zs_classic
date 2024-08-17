@@ -366,6 +366,29 @@ function meta:TemporaryBarricadeObject()
 	end
 end
 
+function meta:RecalculateNailBonuses()
+	local max_health = self:GetMaxBarricadeHealth()
+	if max_health == 0 then return end
+
+	local num_extra_nails = math.Clamp(self:NumLivingNails() - 1, 0, 2)
+	local repairs_frac = self:GetBarricadeRepairs() / self:GetMaxBarricadeRepairs()
+
+	self.OriginalMaxHealth = self.OriginalMaxHealth or max_health
+	self.OriginalMaxBarricadeRepairs = self.OriginalMaxBarricadeRepairs or max_repairs
+
+	local health = self:GetBarricadeHealth()
+	if !(self.DefaultCadeHealth) then
+		self.DefaultCadeHealth = self:GetDefaultBarricadeHealth()
+	end
+
+	local new_max_health = self.OriginalMaxHealth + self.DefaultCadeHealth * 0.25 * num_extra_nails
+	self:SetMaxBarricadeHealth(new_max_health)
+	self:SetBarricadeHealth(health / max_health * new_max_health)
+
+	self:SetBarricadeRepairs(repairs_frac * self:GetMaxBarricadeRepairs())
+end
+
+
 function meta:IsBarricadeProp()
 	return self.IsBarricadeObject or self:IsNailed()
 end
@@ -421,7 +444,7 @@ function meta:ThrowFromPositionSetZ(pos, force, zmul, noknockdown)
 			force = force * self.KnockBackResistScale
 		end
 	end
-
+	
 	if self:GetMoveType() == MOVETYPE_VPHYSICS then
 		local phys = self:GetPhysicsObject()
 		if phys:IsValid() and phys:IsMoveable() then

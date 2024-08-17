@@ -41,24 +41,7 @@ function SWEP:Reload()
 	owner:DoAnimationEvent(ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE)
 
 	owner:EmitSound("weapons/melee/crowbar/crowbar_hit-"..math.random(4)..".ogg")
-	local baseent = ent:GetParent()
-	local nailowners = {}
-	for i, v in ipairs(baseent:GetLivingNails()) do
-		if v:GetOwner():IsValid(v) and v:GetOwner():Alive() and v:GetOwner():Team() == TEAM_HUMAN then
-			table.insert(nailowners,v)
-		end
-	end
-	if owner.steelNail and baseent.steelNail then
-		for i, v in ipairs(nailowners) do
-			if v.steelNail then
-				return
-			end
-		end
-		baseent.steelNail = false
-		baseent:SetMaxBarricadeHealth(ent:GetMaxNailHealth() / 1.5)
-		baseent:SetBarricadeHealth(ent:GetNailHealth() / 1.5)
-		baseent:SetBarricadeRepairs(baseent:GetBarricadeRepairs()/1.5)
-	end
+
 	ent:GetParent():RemoveNail(ent, nil, self.Owner)
 	
 	if nailowner and nailowner:IsValid() and nailowner:IsPlayer() and nailowner ~= owner and nailowner:Team() == TEAM_HUMAN then
@@ -85,13 +68,6 @@ function SWEP:OnMeleeHit(hitent, hitflesh, tr)
 
 		if hitent:IsNailed() then
 			local healstrength = GAMEMODE.NailHealthPerRepair * (self.Owner.HumanRepairMultiplier or 1) * self.HealStrength
-			if self.Owner.buffBattleEngineer then
-				if self.Owner.battleEngineerCount >= 1 then
-					healstrength = healstrength * 1.2
-					self.Owner.battleEngineerCount = self.Owner.battleEngineerCount - 1
-				end
-			end
-			
 			local oldhealth = hitent:GetBarricadeHealth()
 			if oldhealth <= 0 or oldhealth >= hitent:GetMaxBarricadeHealth() or hitent:GetBarricadeRepairs() <= 0 then return end
 
@@ -99,70 +75,18 @@ function SWEP:OnMeleeHit(hitent, hitflesh, tr)
 			local healed = hitent:GetBarricadeHealth() - oldhealth
 			hitent:SetBarricadeRepairs(math.max(hitent:GetBarricadeRepairs() - healed, 0))
 			self:PlayRepairSound(hitent)
-			if self.Owner.hammerunion then
-                -- math.randomseed(CurTime())
-                local percentage = math.random(1, 1000)
-                local point = 0
-                if percentage >= 500 and percentage <= 505 then
-                    point = 5 * GAMEMODE.NailHealthPerRepair 
-                    -- counts[5] = counts[5] + 1
-                end
-                if percentage >= 120 and percentage <= 128 then
-                    point = 4 * GAMEMODE.NailHealthPerRepair 
-                    -- counts[4] = counts[4] + 1
-                end
-                if percentage >= 220 and percentage <= 240 then
-                    point = 3 * GAMEMODE.NailHealthPerRepair 
-                    -- counts[3] = counts[3] + 1
-                end
-                if percentage >= 600 and percentage <= 640 then
-                    point = 2 * GAMEMODE.NailHealthPerRepair 
-                    -- counts[2] = counts[2] + 1
-                end
-                if percentage >= 800 and percentage <= 900 then
-                    point = 1 * GAMEMODE.NailHealthPerRepair 
-                    -- counts[1] = counts[1] + 1
-                end
-                -- for j = 1, 8 do 
-                        -- PrintMessage(HUD_PRINTTALK, " ")
-                    -- end
-                -- for i, v in pairs(counts) do
+			gamemode.Call("PlayerRepairedObject", self.Owner, hitent, healed, self)
                     
-                    -- PrintMessage(HUD_PRINTTALK, tostring(i) .. "포인트: " .. tostring(v) .. "번 (실제로 " .. (v / count) * 100 .. "%)")
-                -- end
-                -- count = count + 1
-                -- PrintMessage(HUD_PRINTTALK, "총 횟수: " .. tostring(count))
-                if point > 0 then
-                    self.Owner:PrintMessage(HUD_PRINTTALK, "[노동연합] 노동연합에서 추가로 " .. tostring(point / GAMEMODE.NailHealthPerRepair  ) .. " 포인트를 습득했습니다.")
-                end
-				healed = healed + point
-            end
-			gamemode.Call("PlayerRepairedObject", self.Owner, hitent, healed , self)
 			local effectdata = EffectData()
 				effectdata:SetOrigin(tr.HitPos)
 				effectdata:SetNormal(tr.HitNormal)
 				effectdata:SetMagnitude(1)
 			util.Effect("nailrepaired", effectdata, true, true)
 
-			if self.Owner.metalDetector then
-				local rate = math.random(1, 1000000)
-				if rate > 550000 and rate <= 600000 then
-					local tester = math.random(0, 5)
-					local toGive = ""
-					local toGiveString = ""
-					if (tester >= 3) then
-						toGive = "SniperRound"
-						toGiveString = "판자"
-					else
-						toGive = "GaussEnergy"
-						toGiveString = "못"
+			return true
 					end
-					pl:GiveAmmo(1, toGive)
-					self.Owner:PrintMessage(HUD_PRINTTALK, "[금속 탐지기] 재사용 할 수 있는 재료를 발견했습니다! (" .. toGiveString .. "+1)")
 				end
 			end
-			
-			return true
 		end
 	end
 end
