@@ -20,30 +20,29 @@ SWEP.HoldType = "shotgun"
 SWEP.ViewModel = "models/weapons/v_supershorty/v_supershorty.mdl"
 SWEP.WorldModel = "models/weapons/w_supershorty.mdl"
 
-SWEP.ReloadDelay = 0.4
+SWEP.ReloadDelay = 0.3
 
 SWEP.Primary.Sound = Sound("Weapon_Shotgun.Single")
-SWEP.Primary.Damage = 10
-SWEP.Primary.NumShots = 7
-SWEP.Primary.Delay = 0.33
-SWEP.Primary.Recoil = 36
+SWEP.Primary.Damage = 21
+SWEP.Primary.NumShots = 4
+SWEP.Primary.Delay = 0.3
 
-SWEP.Primary.ClipSize = 3
-SWEP.Primary.Automatic = false
+SWEP.Primary.ClipSize = 2
+SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "buckshot"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 1.9
-SWEP.ConeMin = 1.297
+SWEP.ConeMax = 0.126
+SWEP.ConeMin = 0.085
 
 SWEP.WalkSpeed = SPEED_SLOWER
+
+SWEP.Recoil = 8
 
 SWEP.reloadtimer = 0
 SWEP.nextreloadfinish = 0
 
 function SWEP:Reload()
-	self.ConeMul = 1
-	
 	if self.reloading then return end
 
 	if self:Clip1() < self.Primary.ClipSize and 0 < self.Owner:GetAmmoCount(self.Primary.Ammo) then
@@ -51,12 +50,12 @@ function SWEP:Reload()
 		self.reloading = true
 		self.reloadtimer = CurTime() + self.ReloadDelay
 		self:SendWeaponAnim(ACT_SHOTGUN_RELOAD_START)
-		if SERVER then
 			self.Owner:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_SHOTGUN)
 		end
-	end
 
 	self:SetIronsights(false)
+	
+	self:ResetConeAdder()
 end
 
 function SWEP:Think()
@@ -68,10 +67,10 @@ function SWEP:Think()
 		self:SetClip1(self:Clip1() + 1)
 		self:EmitSound("Weapon_Shotgun.Reload")
 
-		if self.Primary.ClipSize <= self:Clip1() or self.Owner:GetAmmoCount(self.Primary.Ammo) <= 0 then
+		if self:Clip1() >= self.Primary.ClipSize or self.Owner:GetAmmoCount(self.Primary.Ammo) <= 0 then
 			self.nextreloadfinish = CurTime() + self.ReloadDelay
 			self.reloading = false
-			self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+			self:SetNextPrimaryFire(CurTime() + self.Primary.Delay * 4)
 		end
 	end
 
@@ -85,11 +84,8 @@ function SWEP:Think()
 	if self:GetIronsights() and not self.Owner:KeyDown(IN_ATTACK2) then
 		self:SetIronsights(false)
 	end
-	if self.LastFired + self.ConeResetDelay > CurTime() then
-		local multiplier = 1
-		multiplier = multiplier + (self.ConeMax * 100) * ((self.LastFired + self.ConeResetDelay - CurTime()) / self.ConeResetDelay)
-		self.ConeMul = math.min(multiplier, 1)
-	end
+	
+	self:DevineConeAdder()
 end
 
 function SWEP:CanPrimaryAttack()
@@ -102,12 +98,12 @@ function SWEP:CanPrimaryAttack()
 	end
 
 	if self.reloading then
-		if 0 < self:Clip1() then
-			self:SendWeaponAnim(ACT_SHOTGUN_RELOAD_FINISH)
-		else
-			self:SendWeaponAnim(ACT_VM_IDLE)
-		end
-		self.reloading = false
+		-- if self:Clip1() >= self.Primary.ClipSize then
+			-- self:SendWeaponAnim(ACT_SHOTGUN_RELOAD_FINISH)
+			-- self.reloading = false
+		-- else
+			-- self:SendWeaponAnim(ACT_VM_IDLE)
+		-- end
 		self:SetNextPrimaryFire(CurTime() + 0.25)
 		return false
 	end

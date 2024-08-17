@@ -30,7 +30,8 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "XBowBolt"
 SWEP.Primary.Delay = 2.0
 SWEP.Primary.DefaultClip = 15
-SWEP.Primary.Recoil = 12
+
+SWEP.Recoil = 10
 
 SWEP.SecondaryDelay = 0.25
 
@@ -56,8 +57,6 @@ if SERVER then
 
 			self:EmitSound("Weapon_Crossbow.Single")
 
-			self:DoRecoil()
-			
 			local ent = ents.Create("projectile_arrow")
 			if ent:IsValid() then
 				ent:SetOwner(owner)
@@ -71,6 +70,7 @@ if SERVER then
 					phys:SetVelocityInstantaneous(owner:GetAimVector() * 2200)
 				end
 			end
+			self:DoRecoil()
 		end
 	end
 
@@ -83,6 +83,8 @@ if SERVER then
 				self.Owner:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_CROSSBOW)
 			end
 			self:SetNextReload(CurTime() + self:SequenceDuration())
+			
+			self:ResetConeAdder()
 		end
 	end
 
@@ -109,10 +111,11 @@ if CLIENT then
 		if self:CanPrimaryAttack() then
 			self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 			self:TakePrimaryAmmo(1)
-			self:DoRecoil()
 			self:EmitSound("Weapon_Crossbow.Single")
+			self.Owner:RestartGesture(ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW)
 			self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 			self.IdleAnimation = CurTime() + self:SequenceDuration()
+			self:DoRecoil()
 		end
 	end
 
@@ -133,10 +136,17 @@ if CLIENT then
 		if self:GetNextReload() <= CurTime() and self:Clip1() == 0 and 0 < self.Owner:GetAmmoCount("XBowBolt") then
 			surface.PlaySound("weapons/crossbow/bolt_load"..math.random(1,2)..".wav")
 			self:DefaultReload(ACT_VM_RELOAD)
+			self.Owner:RestartGesture(ACT_HL2MP_GESTURE_RELOAD_CROSSBOW)
 			self:SetNextReload(CurTime() + self:SequenceDuration())
+			
+			self:ResetConeAdder()
 		end
 	end
 
+	local surface = surface
+	local ScrW = ScrW
+	local ScrH = ScrH
+	
 	local texScope = surface.GetTextureID("zombiesurvival/scope")
 	function SWEP:DrawHUDBackground()
 		if self:GetDTBool(1) then

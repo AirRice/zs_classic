@@ -7,12 +7,23 @@ SWEP.DrawCrosshair = false
 SWEP.Slot = 4
 SWEP.SlotPos = 0
 
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local GetGlobalBool = GetGlobalBool
+local ScrW = ScrW
+local ScrH = ScrH
+local Material = Material
+local draw = draw
+
 function SWEP:DrawHUD()
 	if GetConVarNumber("crosshair") ~= 1 then return end
 	self:DrawCrosshairDot()
 end
-
 function SWEP:Deploy()
+	gamemode.Call("WeaponDeployed", self.Owner, self)
 	self.IdleAnimation = CurTime() + self:SequenceDuration()
 
 	return true

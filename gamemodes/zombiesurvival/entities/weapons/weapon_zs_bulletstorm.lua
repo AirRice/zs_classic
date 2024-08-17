@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "'Bullet Storm' SMG"
-	SWEP.Description = "보조 공격 버튼을 눌러 Storm firing 모드로 사격한다.\n해당 모드를 사용하는 동안 격발 딜레이가 60% 증가하지만 한 번에 두 개의 탄환이 발사된다."
+	SWEP.Description = "정조준 중: Storm Firing Mode. 공격 속도가 60% 감소하지만 한 번에 두 개의 탄환을 발사하게 된다."
 	SWEP.Slot = 2
 	SWEP.SlotPos = 0
 
@@ -26,15 +26,16 @@ SWEP.Primary.Sound = Sound("Weapon_p90.Single")
 SWEP.Primary.Damage = 12
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.05
-SWEP.Primary.Recoil = 4
 
 SWEP.Primary.ClipSize = 50
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "smg1"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.25
-SWEP.ConeMin = 0.1
+SWEP.ConeMax = 0.036
+SWEP.ConeMin = 0.025
+
+SWEP.Recoil = 0.48
 
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
@@ -46,8 +47,8 @@ SWEP.IronSightsAng = Vector(0, 2, 0)
 
 SWEP.Primary.DefaultNumShots = SWEP.Primary.NumShots
 SWEP.Primary.DefaultDelay = SWEP.Primary.Delay
-SWEP.Primary.IronsightsNumShots = SWEP.Primary.NumShots * 3
-SWEP.Primary.IronsightsDelay = SWEP.Primary.Delay * 1.8
+SWEP.Primary.IronsightsNumShots = SWEP.Primary.NumShots * 2
+SWEP.Primary.IronsightsDelay = SWEP.Primary.Delay * 1.6666
 
 function SWEP:SetIronsights(b)
 	if self:GetIronsights() ~= b then
@@ -77,11 +78,7 @@ end
 
 function SWEP:TakeAmmo()
 	if self:GetIronsights() then
-		if self:Clip1() < 3 then
-			self:TakePrimaryAmmo(self:Clip1())
-		else
-			self:TakePrimaryAmmo(4)
-		end
+		self:TakePrimaryAmmo(math.min(2, self:Clip1()))
 	else
 		self.BaseClass.TakeAmmo(self)
 	end

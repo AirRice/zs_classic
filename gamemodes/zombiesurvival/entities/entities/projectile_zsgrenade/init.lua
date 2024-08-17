@@ -21,6 +21,16 @@ end
 function ENT:PhysicsCollide(data, phys)
 	if 20 < data.Speed and 0.25 < data.DeltaTime then
 		self:EmitSound("physics/metal/metal_grenade_impact_hard"..math.random(1,3)..".wav")
+	
+		if data.HitEntity and data.HitEntity != NULL --[[and data.HitEntity:IsWorld()]] then
+			local dir = data.HitNormal
+			
+			local phys = self:GetPhysicsObject()
+			
+			if (IsValid(phys)) then
+				phys:AddVelocity(-dir * data.OurOldVelocity * 2)
+			end
+		end	
 	end
 end
 
@@ -41,7 +51,6 @@ function ENT:Explode()
 		local pos = self:GetPos()
 
 		util.BlastDamage2(self, owner, pos, self.GrenadeRadius or 256, self.GrenadeDamage or 256)
-
 		local effectdata = EffectData()
 			effectdata:SetOrigin(pos)
 		util.Effect("Explosion", effectdata)

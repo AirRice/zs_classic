@@ -2,7 +2,9 @@ AddCSLuaFile()
 
 ENT.Base = "projectile_poisonflesh"
 ENT.Type = "anim"
+ENT.m_IsProjectile = true
 
+ENT.TwisterDamagePercentage = 0.06
 ENT.TraceHumanRadius = 350
 ENT.TraceManhackRadius = 450
 

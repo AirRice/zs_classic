@@ -1,3 +1,133 @@
+local baseclass = baseclass
+local bit = bit
+local cam = cam
+local chat = chat
+local concommand = concommand
+local constraint = constraint
+local cvars = cvars
+local derma = derma
+local draw = draw
+local effects = effects
+local ents = ents
+local file = file
+local game = game
+local gamemode = gamemode
+local gmod = gmod
+local gui = gui
+local hook = hook
+local input = input
+local killicon = killicon
+local language = language
+local list = list
+local math = math
+local mesh = mesh
+local net = net
+local os = os
+local physenv = physenv
+local player = player
+local player_manager = player_manager
+local render = render
+local scripted_ents = scripted_ents
+local sound = sound
+local string = string
+local surface = surface
+local table = table
+local team = team
+local timer = timer
+local util = util
+local vgui = vgui
+local weapons = weapons
+local AccessorFunc = AccessorFunc
+local Angle = Angle
+local AngleRand = AngleRand
+local assert = assert
+local ClientsideModel = ClientsideModel
+local CloseDermaMenus = CloseDermaMenus
+local Color = Color
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local CurTime = CurTime
+local DamageInfo = DamageInfo
+local Derma_Anim = Derma_Anim
+local Derma_DrawBackgroundBlur = Derma_DrawBackgroundBlur
+local Derma_Hook = Derma_Hook
+local Derma_Install_Convar_Functions = Derma_Install_Convar_Functions
+local Derma_Message = Derma_Message
+local Derma_Query = Derma_Query
+local Derma_StringRequest = Derma_StringRequest
+local DermaMenu = DermaMenu
+local DisableClipping = DisableClipping
+local DynamicLight = DynamicLight
+local EffectData = EffectData
+local EmitSentence = EmitSentence
+local EmitSound = EmitSound
+local EyeAngles = EyeAngles
+local EyePos = EyePos
+local EyeVector = EyeVector
+local Format = Format
+local FrameTime = FrameTime
+local GetConVar = GetConVar
+local GetConVarNumber = GetConVarNumber
+local GetConVarString = GetConVarString
+local getfenv = getfenv
+local GetGlobalAngle = GetGlobalAngle
+local GetGlobalBool = GetGlobalBool
+local GetGlobalEntity = GetGlobalEntity
+local GetGlobalFloat = GetGlobalFloat
+local GetGlobalInt = GetGlobalInt
+local GetGlobalString = GetGlobalString
+local GetGlobalVector = GetGlobalVector
+local GetHostName = GetHostName
+local GetHUDPanel = GetHUDPanel
+local GetRenderTarget = GetRenderTarget
+local GetRenderTargetEx = GetRenderTargetEx
+local GetViewEntity = GetViewEntity
+local ipairs = ipairs
+local IsFirstTimePredicted = IsFirstTimePredicted
+local isnumber = isnumber
+local IsValid = IsValid
+local Label = Label
+local LocalPlayer = LocalPlayer
+local LocalToWorld = LocalToWorld
+local Material = Material
+local Matrix = Matrix
+local Msg = Msg
+local MsgAll = MsgAll
+local MsgC = MsgC
+local MsgN = MsgN
+local pairs = pairs
+local Particle = Particle
+local ParticleEffect = ParticleEffect
+local ParticleEffectAttach = ParticleEffectAttach
+local ParticleEmitter = ParticleEmitter
+local print = print
+local PrintMessage = PrintMessage
+local PrintTable = PrintTable
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local ScrH = ScrH
+local ScrW = ScrW
+local SetGlobalAngle = SetGlobalAngle
+local SetGlobalBool = SetGlobalBool
+local SetGlobalEntity = SetGlobalEntity
+local SetGlobalFloat = SetGlobalFloat
+local SetGlobalInt = SetGlobalInt
+local SetGlobalString = SetGlobalString
+local SetGlobalVector = SetGlobalVector
+local Sound = Sound
+local SoundDuration = SoundDuration
+local tobool = tobool
+local tonumber = tonumber
+local tostring = tostring
+local type = type
+local unpack = unpack
+local ValidPanel = ValidPanel
+local Vector = Vector
+local VectorRand = VectorRand
+local VGUIFrameTime = VGUIFrameTime
+local VGUIRect = VGUIRect
+local WorldToLocal = WorldToLocal
+
 local meta = FindMetaTable("Entity")
 if not meta then return end
 
@@ -202,7 +332,7 @@ function meta:PackUp(pl)
 	local status = pl:GiveStatus("packup")
 	if status:IsValid() then
 		status:SetPackUpEntity(self)
-		status:SetEndTime(CurTime() + (self.PackUpTime or 4) * (pl.buffBlueprint and 0.3 or 1))
+		status:SetEndTime(CurTime() + (self.PackUpTime or 4) * (pl.PackupTimeMult and pl.PackupTimeMult or 1))
 
 		if self.GetObjectOwner then
 			local owner = self:GetObjectOwner()
@@ -290,62 +420,16 @@ function meta:DamageNails(attacker, inflictor, damage, dmginfo)
 
 	self:ResetLastBarricadeAttacker(attacker, dmginfo)
 
-	local thorncade = false
-	local owners = {}
 	local nails = self:GetLivingNails()
 	if #nails <= 0 then return end
 
 	self:SetBarricadeHealth(self:GetBarricadeHealth() - damage)
 	for i, nail in ipairs(nails) do
 		nail:OnDamaged(damage, attacker, inflictor, dmginfo)
-		if nail.thorncade or nail:GetOwner().thorncade then
-			if !table.HasValue(owners, nail:GetOwner()) then
-				table.insert(owners, nail:GetOwner())
-			end
-			thorncade = thorncade or true
-		end
-	end
-	
-	for i, v in pairs(owners) do
-		if !IsValid(v) or !v:Alive() or v:Team() == TEAM_ZOMBIE then
-			table.RemoveByValue(owners, v)
-			PrintTable(owners)
-		end
 	end
 
 	if attacker:IsPlayer() then
 		GAMEMODE:DamageFloater(attacker, self, dmginfo)
-		if attacker:Team() == TEAM_ZOMBIE and thorncade then
-			local dmg = dmginfo:GetDamage() * 0.75
-			local count = table.Count(owners)
-			dmg = dmg / (count > 0 and count or 1)
-		
-			if count <= 0 then
-				attacker:TakeDamage(dmg, self, self)
-			else
-				for i, v in pairs(owners) do
-					--attacker:TakeDamage(dmg, v, self)
-					attacker:TakeDamage(dmg, self, self)
-					v:AddLifeHumanDamage(dmg)
-					v.m_PointQueue = v.m_PointQueue + dmg / attacker:GetMaxHealth() * (attacker:GetZombieClassTable().Points or 0) * 0.5
-					--init.lua 복붙, 가시철책 포인트 50% 감소
-					local _dmginfo = DamageInfo()
-					_dmginfo:SetAmmoType(dmginfo:GetAmmoType())
-					_dmginfo:SetAttacker(dmginfo:GetAttacker())
-					_dmginfo:SetDamage(dmginfo:GetDamage())
-					_dmginfo:ScaleDamage(0.75)
-					_dmginfo:SetDamageBonus(dmginfo:GetDamageBonus())
-					_dmginfo:SetDamageCustom(dmginfo:GetDamageCustom())
-					_dmginfo:SetDamageForce(dmginfo:GetDamageForce())
-					_dmginfo:SetDamagePosition(dmginfo:GetDamagePosition())
-					_dmginfo:SetDamageType(dmginfo:GetDamageType())
-					_dmginfo:SetInflictor(dmginfo:GetInflictor())
-					_dmginfo:SetMaxDamage(dmginfo:GetMaxDamage())
-					_dmginfo:SetReportedPosition(dmginfo:GetReportedPosition())
-					GAMEMODE:DamageFloater(v, self, _dmginfo)						
-				end
-			end
-		end
 	end
 
 	if dmginfo then dmginfo:SetDamage(0) end
@@ -398,6 +482,20 @@ function meta:GetLivingNails()
 	end
 
 	return tab
+end
+
+function meta:NumLivingNails()
+	local amount = 0
+
+	if self.Nails then
+		for _, nail in pairs(self.Nails) do
+			if nail and nail:IsValid() and nail:GetNailHealth() > 0 then
+				amount = amount + 1
+			end
+		end
+	end
+
+	return amount
 end
 
 function meta:GetFirstNail()
@@ -473,6 +571,13 @@ function meta:RemoveNail(nail, dontremoveentity, removedby)
 	if not dontremoveentity then
 		nail:Remove()
 		nail.m_IsRemoving = true
+	end
+
+	self:RecalculateNailBonuses()
+	self:CollisionRulesChanged()
+
+	if ent2 and ent2:IsValid() then
+		ent2:CollisionRulesChanged()
 	end
 
 	return true

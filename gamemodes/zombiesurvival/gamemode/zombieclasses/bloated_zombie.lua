@@ -1,3 +1,94 @@
+local bit = bit
+local cam = cam
+local chat = chat
+local concommand = concommand
+local constraint = constraint
+local cvars = cvars
+local derma = derma
+local draw = draw
+local effects = effects
+local ents = ents
+local file = file
+local game = game
+local gamemode = gamemode
+local gmod = gmod
+local gui = gui
+local hook = hook
+local input = input
+local killicon = killicon
+local language = language
+local list = list
+local math = math
+local mesh = mesh
+local net = net
+local os = os
+local physenv = physenv
+local player = player
+local player_manager = player_manager
+local render = render
+local scripted_ents = scripted_ents
+local sound = sound
+local string = string
+local surface = surface
+local table = table
+local team = team
+local timer = timer
+local util = util
+local vgui = vgui
+local weapons = weapons
+local AccessorFunc = AccessorFunc
+local Angle = Angle
+local AngleRand = AngleRand
+local ClientsideModel = ClientsideModel
+local Color = Color
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local CurTime = CurTime
+local DamageInfo = DamageInfo
+local DisableClipping = DisableClipping
+local DynamicLight = DynamicLight
+local EffectData = EffectData
+local EmitSound = EmitSound
+local EyeAngles = EyeAngles
+local EyePos = EyePos
+local FrameTime = FrameTime
+local GetConVar = GetConVar
+local GetConVarNumber = GetConVarNumber
+local GetConVarString = GetConVarString
+local GetGlobalAngle = GetGlobalAngle
+local GetGlobalBool = GetGlobalBool
+local GetGlobalEntity = GetGlobalEntity
+local GetGlobalFloat = GetGlobalFloat
+local GetGlobalInt = GetGlobalInt
+local GetGlobalString = GetGlobalString
+local GetGlobalVector = GetGlobalVector
+local ipairs = ipairs
+local isnumber = isnumber
+local IsValid = IsValid
+local LocalPlayer = LocalPlayer
+local LocalToWorld = LocalToWorld
+local Material = Material
+local Matrix = Matrix
+local pairs = pairs
+local ParticleEmitter = ParticleEmitter
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local ScrH = ScrH
+local ScrW = ScrW
+local SetGlobalAngle = SetGlobalAngle
+local SetGlobalBool = SetGlobalBool
+local SetGlobalEntity = SetGlobalEntity
+local SetGlobalFloat = SetGlobalFloat
+local SetGlobalInt = SetGlobalInt
+local SetGlobalString = SetGlobalString
+local SetGlobalVector = SetGlobalVector
+local tostring = tostring
+local type = type
+local unpack = unpack
+local Vector = Vector
+local VectorRand = VectorRand
+
+
 CLASS.Name = "Bloated Zombie"
 CLASS.TranslationName = "class_bloated_zombie"
 CLASS.Description = "description_bloated_zombie"
@@ -5,9 +96,9 @@ CLASS.Help = "controls_bloated_zombie"
 
 CLASS.Wave = 3 / 6
 
-CLASS.Health = 325
-CLASS.Speed = 120
-CLASS.JumpPower = 150
+CLASS.Health = 350
+CLASS.Speed = 140
+CLASS.JumpPower = 175
 CLASS.Mass = DEFAULT_MASS * 2
 
 CLASS.CanTaunt = true
@@ -23,7 +114,7 @@ CLASS.DeathSounds = {"npc/ichthyosaur/water_growl5.wav"}
 CLASS.VoicePitch = 0.6
 
 CLASS.CanFeignDeath = true
-
+CLASS.GasDamageRadius = 65
 sound.Add({
 	name = "fatty.footstep",
     channel = CHAN_BODY,
@@ -53,8 +144,20 @@ local ACT_HL2MP_RUN_ZOMBIE = ACT_HL2MP_RUN_ZOMBIE
 
 function CLASS:PlayPainSound(pl)
 	pl:EmitSound("npc/zombie_poison/pz_idle"..math.random(2, 3)..".wav", 72, math.Rand(75, 85))
-
+	
 	return true
+end
+function CLASS:OnZombieHurt(pl, attacker, healthremaining, damage)
+	local pos = pl:LocalToWorld(pl:OBBCenter())
+	local effectdata = EffectData()
+		effectdata:SetOrigin(pos)
+		effectdata:SetNormal(pl:SyncAngles():Forward())
+	util.Effect("gas", effectdata, true)
+	for _, ent in pairs(ents.FindInSphere(pos, self.GasDamageRadius)) do
+		if ent and ent:IsValid() and ent:IsNailed() then
+			ent:TakeSpecialDamage(math.max(math.floor(damage/10),1), DMG_SLASH, pl, pl:GetActiveWeapon())
+		end
+	end
 end
 
 local mathrandom = math.random
@@ -166,6 +269,7 @@ if SERVER then
 				ent:SetPos(pos)
 				ent:SetOwner(pl)
 				ent:Spawn()
+				ent.TwisterDamagePercentage = 0.045
 
 				local phys = ent:GetPhysicsObject()
 				if phys:IsValid() then
@@ -186,5 +290,5 @@ if SERVER then
 end
 
 if CLIENT then
-	CLASS.Icon = "zombiesurvival/killicons/bloatedzombie"
+	CLASS.Icon = "zombiesurvival/killicons/zombie"
 end

@@ -1,8 +1,8 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "의료킷"
-	SWEP.Description = "응급 처치에 사용할 수 있는 모든 것이 담긴 다용도 치료 키트이다.\n생존자들의 체력을 책임진다.\n주 공격 버튼: 타인 치료.\n보조 공격 버튼: 자신 치료\n타인을 치료하면 충전 속도가 빠를 뿐 아니라 포인트도 얻는다!"
+	SWEP.PrintName = "의료 키트"
+	SWEP.Description = "약물, 붕대, 마취제 등이 들어있는 복합 의료 키트.\n생존자 그룹을 건강히 유지하는 데 반드시 필요하다.\n주 공격 버튼으로 타인 치료\n보조 공격 버튼으로 자가 치료\n타인 치료 시 재사용 대기시간이 적을 뿐 아니라 포인트까지 벌 수 있다!"
 	SWEP.Slot = 4
 	SWEP.SlotPos = 0
 
@@ -20,7 +20,7 @@ SWEP.ViewModel = "models/weapons/c_medkit.mdl"
 SWEP.UseHands = true
 
 SWEP.Primary.Delay = 10
-SWEP.Primary.Heal = 17
+SWEP.Primary.Heal = 15
 
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.DefaultClip = 150
@@ -67,10 +67,11 @@ function SWEP:PrimaryAttack()
 	if ent and ent:IsValid() and ent:IsPlayer() and ent:Team() == owner:Team() and ent:Alive() and gamemode.Call("PlayerCanBeHealed", ent) then
 		local health, maxhealth = ent:Health(), ent:GetMaxHealth()
 		local multiplier = owner.HumanHealMultiplier or 1
+		multiplier = multiplier * (ent.ReceivedHealMultiplier or 1)
 		local toheal = math.min(self:GetPrimaryAmmoCount(), math.ceil(math.min(self.Primary.Heal * multiplier, maxhealth - health)))
 		local totake = math.ceil(toheal / multiplier)
 		if toheal > 0 then
-			self:SetNextCharge(CurTime() + self.Primary.Delay * math.min(1, toheal / self.Primary.Heal) * (self.Owner.buffMedic and 0.75 or 1))
+			self:SetNextCharge(CurTime() + self.Primary.Delay * math.min(1, toheal / self.Primary.Heal) * (owner.HumanHealDelayMultiplier and owner.HumanHealDelayMultiplier or 1))
 			owner.NextMedKitUse = self:GetNextCharge()
 
 			self:TakeCombinedPrimaryAmmo(totake)
@@ -94,10 +95,11 @@ function SWEP:SecondaryAttack()
 
 	local health, maxhealth = owner:Health(), owner:GetMaxHealth()
 	local multiplier = owner.HumanHealMultiplier or 1
+	multiplier = multiplier * (owner.ReceivedHealMultiplier or 1)
 	local toheal = math.min(self:GetPrimaryAmmoCount(), math.ceil(math.min(self.Secondary.Heal * multiplier, maxhealth - health)))
 	local totake = math.ceil(toheal / multiplier)
 	if toheal > 0 then
-		self:SetNextCharge(CurTime() + self.Secondary.Delay * math.min(1, toheal / self.Secondary.Heal) * (self.Owner.buffMedic and 0.75 or 1))
+		self:SetNextCharge(CurTime() + self.Secondary.Delay * math.min(1, toheal / self.Secondary.Heal) * (owner.HumanHealDelayMultiplier and owner.HumanHealDelayMultiplier or 1))
 		owner.NextMedKitUse = self:GetNextCharge()
 
 		self:TakeCombinedPrimaryAmmo(totake)
@@ -173,6 +175,17 @@ function SWEP:DrawWeaponSelection(...)
 	return self:BaseDrawWeaponSelection(...)
 end
 
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local GetGlobalBool = GetGlobalBool
+local ScrW = ScrW
+local ScrH = ScrH
+local Material = Material
+local draw = draw
+
 local texGradDown = surface.GetTextureID("VGUI/gradient_down")
 function SWEP:DrawHUD()
 	local screenscale = BetterScreenScale()
@@ -193,7 +206,7 @@ function SWEP:DrawHUD()
 		surface.DrawOutlinedRect(x, y, wid, hei)
 	end
 
-	draw.SimpleText("의료킷", "ZSHUDFontSmall", x, texty, COLOR_GREEN, TEXT_ALIGN_LEFT)
+	draw.SimpleText("의료 키트", "ZSHUDFontSmall", x, texty, COLOR_GREEN, TEXT_ALIGN_LEFT)
 
 	local charges = self:GetPrimaryAmmoCount()
 	if charges > 0 then

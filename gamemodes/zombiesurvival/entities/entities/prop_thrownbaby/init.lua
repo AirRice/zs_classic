@@ -4,7 +4,7 @@ AddCSLuaFile("cl_init.lua")
 include("shared.lua")
 
 ENT.m_IsProjectile = true -- Quick fix to stop people being able to use this as ammo to prop kill.
-
+ENT.IgnoreProjDefense = true
 function ENT:Initialize()
 	self:SetModel("models/props_c17/doll01.mdl")
 	self:PhysicsInit(SOLID_VPHYSICS) --self:PhysicsInitBox(Vector(-10.8, -10.8, -10.8), Vector(10.8, 10.8, 10.8))

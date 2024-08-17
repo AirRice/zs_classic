@@ -13,10 +13,4 @@ function SWEP:Reload()
 end
 
 function SWEP:Think()
-	if (self:GetPhoenixKey()) then
-		local ed = EffectData()
-		ed:SetOrigin(self:LocalToWorld(self:OBBCenter()))
-		ed:SetMagnitude(3)
-		util.Effect("explosion", ed)
-	end
 end

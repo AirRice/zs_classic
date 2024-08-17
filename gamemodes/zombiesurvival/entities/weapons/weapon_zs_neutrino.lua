@@ -33,7 +33,7 @@ end
 sound.Add(
 {
 	name = "Weapon_pulselmg.Single",
-	channel = CHAN_WEAPON,
+	channel = CHAN_AUTO+21,
 	volume = 1.0,
 	soundlevel = 100,
 	sound = "weapons/ar2/fire1.wav"
@@ -45,6 +45,7 @@ SWEP.HoldType = "ar2"
 
 SWEP.ViewModel = Model( "models/weapons/c_physcannon.mdl" )
 SWEP.WorldModel = Model( "models/weapons/w_physics.mdl" )
+SWEP.ViewModelFlip = false
 SWEP.UseHands = true
 
 SWEP.CSMuzzleFlashes = true
@@ -66,29 +67,27 @@ sound.Add( {
 
 SWEP.ReloadSound = Sound("weapons/ar2/ar2_reload_push.wav")
 SWEP.Primary.Sound = Sound("Weapon_pulselmg.Single")
-SWEP.Primary.Recoil = 3
-SWEP.Primary.Damage = 16
+SWEP.Recoil = 0.5
+SWEP.Primary.Damage = 10
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Delay = 0.4
+SWEP.Primary.Delay = 0.17
 
 SWEP.Primary.ClipSize = -1
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "pulse"
 SWEP.Primary.DefaultClip = 100
 
-SWEP.ConeMax = 2
-SWEP.ConeMin = 0.9
+SWEP.ConeMax = 0.2
+SWEP.ConeMin = 0.07
 
 SWEP.WalkSpeed = SPEED_SLOWEST
-SWEP.TracerName = "AirboatGunHeavyTracer"
+SWEP.TracerName = "Ar2Tracer"
 SWEP.PlayCharge = nil
 function SWEP:SetIronsights()
 end
 
 local function BulletCallback(attacker, tr, dmginfo)
 	local ent = tr.Entity
-	
-
 	local e = EffectData()
 		e:SetOrigin(tr.HitPos)
 		e:SetNormal(tr.HitNormal)
@@ -115,7 +114,7 @@ function SWEP:PrimaryAttack()
 		self.Owner:RemoveAmmo( self.Primary.NumShots*((self:GetDTInt(4) >= 40) and 2 or (self:GetDTInt(4) >= 80) and 3 or 1), self.Weapon:GetPrimaryAmmoType() )
 		self.IdleAnimation = CurTime() + self:SequenceDuration()
 		local combo = self:GetDTInt(4)
-		self:SetNextPrimaryFire(CurTime() + math.max(0.04, self.Primary.Delay * (1 - combo / 120)))
+		self:SetNextPrimaryFire(CurTime() + math.max(0.05, self.Primary.Delay * (1 - combo / 80)))
 		self:SetDTInt(4, combo + 1)
 	end
 end
@@ -126,7 +125,7 @@ function SWEP:Think()
 		if self:Ammo1()<=0 then return end
 		
 		if not self.PlayCharge then
-			owner:EmitSound("Loop_Neutrino_Charging")
+			self:EmitSound("Loop_Neutrino_Charging")
 			self.PlayCharge = true
 		end
 		if CLIENT then
@@ -136,18 +135,23 @@ function SWEP:Think()
 	elseif CLIENT then
 		self.VElements["ring"].angle.y = math.Approach(self.VElements["ring"].angle.y, math.ceil(self.VElements["ring"].angle.y/360)*360, FrameTime()*100)
         self.VElements["ring+"].angle.y = math.Approach(self.VElements["ring+"].angle.y, math.ceil(self.VElements["ring+"].angle.y/360)*360, FrameTime()*100)
-	elseif not owner:KeyDown(IN_ATTACK) then
+	elseif not owner:KeyDown(IN_ATTACK) or not owner:Alive() then
 		self:SetDTInt(4, 0)
 		if self.PlayCharge then
-			owner:StopSound("Loop_Neutrino_Charging")
+			self:StopSound("Loop_Neutrino_Charging")
 			self.PlayCharge = nil
 		end
 	end
 	if owner:KeyReleased(IN_ATTACK) then
 		owner:EmitSound("weapons/slam/mine_mode.wav")
 	end
+	if self.BaseClass.Think then
+		self.BaseClass.Think(self)
 end
-
+end
+function SWEP:OnRemove()
+	self:StopSound("Loop_Neutrino_Charging")
+end
 function SWEP:CanPrimaryAttack()
 	return true
 end

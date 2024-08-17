@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "맨핵"
-	SWEP.Description = "원격 조종이 가능한 군용 로봇이다.\n본래 용도는 정찰용이었으나 안전하게 멀리서 공격하는 데도 사용 가능하다."
+	SWEP.Description = "원격 조종이 가능한 군용 로봇.\n본래 용도는 정찰용이었으나 필요 시 안전한 곳에서 원격으로 좀비를 공격하는 데 사용할 수도 있다."
 
 	SWEP.ViewModelFlip = false
 	SWEP.ViewModelFOV = 50
@@ -102,7 +102,6 @@ function SWEP:PrimaryAttack()
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
 				phys:Wake()
-				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 200)
 			end
 
 			if not owner:HasWeapon(self.ControlWeapon) then
@@ -167,6 +166,33 @@ local colBG = Color(16, 16, 16, 90)
 local colWhite = Color(220, 220, 220, 230)
 
 SWEP.HUD3DPos = Vector(5, 2, 0)
+
+local Color = Color
+local render = render
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local ScrW = ScrW
+local ScrH = ScrH
+local cam = cam
+local GetGlobalBool = GetGlobalBool
+local Material = Material
+local draw = draw
+local IsValid = IsValid
+local pairs = pairs
+local ipairs = ipairs
+local table = table
+local type = type
+local Matrix = Matrix
+local Vector = Vector
+local Angle = Angle
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local ClientsideModel = ClientsideModel
+local tostring = tostring
+local tonumber = tonumber
 
 function SWEP:PostDrawViewModel(vm)
 	if not self.HUD3DPos or GAMEMODE.WeaponHUDMode == 1 then return end

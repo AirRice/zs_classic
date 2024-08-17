@@ -1,3 +1,10 @@
+local surface = surface
+local Color = Color
+local draw = draw
+local math = math
+local RealTime = RealTime
+local vgui = vgui
+
 local PANEL = {}
 
 PANEL.IdealPing = 50
@@ -55,8 +62,9 @@ function PANEL:Refresh()
 end
 
 function PANEL:Think()
-	if RealTime() >= self.NextRefresh then
-		self.NextRefresh = RealTime() + self.RefreshTime
+	local realTime = RealTime()
+	if realTime >= self.NextRefresh then
+		self.NextRefresh = realTime + self.RefreshTime
 		self:Refresh()
 	end
 end

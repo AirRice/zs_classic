@@ -1,3 +1,17 @@
+local CreateClientConVar = CreateClientConVar
+local vgui = vgui
+local table = table
+local pairs = pairs
+local ipairs = ipairs
+local math = math
+local EasyButton = EasyButton
+local EasyLabel = EasyLabel
+local surface = surface
+local DisableClipping = DisableClipping
+local LocalPlayer = LocalPlayer
+local gamemode = gamemode
+local derma = derma
+
 CreateClientConVar("zs_bossclass", "", true, true)
 
 local Window
@@ -49,7 +63,7 @@ function PANEL:Init()
 		end
 	end
 
-	local button = EasyButton(self, "보스 좀비 선택 화면으로", 8, 4)
+	local button = EasyButton(self, "보스 클래스 선택 화면으로", 8, 4)
 	self.ClassTypeButton = button
 	button.DoClick = BossTypeDoClick
 
@@ -109,7 +123,7 @@ function PANEL:Init()
 		end
 	end
 
-	local button = EasyButton(self, "일반 좀비 선택 화면으로", 8, 4)
+	local button = EasyButton(self, "일반 클래스 선택 화면으로", 8, 4)
 	self.ClassTypeButton = button
 	button.DoClick = ClassTypeDoClick
 
@@ -198,7 +212,7 @@ function PANEL:DoClick()
 	if self.ClassTable then
 		if self.ClassTable.Boss then
 			RunConsoleCommand("zs_bossclass", self.ClassTable.Name)
-			GAMEMODE:CenterNotify(translate.Format("boss_class_select", self.ClassTable.Name))
+			GAMEMODE:CenterNotify(translate.Format("boss_class_select", translate.Get(self.ClassTable.TranslationName)))
 		else
 			RunConsoleCommand("zs_class", self.ClassTable.Name, GAMEMODE.SuicideOnChangeClass and "1" or "0")
 		end

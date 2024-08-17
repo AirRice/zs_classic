@@ -1,3 +1,9 @@
+local RunConsoleCommand = RunConsoleCommand
+local Color = Color
+local vgui = vgui
+local draw = draw
+local RealTime = RealTime
+
 local PANEL = {}
 
 PANEL.NextRefresh = 0
@@ -48,8 +54,9 @@ function PANEL:Paint()
 end
 
 function PANEL:Think()
-	if RealTime() >= self.NextRefresh then
-		self.NextRefresh = RealTime() + self.RefreshTime
+	local realTime = RealTime()
+	if realTime >= self.NextRefresh then
+		self.NextRefresh = realTime + self.RefreshTime
 		self:Refresh()
 	end
 end

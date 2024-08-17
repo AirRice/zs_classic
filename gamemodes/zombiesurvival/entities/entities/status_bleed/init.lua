@@ -10,7 +10,7 @@ end
 function ENT:Think()
 	local owner = self:GetOwner()
 
-	if self:GetDamage() <= 0 or owner:Team() == TEAM_UNDEAD then
+	if self:GetDamage() <= 0 then
 		self:Remove()
 		return
 	end

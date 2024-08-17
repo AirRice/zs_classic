@@ -27,31 +27,6 @@ function ENT:Initialize()
 	self:SetObjectHealth(self:GetMaxObjectHealth())
 end
 
-function ENT:KeyValue(key, value)
-	key = string.lower(key)
-	if key == "maxcratehealth" then
-		value = tonumber(value)
-		if not value then return end
-
-		self:SetMaxObjectHealth(value)
-	elseif key == "cratehealth" then
-		value = tonumber(value)
-		if not value then return end
-
-		self:SetObjectHealth(value)
-	end
-end
-
-function ENT:AcceptInput(name, activator, caller, args)
-	if name == "setcratehealth" then
-		self:KeyValue("cratehealth", args)
-		return true
-	elseif name == "setmaxcratehealth" then
-		self:KeyValue("maxcratehealth", args)
-		return true
-	end
-end
-
 function ENT:SetObjectHealth(health)
 	self:SetDTFloat(0, health)
 	if health <= 0 and not self.Destroyed then
@@ -135,13 +110,14 @@ function ENT:Use(activator, caller)
 		return
 		end
 
-		NextUse[myuid] = CurTime() + 10* (self.Owner.buffMedic and 0.75 or 1)
+		NextUse[myuid] = CurTime() + 10* (owner.HumanHealDelayMultiplier and owner.HumanHealDelayMultiplier or 1)
 
 		net.Start("zs_nextchargeruse")
 			net.WriteFloat(NextUse[myuid])
 		net.Send(activator)
 		local health, maxhealth = activator:Health(), activator:GetMaxHealth()
 		local multiplier = owner.HumanHealMultiplier or 1
+		multiplier = multipler * (activator.ReceivedHealMultiplier or 1)
 		local toheal = math.min(self:GetAmmoCount(), math.ceil(math.min(15 * multiplier, maxhealth - health)))
 		activator:SetHealth(health + toheal)
 		self:SetAmmoCount(self:GetAmmoCount() - toheal*2,0)

@@ -1,3 +1,7 @@
+local surface = surface
+local draw = draw
+local Color = Color
+
 local PANEL = {}
 
 AccessorFunc(PANEL, "m_iBorderRadius", "BorderRadius", FORCE_NUMBER)

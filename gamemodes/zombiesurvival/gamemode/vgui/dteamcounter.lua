@@ -1,3 +1,8 @@
+local math = math
+local RealTime = RealTime
+local vgui = vgui
+local team = team
+
 local PANEL = {}
 
 PANEL.m_Team = 0
@@ -13,7 +18,7 @@ function PANEL:Init()
 	self.m_Image = vgui.Create("DEXRotatedImage", self)
 	self.m_Image:SetImage("icon16/check_off.png")
 	self.m_Image.Seed = math.Rand(0, 1000)
-	self.m_Image.OldPaint = self.m_Image.OldPaint or self.m_Image.Paint
+	self.m_Image.OldPaint = self.m_Image.Paint
 	self.m_Image.Paint = ImageThink
 
 	self.m_Counter = vgui.Create("DLabel", self)

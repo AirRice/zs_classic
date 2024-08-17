@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "'Savior' 메딕 건"
-	SWEP.Description = "멀리 있는 사람도 치료할 수 있는 의료 주사기를 발사한다. 한 방의 치유량은 적지만, 먼 대상에게 빠르게 발사할 수 있어 유용하다."
+	SWEP.Description = "먼 거리의 아군을 치료할 수 있는 치료 주사를 발사한다.\n의료 키트보다 성능은 덜하지만, 더 빠르게 사용할 수 있고 아군이 멀리 있어도 문제되지 않는다."
 	SWEP.Slot = 4
 	SWEP.SlotPos = 0
 	
@@ -67,6 +67,8 @@ SWEP.NoMagazine = true
 SWEP.ConeMax = 0.005
 SWEP.ConeMin = 0.005
 
+SWEP.Recoil = 0.23
+
 SWEP.IronSightsPos = Vector(-5.95, 3, 2.75)
 SWEP.IronSightsAng = Vector(-0.15, -1, 2)
 
@@ -74,6 +76,12 @@ function SWEP:ShootBullets(dmg, numbul, cone)
 	local owner = self.Owner
 	self:SendWeaponAnimation()
 	owner:DoAttackEvent()
+
+	if SERVER then
+		self:SetConeAndFire()
+	end
+	
+	self:DoRecoil()
 
 	if CLIENT then return end
 
@@ -88,7 +96,6 @@ function SWEP:ShootBullets(dmg, numbul, cone)
 		ent.FirstShot = self:Clip1() == 0
 		
 		ent.Heal = math.ceil(ent.Heal * (owner.HumanHealMultiplier or 1))
-
 		local phys = ent:GetPhysicsObject()
 		if phys:IsValid() then
 			phys:Wake()

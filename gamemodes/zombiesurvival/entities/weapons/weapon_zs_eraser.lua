@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "'Eraser' 전략 권총"
-	SWEP.Description = "한 총기연구시설에서 불의의 사고로 만들어진 권총.\n탄창에 남아있는 탄환의 수에 비례해 공격력이 증가한다. 마지막 한 발은 최종적으로 3배의 데미지를 가한다."
+	SWEP.Description = "한 총기연구시설에서 불의의 사고로 만들어진 권총.\n탄창에 남은 탄이 줄어들수록 데미지가 증가하며, 마지막 한 발은 3배의 대미지를 가한다."
 
 	SWEP.ViewModelFOV = 60
 	SWEP.ViewModelFlip = false
@@ -27,15 +27,15 @@ SWEP.Primary.Sound = Sound("weapons/ar2/npc_ar2_altfire.wav")
 SWEP.Primary.Damage = 21
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.1
-SWEP.Primary.Recoil = 2.1
 
 SWEP.Primary.ClipSize = 12
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "pistol"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.424
-SWEP.ConeMin = 0.105
+SWEP.ConeMax = 0.025
+SWEP.ConeMin = 0.012
+SWEP.Recoil = 0.65
 
 SWEP.IronSightsPos = Vector(-5.95, 0, 2.5)
 
@@ -44,7 +44,7 @@ function SWEP:EmitFireSound()
 end
 
 function SWEP:ShootBullets(dmg, numbul, cone)
-	if self:Clip1() == 1 then
+	if self:Clip1() == 0 then
 		dmg = dmg * 3
 	else
 		dmg = dmg + dmg * (1 - self:Clip1() / self.Primary.ClipSize)

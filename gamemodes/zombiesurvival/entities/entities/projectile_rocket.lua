@@ -13,6 +13,7 @@ ENT.LifeTime = 8
 ENT.OwnerDamageMul = 0.03
 ENT.PropDamageMul = 0.3
 ENT.DieTime = 0
+ENT.m_IsProjectile = true
 
 util.PrecacheSound("weapons/rpg/rocketfire1.wav")
 util.PrecacheSound("weapons/rpg/rocket1.wav")

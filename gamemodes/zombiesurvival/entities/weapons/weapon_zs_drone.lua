@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "드론"
-	SWEP.Description = "설치 후 원격 조종 가능한 드론.\n정찰, 회수, 타겟 공격 등에 사용할 수 있다."
+	SWEP.Description = "정찰용 원격 조종 드론."
 
 	SWEP.ViewModelFlip = false
 	SWEP.ViewModelFOV = 50
@@ -99,7 +99,6 @@ function SWEP:PrimaryAttack()
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
 				phys:Wake()
-				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 200)
 			end
 
 			if not owner:HasWeapon("weapon_zs_dronecontrol") then

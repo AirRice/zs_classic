@@ -1,3 +1,94 @@
+local bit = bit
+local cam = cam
+local chat = chat
+local concommand = concommand
+local constraint = constraint
+local cvars = cvars
+local derma = derma
+local draw = draw
+local effects = effects
+local ents = ents
+local file = file
+local game = game
+local gamemode = gamemode
+local gmod = gmod
+local gui = gui
+local hook = hook
+local input = input
+local killicon = killicon
+local language = language
+local list = list
+local math = math
+local mesh = mesh
+local net = net
+local os = os
+local physenv = physenv
+local player = player
+local player_manager = player_manager
+local render = render
+local scripted_ents = scripted_ents
+local sound = sound
+local string = string
+local surface = surface
+local table = table
+local team = team
+local timer = timer
+local util = util
+local vgui = vgui
+local weapons = weapons
+local AccessorFunc = AccessorFunc
+local Angle = Angle
+local AngleRand = AngleRand
+local ClientsideModel = ClientsideModel
+local Color = Color
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local CurTime = CurTime
+local DamageInfo = DamageInfo
+local DisableClipping = DisableClipping
+local DynamicLight = DynamicLight
+local EffectData = EffectData
+local EmitSound = EmitSound
+local EyeAngles = EyeAngles
+local EyePos = EyePos
+local FrameTime = FrameTime
+local GetConVar = GetConVar
+local GetConVarNumber = GetConVarNumber
+local GetConVarString = GetConVarString
+local GetGlobalAngle = GetGlobalAngle
+local GetGlobalBool = GetGlobalBool
+local GetGlobalEntity = GetGlobalEntity
+local GetGlobalFloat = GetGlobalFloat
+local GetGlobalInt = GetGlobalInt
+local GetGlobalString = GetGlobalString
+local GetGlobalVector = GetGlobalVector
+local ipairs = ipairs
+local isnumber = isnumber
+local IsValid = IsValid
+local LocalPlayer = LocalPlayer
+local LocalToWorld = LocalToWorld
+local Material = Material
+local Matrix = Matrix
+local pairs = pairs
+local ParticleEmitter = ParticleEmitter
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local ScrH = ScrH
+local ScrW = ScrW
+local SetGlobalAngle = SetGlobalAngle
+local SetGlobalBool = SetGlobalBool
+local SetGlobalEntity = SetGlobalEntity
+local SetGlobalFloat = SetGlobalFloat
+local SetGlobalInt = SetGlobalInt
+local SetGlobalString = SetGlobalString
+local SetGlobalVector = SetGlobalVector
+local tostring = tostring
+local type = type
+local unpack = unpack
+local Vector = Vector
+local VectorRand = VectorRand
+
+
 SWEP.Primary.Sound = Sound("Weapon_Pistol.Single")
 SWEP.Primary.Damage = 30
 SWEP.Primary.KnockbackScale = 1
@@ -14,7 +105,6 @@ SWEP.Primary.ClipSize = 8
 SWEP.Primary.DefaultClip = 0
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "pistol"
-SWEP.Primary.Recoil = 0
 SWEP.RequiredClip = 1
 
 SWEP.Secondary.ClipSize = 1
@@ -31,11 +121,19 @@ SWEP.IronSightsPos = Vector(0, 0, 0)
 
 SWEP.EmptyWhenPurchased = true
 
-SWEP.ConeResetDelay = 0.8
+SWEP.AngleAdded = {
+	Pitch = 0,
+	Yaw = 0,
+	Roll = 0,
+	CurrentPitch = 0,
+	CurrentYaw = 0,
+	CurrentRoll = 0
+}
 
-SWEP.LastFired = 0
-
-SWEP.ConeMul = 1
+function SWEP:SetupDataTables()
+	self:NetworkVar("Vector", 31, "ConeAdder")
+	self:NetworkVar("Float", 31, "LastFire")
+end
 
 function SWEP:Initialize()
 	if not self:IsValid() then return end --???
@@ -56,18 +154,90 @@ function SWEP:Initialize()
 	end
 end
 
+function SWEP:DevineConeAdder() 
+	if (IsValid(self.Owner) and self:GetLastFire() + (self.Primary.Delay or 0) + FrameTime() <= CurTime()) then
+		self:SetConeAdder(self:GetConeAdder() / 2)
+	end
+end
+
+-- function SWEP:SetConeAdder()
+	-- self:SetNWFloat("LastFire", CurTime())
+	-- self:SetNWVector("ConeAdder", self:GetConeAdder() + Vector(math.Rand(0, 1), math.Rand(0, 1), math.Rand(0, 1)) * math.Min(self.ConeMax, math.Rand(self.ConeMin, self.ConeMax)) * 0.2)
+-- end
+
+-- function SWEP:GetConeAdder()
+	-- return self:GetNWVector("ConeAdder")
+-- end
+function SWEP:ResetConeAdder()
+	self:SetConeAdder(Vector(0, 0, 0))
+end
+
+function SWEP:SetConeAndFire()
+	self:SetLastFire(CurTime())
+	if (self:GetConeAdder():Length() < (self.MaxConeAdder or 1.0)) then
+		self:SetConeAdder((self:GetConeAdder() or Vector(0, 0, 0)) + Vector(math.Rand(0, 1), math.Rand(0, 1), math.Rand(0, 1)) * math.Min(self.ConeMax, math.Rand(self.ConeMin, self.ConeMax)) * 0.2)
+	end
+end
+
+function SWEP:GetConeAdderLength()
+	return self:GetConeAdder():Length()
+end
+
+function SWEP:DoRecoil()
+	if (!IsValid(self.Owner)) then
+		return
+	end
+	
+	local recoil = self.Recoil
+	
+	local mul = 1
+	
+	if (self.Owner:Crouching()) then
+		mul = mul - 0.2
+	end
+	
+	if (self:GetIronsights()) then
+		mul = mul - 0.15
+	end
+	
+	if (self.Owner.BuffTightGrip) then
+		mul = mul - 0.15
+	end
+	
+	recoil = recoil * mul
+	
+	if SERVER then
+		
+		self.Owner:ViewPunch(Angle(math.Rand(-recoil * 3, 0), math.Rand(-recoil, recoil), 0))
+	else
+		local curAng = self.Owner:EyeAngles()
+		curAng.pitch = curAng.pitch - math.Rand(recoil * 3, 0)
+		curAng.yaw = curAng.yaw + math.Rand(-recoil, recoil)
+		curAng.Roll = 0
+		self.Owner:SetEyeAngles(curAng)
+	end
+end
+
 function SWEP:GetCone()
 	-- if not self.Owner:OnGround() or self.ConeMax == self.ConeMin then return self.ConeMax end
-	if self.ConeMax == self.ConeMin then return self.ConeMax end
 
 	local basecone = self.ConeMin
 	local conedelta = self.ConeMax - basecone
 
+	if !self.Owner:OnGround() then
+		basecone = basecone * 1.2
+	end
+	
 	local multiplier = math.min(self.Owner:GetVelocity():Length() / self.WalkSpeed, 1) * 0.5
 	if not self.Owner:Crouching() then multiplier = multiplier + 0.25 end
 	if not self:GetIronsights() then multiplier = multiplier + 0.25 end
 	
-	return (basecone + conedelta * multiplier ^ self.ConeRamp) * 0.08 * self.ConeMul
+	-- if (SERVER) then
+	-- PrintMessage(3, tostring(basecone) .. "\t" .. tostring(self:GetConeAdderLength()) .. "\t" .. tostring(conedelta) .. "\t" .. tostring(multiplier) .. "\t" .. tostring(self.ConeRamp))
+	-- else
+	-- chat.AddText(Color(255, 0, 0), tostring(basecone) .. "\t" .. tostring(self:GetConeAdderLength()) .. "\t" .. tostring(conedelta) .. "\t" .. tostring(multiplier) .. "\t" .. tostring(self.ConeRamp))
+	-- end
+	return (basecone + self:GetConeAdderLength()) + conedelta * multiplier ^ self.ConeRamp
 end
 
 function SWEP:PrimaryAttack()
@@ -157,7 +327,6 @@ function SWEP:TakeAmmo()
 end
 
 function SWEP:Reload()
-	self.ConeMul = 1
 	if self.Owner:IsHolding() then return end
 
 	if self:GetIronsights() then
@@ -172,6 +341,8 @@ function SWEP:Reload()
 			self:EmitSound(self.ReloadSound)
 		end
 	end
+	
+	self:ResetConeAdder()
 end
 
 function SWEP:GetIronsights()
@@ -238,44 +409,20 @@ end
 
 SWEP.BulletCallback = GenericBulletCallback
 function SWEP:ShootBullets(dmg, numbul, cone)
+	if SERVER then
+		self:SetConeAndFire()
+	end
+	self:DoRecoil()
+	
 	local owner = self.Owner
 	--owner:MuzzleFlash()
 	self:SendWeaponAnimation()
 	owner:DoAttackEvent()
 
 	self:StartBulletKnockback()
-	
-	self:DoRecoil()
 	owner:FireBullets({Num = numbul, Src = owner:GetShootPos(), Dir = owner:GetAimVector(), Spread = Vector(cone, cone, 0), Tracer = 1, TracerName = self.TracerName, Force = dmg * 0.1, Damage = dmg, Callback = self.BulletCallback})
-	self:DoBulletKnockback(self.Primary.KnockbackScale * 0.02)
+	self:DoBulletKnockback(self.Primary.KnockbackScale * 0.05)
 	self:EndBulletKnockback()
-	
-	self.LastFired = CurTime()
-end
-
-function SWEP:DoRecoil()
-	local owner = self.Owner
-	if !IsValid(owner) or !owner.ViewPunch then 
-		return
-	end
-	
-	local recoil = self.Primary.Recoil
-	if owner:Crouching() then
-		recoil = recoil * 0.7
-	end
-	
-	if self:GetIronsights() then
-		recoil = recoil * 0.7
-	end
-	
-	owner:ViewPunch(Angle(math.Rand(-0.2, -0.1) * recoil, math.Rand(-0.2, 0.2) * recoil, 0))
-	
-	if CLIENT then
-		local eyeang = owner:EyeAngles()
-		eyeang.pitch = eyeang.pitch + self.Primary.Recoil * math.Rand(-0.2, -0.1)
-		eyeang.yaw = eyeang.yaw + self.Primary.Recoil * math.Rand(-0.2, 0.2)
-		owner:SetEyeAngles(eyeang)
-	end
 end
 
 local ActIndex = {

@@ -38,6 +38,16 @@ function ENT:PhysicsCollide(data, phys)
 	end
 end
 
+function ENT:Touch(ent)
+	if !IsValid(ent) then
+		return
+	end
+	
+	if (ent:IsPlayer() and ent:Team() == TEAM_HUMAN) or ent:IsNailed() then
+		self:Explode()
+	end
+end
+
 function ENT:Think()
 	if self.DieTime <= CurTime() then
 		self:Explode()
@@ -90,11 +100,11 @@ function ENT:Explode()
 	local humans = {}
 	
 	for _, v in pairs(ents.FindInSphere(self:LocalToWorld(self:OBBCenter()), self.Radius)) do
-		if IsValid(v) and v:IsPlayer() and v:Team() == TEAM_HUMAN then
+		if IsValid(v) and ((v:IsPlayer() and v:Team() == TEAM_HUMAN) or v:IsNailed()) then
 			table.insert(humans, v)
 		elseif v == owner then
 			v:SetGroundEntity(NULL)
-			v:SetVelocity(((v:GetPos() - self:GetPos()):GetNormal() + Vector(0, 0, 0.05)) * self.PushVel)
+			v:SetVelocity(((v:LocalToWorld(v:OBBCenter()) - self:GetPos()):GetNormal() + Vector(0, 0, 0.10)) * self.PushVel)
 		end
 	end
 	
@@ -110,7 +120,6 @@ function ENT:Explode()
 		for i, v in pairs(humans) do
 			td.endpos = v:LocalToWorld(v:OBBCenter())
 			trace = util.TraceLine(td)
-
 			if IsValid(trace.Entity) and trace.Entity == v then
 				table.insert(validlist, v)
 				table.insert(td.filter, v)
@@ -118,15 +127,17 @@ function ENT:Explode()
 		end
 	end
 	
+
 	for _, v in pairs(validlist) do
 		v:SetGroundEntity(NULL)
-		v:SetLocalVelocity(((v:LocalToWorld(v:OBBCenter()) - self:LocalToWorld(self:OBBCenter())):GetNormal() + Vector(0, 0, 0.1)) * self.PushVel)
-		local dmg = math.ceil(self.MaxDmg * math.min((1.5 - (v:GetPos():Distance(self:GetPos()) / self.Radius)), 1))
+		v:SetLocalVelocity(((v:LocalToWorld(v:OBBCenter()) - self:GetPos()):GetNormal() + Vector(0, 0, 0.15)) * self.PushVel)
+		local dmg = math.ceil(self.MaxDmg * (v:IsNailed() and 3 or 1) * math.min((1.5 - (v:GetPos():Distance(self:GetPos()) / self.Radius)), 1))
 		v:TakeDamage(dmg, owner, self)
 	end
-	
+
 	local ed = EffectData()
-	ed:SetOrigin(self:LocalToWorld(self:OBBCenter()))
+	local pos = self:LocalToWorld(self:OBBCenter())
+	ed:SetOrigin(pos)
 	ed:SetScale(100)
 	ed:SetMagnitude(200)
 	ed:SetNormal(VectorRand())

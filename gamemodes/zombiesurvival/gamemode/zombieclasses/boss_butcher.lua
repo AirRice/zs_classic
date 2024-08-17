@@ -1,3 +1,94 @@
+local bit = bit
+local cam = cam
+local chat = chat
+local concommand = concommand
+local constraint = constraint
+local cvars = cvars
+local derma = derma
+local draw = draw
+local effects = effects
+local ents = ents
+local file = file
+local game = game
+local gamemode = gamemode
+local gmod = gmod
+local gui = gui
+local hook = hook
+local input = input
+local killicon = killicon
+local language = language
+local list = list
+local math = math
+local mesh = mesh
+local net = net
+local os = os
+local physenv = physenv
+local player = player
+local player_manager = player_manager
+local render = render
+local scripted_ents = scripted_ents
+local sound = sound
+local string = string
+local surface = surface
+local table = table
+local team = team
+local timer = timer
+local util = util
+local vgui = vgui
+local weapons = weapons
+local AccessorFunc = AccessorFunc
+local Angle = Angle
+local AngleRand = AngleRand
+local ClientsideModel = ClientsideModel
+local Color = Color
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local CurTime = CurTime
+local DamageInfo = DamageInfo
+local DisableClipping = DisableClipping
+local DynamicLight = DynamicLight
+local EffectData = EffectData
+local EmitSound = EmitSound
+local EyeAngles = EyeAngles
+local EyePos = EyePos
+local FrameTime = FrameTime
+local GetConVar = GetConVar
+local GetConVarNumber = GetConVarNumber
+local GetConVarString = GetConVarString
+local GetGlobalAngle = GetGlobalAngle
+local GetGlobalBool = GetGlobalBool
+local GetGlobalEntity = GetGlobalEntity
+local GetGlobalFloat = GetGlobalFloat
+local GetGlobalInt = GetGlobalInt
+local GetGlobalString = GetGlobalString
+local GetGlobalVector = GetGlobalVector
+local ipairs = ipairs
+local isnumber = isnumber
+local IsValid = IsValid
+local LocalPlayer = LocalPlayer
+local LocalToWorld = LocalToWorld
+local Material = Material
+local Matrix = Matrix
+local pairs = pairs
+local ParticleEmitter = ParticleEmitter
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local ScrH = ScrH
+local ScrW = ScrW
+local SetGlobalAngle = SetGlobalAngle
+local SetGlobalBool = SetGlobalBool
+local SetGlobalEntity = SetGlobalEntity
+local SetGlobalFloat = SetGlobalFloat
+local SetGlobalInt = SetGlobalInt
+local SetGlobalString = SetGlobalString
+local SetGlobalVector = SetGlobalVector
+local tostring = tostring
+local type = type
+local unpack = unpack
+local Vector = Vector
+local VectorRand = VectorRand
+
+
 CLASS.Name = "The Butcher"
 CLASS.TranslationName = "class_butcher"
 CLASS.Description = "description_butcher"
@@ -110,23 +201,6 @@ if SERVER then
 		pl:CreateAmbience("butcherambience")
 	end
 
-	local function MakeButcherKnife(pos)
-		local ent = ents.Create("prop_weapon")
-		if ent:IsValid() then
-			ent:SetPos(pos)
-			ent:SetAngles(AngleRand())
-			ent:SetWeaponType("weapon_zs_butcherknife")
-			ent:Spawn()
-
-			local phys = ent:GetPhysicsObject()
-			if phys:IsValid() then
-				phys:Wake()
-				phys:SetVelocityInstantaneous(VectorRand():GetNormalized() * math.Rand(24, 100))
-				phys:AddAngleVelocity(VectorRand() * 200)
-			end
-		end
-	end
-
 	function CLASS:OnKilled(pl, attacker, inflictor, suicide, headshot, dmginfo, assister)
 		local pos = pl:LocalToWorld(pl:OBBCenter())
 		timer.Simple(0, function()
@@ -139,6 +213,7 @@ end
 
 if not CLIENT then return end
 
+--CLASS.Icon = "zombiesurvival/killicons/butcher"
 
 function CLASS:PrePlayerDraw(pl)
 	render.SetColorModulation(1, 0.5, 0.5)
@@ -147,5 +222,3 @@ end
 function CLASS:PostPlayerDraw(pl)
 	render.SetColorModulation(1, 1, 1)
 end
-
-CLASS.Icon = "zombiesurvival/killicons/butcher"

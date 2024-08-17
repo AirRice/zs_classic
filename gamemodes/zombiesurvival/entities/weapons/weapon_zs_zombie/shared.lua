@@ -5,7 +5,7 @@ SWEP.ViewModel = Model("models/Weapons/v_zombiearms.mdl")
 SWEP.WorldModel = "models/weapons/w_crowbar.mdl"
 
 SWEP.MeleeDelay = 0.74
-SWEP.MeleeReach = 48
+SWEP.MeleeReach = 52
 SWEP.MeleeSize = 1.5
 SWEP.MeleeDamage = 30
 SWEP.MeleeForceScale = 1
@@ -100,7 +100,7 @@ function SWEP:GetDamage(numplayers, basedamage)
 	basedamage = basedamage or self.MeleeDamage
 
 	if numplayers then
-		return basedamage --* math.Clamp(1.2 - numplayers * 0.2, 0.5, 1)
+		return basedamage * math.Clamp(1.2 - numplayers * 0.2, 0.5, 1)
 	end
 
 	return basedamage
@@ -117,8 +117,6 @@ function SWEP:Swung()
 
 	local damage = self:GetDamage(self:GetTracesNumPlayers(traces))
 
-	local hitlist = {}
-	
 	for _, trace in ipairs(traces) do
 		if not trace.Hit then continue end
 
@@ -128,9 +126,8 @@ function SWEP:Swung()
 			self:MeleeHitWorld(trace)
 		else
 			local ent = trace.Entity
-			if ent and ent:IsValid() and !table.HasValue(hitlist, ent) then
+			if ent and ent:IsValid() then
 				self:MeleeHit(ent, trace, damage)
-				table.insert(hitlist, 1, ent)
 			end
 		end
 	end

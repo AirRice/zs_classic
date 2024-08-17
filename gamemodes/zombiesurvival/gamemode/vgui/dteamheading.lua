@@ -1,3 +1,8 @@
+local RealTime = RealTime
+local vgui = vgui
+local team = team
+local surface = surface
+
 local PANEL = {}
 PANEL.m_Team = 0
 PANEL.NextRefresh = 0
@@ -15,8 +20,10 @@ function PANEL:Init()
 end
 
 function PANEL:Think()
-	if RealTime() >= self.NextRefresh then
-		self.NextRefresh = RealTime() + self.RefreshTime
+	local realTime = RealTime()
+	
+	if realTime >= self.NextRefresh then
+		self.NextRefresh = realTime + self.RefreshTime
 		self:Refresh()
 	end
 end

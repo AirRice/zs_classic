@@ -1,8 +1,8 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "돌맹이"
-	SWEP.Description = "아무데서나 누우면 발견할 수 있는 돌맹이."
+	SWEP.PrintName = "돌멩이"
+	SWEP.Description = "어디에나 굴러다니는 흔한 돌멩이."
 
 	SWEP.ViewModelFlip = false
 	SWEP.ViewModelFOV = 50
@@ -92,7 +92,7 @@ function SWEP:PrimaryAttack()
 			if phys:IsValid() then
 				phys:Wake()
 				phys:AddAngleVelocity(VectorRand() * 360)
-				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 900)
+				phys:SetVelocityInstantaneous(self.Owner:GetAimVector() * 900 * (owner.BuffPitcher and 1.4 or 1))
 			end
 		end
 
@@ -152,6 +152,33 @@ local colBG = Color(16, 16, 16, 90)
 local colWhite = Color(220, 220, 220, 230)
 
 SWEP.HUD3DPos = Vector(5, 2, 0)
+
+local Color = Color
+local render = render
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local ScrW = ScrW
+local ScrH = ScrH
+local cam = cam
+local GetGlobalBool = GetGlobalBool
+local Material = Material
+local draw = draw
+local IsValid = IsValid
+local pairs = pairs
+local ipairs = ipairs
+local table = table
+local type = type
+local Matrix = Matrix
+local Vector = Vector
+local Angle = Angle
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local ClientsideModel = ClientsideModel
+local tostring = tostring
+local tonumber = tonumber
 
 function SWEP:PostDrawViewModel(vm)
 	if not self.HUD3DPos or GAMEMODE.WeaponHUDMode == 1 then return end

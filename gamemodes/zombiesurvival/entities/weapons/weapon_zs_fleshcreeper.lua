@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 SWEP.Base = "weapon_zs_zombie"
 
-SWEP.PrintName = "종양 크리퍼"
+SWEP.PrintName = "크리퍼"
 
 SWEP.MeleeDelay = 0.5
 SWEP.MeleeReach = 52
@@ -102,6 +102,7 @@ function SWEP:BuildingThink()
 	tr = util.TraceLine({start = endpos, endpos = endpos + Vector(0, 0, -48), mask = MASK_PLAYERSOLID})
 	local hitnormal = tr.HitNormal
 	local z = hitnormal.z
+	
 	if not tr.HitWorld or tr.HitSky or z < 0.75 then
 		self:SendMessage("not_enough_room_for_a_nest")
 		return
@@ -109,18 +110,17 @@ function SWEP:BuildingThink()
 
 	local hitpos = tr.HitPos
 
-	-- local rsz = 5
-	-- for x = -rsz, rsz, rsz do
-		-- for y = -rsz, rsz, rsz do
-			-- local start = endpos + x * right + y * forward
-			-- local start = endpos + x * right + y * forward
-			-- tr = util.TraceLine({start = start, endpos = start + Vector(0, 0, -48), mask = MASK_PLAYERSOLID})
-			-- if not tr.HitWorld or tr.HitSky or math.abs(tr.HitNormal.z - z) >= 0.2 then
-				-- self:SendMessage("not_enough_room_for_a_nest")
-				-- return
-			-- end
-		-- end
-	-- end
+	for x = -15, 15, 15 do
+		for y = 15, 15, 15 do
+			local start = endpos + x * right + y * forward
+			tr = util.TraceLine({start = start, endpos = start + Vector(0, 0, -48), mask = MASK_PLAYERSOLID})
+			
+			if not tr.HitWorld or tr.HitSky or math.abs(tr.HitNormal.z - z) >= 0.2 then
+				self:SendMessage("not_enough_room_for_a_nest") 
+				return
+			end
+		end
+	end
 
 	for _, ent in pairs(team.GetValidSpawnPoint(TEAM_UNDEAD)) do
 		if ent.Disabled then continue end
@@ -245,6 +245,33 @@ function SWEP:IsInAttackAnim()
 end
 
 if not CLIENT then return end
+
+local Color = Color
+local render = render
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local ScrW = ScrW
+local ScrH = ScrH
+local cam = cam
+local GetGlobalBool = GetGlobalBool
+local Material = Material
+local draw = draw
+local IsValid = IsValid
+local pairs = pairs
+local ipairs = ipairs
+local table = table
+local type = type
+local Matrix = Matrix
+local Vector = Vector
+local Angle = Angle
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local ClientsideModel = ClientsideModel
+local tostring = tostring
+local tonumber = tonumber
 
 function SWEP:PreDrawViewModel(vm)
 	return true

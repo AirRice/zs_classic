@@ -8,3 +8,5 @@ SWEP.Primary.DefaultClip = 99999
 SWEP.Primary.KnockbackScale = ZE_KNOCKBACKSCALE
 
 SWEP.WalkSpeed = SPEED_ZOMBIEESCAPE_SLOWER
+
+SWEP.BulletCallback = GenericBulletCallback

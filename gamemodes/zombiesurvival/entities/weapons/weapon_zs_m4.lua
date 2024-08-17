@@ -29,8 +29,6 @@ SWEP.Primary.DefaultDamage = 21
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.08
 SWEP.Primary.DefaultDelay = 0.08
-SWEP.Primary.Recoil = 4.75
-SWEP.Primary.DefaultRecoil = 4.75
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "ar2"
@@ -39,10 +37,13 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
 
-SWEP.ConeMax = 0.31
-SWEP.DefaultConeMax = 0.31
-SWEP.ConeMin = 0.242
-SWEP.DefaultConeMin= 0.242
+SWEP.ConeMax = 0.0721
+SWEP.DefaultConeMax = 0.0721
+SWEP.ConeMin = 0.0009
+SWEP.DefaultConeMin = 0.0009
+
+SWEP.Recoil = 0.28
+
 SWEP.WalkSpeed = SPEED_SLOW
 
 SWEP.IronSightsPos = Vector(-3, 0, 2)
@@ -58,8 +59,8 @@ function SWEP:SetIronsights(b)
 			self.Primary.Automatic = false
 			
 			self.Primary.Damage = self.Primary.DefaultDamage * 1.4
-			self.ConeMax = 0.05
-			self.ConeMin = 0.01
+			self.ConeMax = self.DefaultConeMax * 0.3
+			self.ConeMin = self.DefaultConeMin * 0.3
 			self:EmitSound("npc/scanner/scanner_scan4.wav", 40)
 		else
 			self.Primary.Delay = self.Primary.DefaultDelay

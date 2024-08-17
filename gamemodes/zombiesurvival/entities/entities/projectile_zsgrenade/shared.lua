@@ -1,6 +1,7 @@
 ENT.Type = "anim"
+ENT.m_IsProjectile = true
 
-ENT.LifeTime = 2.5
+ENT.LifeTime = 2
 
 ENT.NoPropDamageDuringWave0 = true
 

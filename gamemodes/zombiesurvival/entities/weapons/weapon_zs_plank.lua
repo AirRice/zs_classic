@@ -1,7 +1,7 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "나무판자"
+	SWEP.PrintName = "판자 쪼가리"
 
 	SWEP.ViewModelFOV = 55
 	SWEP.ViewModelFlip = false

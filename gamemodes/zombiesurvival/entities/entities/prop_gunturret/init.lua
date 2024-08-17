@@ -87,11 +87,22 @@ local function BulletCallback(attacker, tr, dmginfo)
 	local ent = tr.Entity
 	if ent:IsValid() then
 		if ent:IsPlayer() then
-			if ent:Team() == TEAM_UNDEAD and tempknockback then
+			if ent:Team() == TEAM_HUMAN then
+				dmginfo:ScaleDamage(0)
+			
+				if (attacker.Penetrated < 3) then
+					attacker.Penetrated = (attacker.Penetrated or 0) + 1
+					attacker:FireBullets({Num = 1, Src = tr.HitPos + tr.Normal * 30, Dir = attacker:GetGunAngles():Forward(), Spread = Vector(0.05, 0.05, 0), Tracer = 1, Force = 1, Damage = 12, Callback = BulletCallback, Attacker = attacker})
+				end
+			elseif ent:Team() == TEAM_UNDEAD and tempknockback then
 				if attacker:GetTarget() == ent then
 					attacker.LastHitSomething = CurTime()
+					dmginfo:SetDamage(dmginfo:GetDamage() - attacker.Penetrated)
 				end
 				tempknockback[ent] = ent:GetVelocity()
+			end
+			if (ent == attacker:GetObjectOwner()) then
+				dmginfo:ScaleDamage(0)
 			end
 		else
 			local phys = ent:GetPhysicsObject()
@@ -105,15 +116,18 @@ local function BulletCallback(attacker, tr, dmginfo)
 	end
 end
 
+ENT.Penetrated = 0
+
 function ENT:FireTurret(src, dir)
 	if self:GetNextFire() <= CurTime() then
 		local curammo = self:GetAmmo()
 		if curammo > 0 then
+			self.Penetrated = 0
 			self:SetNextFire(CurTime() + 0.1)
 			self:SetAmmo(curammo - 1)
 
 			self:StartBulletKnockback()
-			self:FireBullets({Num = 1, Src = src, Dir = dir, Spread = Vector(0.05, 0.05, 0), Tracer = 1, Force = 1, Damage = 12, Callback = BulletCallback})
+			self:FireBullets({Num = 1, Src = src, Dir = dir, Spread = Vector(0.05, 0.05, 0), Tracer = 1, Force = 1, Damage = 12, Callback = BulletCallback, Attacker = self})
 			self:DoBulletKnockback(0.04)
 			self:EndBulletKnockback()
 		else

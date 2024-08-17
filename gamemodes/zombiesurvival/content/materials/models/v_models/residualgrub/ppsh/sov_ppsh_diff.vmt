@@ -1,7 +1,7 @@
 "vertexlitgeneric"
 {
-	"$baseTexture" "models/v_models/ResidualGrub/ppsh/Sov_ppsh_DIFF"
-	"$bumpmap" "models/v_models/ResidualGrub/ppsh/Sov_ppsh_NORM"
+	"$baseTexture" "models/v_models/residualgrub/ppsh/Sov_ppsh_DIFF"
+	"$bumpmap" "models/v_models/residualgrub/ppsh/Sov_ppsh_NORM"
 	 "$phong" "1"
 	"$phongboost" "0.2"
 	"$phongfresnelranges" "[0.5 0.7 0.8]"

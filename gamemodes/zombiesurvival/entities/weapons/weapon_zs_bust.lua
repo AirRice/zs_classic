@@ -1,7 +1,7 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "스틱-동상 콜라보"
+	SWEP.PrintName = "흉상 막대"
 	SWEP.ViewModelFOV = 70
 	SWEP.ViewModelFlip = false
 

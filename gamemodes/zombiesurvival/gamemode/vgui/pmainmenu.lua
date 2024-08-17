@@ -1,3 +1,17 @@
+local Derma_DrawBackgroundBlur = Derma_DrawBackgroundBlur
+local surface = surface
+local RunConsoleCommand = RunConsoleCommand
+local chat = chat
+local vgui = vgui
+local player_manager = player_manager
+local math = math
+local table = table
+local string = string
+local ScrW = ScrW
+local ScrH = ScrH
+local Color = Color
+local GetConVarString = GetConVarString
+
 local function HelpMenuPaint(self)
 	Derma_DrawBackgroundBlur(self, self.Created)
 	Derma_DrawBackgroundBlur(self, self.Created)
@@ -7,7 +21,7 @@ local pPlayerModel
 local function SwitchPlayerModel(self)
 	surface.PlaySound("buttons/button14.wav")
 	RunConsoleCommand("cl_playermodel", self.m_ModelName)
-	chat.AddText(COLOR_LIMEGREEN, "이제 플레이어모델은 "..tostring(self.m_ModelName).."입니다.")
+	chat.AddText(COLOR_LIMEGREEN, "You've changed your desired player model to "..tostring(self.m_ModelName))
 
 	pPlayerModel:Close()
 end
@@ -64,7 +78,7 @@ function MakepPlayerColor()
 
 	local y = 8
 
-	local label = EasyLabel(pPlayerColor, "Colors", "ZSHUDFont", color_white)
+	local label = EasyLabel(pPlayerColor, "색상", "ZSHUDFont", color_white)
 	label:SetPos((pPlayerColor:GetWide() - label:GetWide()) / 2, y)
 	y = y + label:GetTall() + 8
 
@@ -87,7 +101,7 @@ function MakepPlayerColor()
 	colpicker:SetPos(8, y)
 	y = y + colpicker:GetTall()
 
-	local lab = EasyLabel(pPlayerColor, "무기 색상(변화 없음)")
+	local lab = EasyLabel(pPlayerColor, "무기 색상")
 	lab:SetPos(8, y)
 	y = y + lab:GetTall()
 

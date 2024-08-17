@@ -1,3 +1,5 @@
+local vgui = vgui
+
 --local MainMenu
 GM.REVISION = 4352
 

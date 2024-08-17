@@ -44,12 +44,12 @@ function ENT:Hit(vHitPos, vHitNormal, eHitEntity)
 	vHitNormal = vHitNormal or Vector(0, 0, 1)
 
 	if eHitEntity:IsValid() then
-		eHitEntity:PoisonDamage(15, owner, self)
+		eHitEntity:PoisonDamage(self.Damage or 15, owner, self)
 		if eHitEntity:IsPlayer() and eHitEntity:Team() ~= TEAM_UNDEAD then
 			local attach = eHitEntity:GetAttachment(1)
 			if attach then
 				if vHitPos:Distance(attach.Pos) <= 18 then
-					if not eHitEntity.buffAntiPoisonHead then
+					if not eHitEntity.BuffAntiHC then
 						eHitEntity:PlayEyePoisonedSound()
 						local status = eHitEntity:GiveStatus("confusion")
 						if status then

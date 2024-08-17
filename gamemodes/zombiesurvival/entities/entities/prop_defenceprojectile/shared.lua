@@ -1,12 +1,31 @@
 ENT.Type = "anim"
+ENT.RenderGroup = RENDERGROUP_TRANSLUCENT
 
 ENT.m_NoNailUnfreeze = true
 ENT.NoNails = true
 
+ENT.SearchRadius = 150
+ENT.AttackLimit = 10000
+ENT.MaxHealth = 330
+ENT.LastAttack = 0
+ENT.AttackCooldown = 0
+ENT.Gravity = 360
+ENT.MinGravity = ENT.Gravity / 5
+ENT.DragPercentage = 0.0005
+
+ENT.DamagePercentage = 0.01
+
 ENT.CanPackUp = true
-ENT.PackUpTime = 3
 
 ENT.IsBarricadeObject = true
+ENT.AlwaysGhostable = true
+
+function ENT:SetObjectHealth(health)
+	self:SetDTFloat(0, health)
+	if health <= 0 and not self.Destroyed then
+		self.Destroyed = true
+	end
+end
 
 function ENT:GetObjectHealth()
 	return self:GetDTFloat(0)
@@ -30,13 +49,4 @@ end
 
 function ENT:ClearObjectOwner()
 	self:SetObjectOwner(NULL)
-end
-
-function ENT:HitByWrench(wep, owner, tr)
-	return true
-end
-
-function ENT:CanBePackedBy(pl)
-	local owner = self:GetObjectOwner()
-	return not owner:IsValid() or owner == pl or owner:Team() ~= TEAM_HUMAN or gamemode.Call("PlayerIsAdmin", pl)
 end

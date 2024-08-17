@@ -1,3 +1,133 @@
+local baseclass = baseclass
+local bit = bit
+local cam = cam
+local chat = chat
+local concommand = concommand
+local constraint = constraint
+local cvars = cvars
+local derma = derma
+local draw = draw
+local effects = effects
+local ents = ents
+local file = file
+local game = game
+local gamemode = gamemode
+local gmod = gmod
+local gui = gui
+local hook = hook
+local input = input
+local killicon = killicon
+local language = language
+local list = list
+local math = math
+local mesh = mesh
+local net = net
+local os = os
+local physenv = physenv
+local player = player
+local player_manager = player_manager
+local render = render
+local scripted_ents = scripted_ents
+local sound = sound
+local string = string
+local surface = surface
+local table = table
+local team = team
+local timer = timer
+local util = util
+local vgui = vgui
+local weapons = weapons
+local AccessorFunc = AccessorFunc
+local Angle = Angle
+local AngleRand = AngleRand
+local assert = assert
+local ClientsideModel = ClientsideModel
+local CloseDermaMenus = CloseDermaMenus
+local Color = Color
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local CurTime = CurTime
+local DamageInfo = DamageInfo
+local Derma_Anim = Derma_Anim
+local Derma_DrawBackgroundBlur = Derma_DrawBackgroundBlur
+local Derma_Hook = Derma_Hook
+local Derma_Install_Convar_Functions = Derma_Install_Convar_Functions
+local Derma_Message = Derma_Message
+local Derma_Query = Derma_Query
+local Derma_StringRequest = Derma_StringRequest
+local DermaMenu = DermaMenu
+local DisableClipping = DisableClipping
+local DynamicLight = DynamicLight
+local EffectData = EffectData
+local EmitSentence = EmitSentence
+local EmitSound = EmitSound
+local EyeAngles = EyeAngles
+local EyePos = EyePos
+local EyeVector = EyeVector
+local Format = Format
+local FrameTime = FrameTime
+local GetConVar = GetConVar
+local GetConVarNumber = GetConVarNumber
+local GetConVarString = GetConVarString
+local getfenv = getfenv
+local GetGlobalAngle = GetGlobalAngle
+local GetGlobalBool = GetGlobalBool
+local GetGlobalEntity = GetGlobalEntity
+local GetGlobalFloat = GetGlobalFloat
+local GetGlobalInt = GetGlobalInt
+local GetGlobalString = GetGlobalString
+local GetGlobalVector = GetGlobalVector
+local GetHostName = GetHostName
+local GetHUDPanel = GetHUDPanel
+local GetRenderTarget = GetRenderTarget
+local GetRenderTargetEx = GetRenderTargetEx
+local GetViewEntity = GetViewEntity
+local ipairs = ipairs
+local IsFirstTimePredicted = IsFirstTimePredicted
+local isnumber = isnumber
+local IsValid = IsValid
+local Label = Label
+local LocalPlayer = LocalPlayer
+local LocalToWorld = LocalToWorld
+local Material = Material
+local Matrix = Matrix
+local Msg = Msg
+local MsgAll = MsgAll
+local MsgC = MsgC
+local MsgN = MsgN
+local pairs = pairs
+local Particle = Particle
+local ParticleEffect = ParticleEffect
+local ParticleEffectAttach = ParticleEffectAttach
+local ParticleEmitter = ParticleEmitter
+local print = print
+local PrintMessage = PrintMessage
+local PrintTable = PrintTable
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local ScrH = ScrH
+local ScrW = ScrW
+local SetGlobalAngle = SetGlobalAngle
+local SetGlobalBool = SetGlobalBool
+local SetGlobalEntity = SetGlobalEntity
+local SetGlobalFloat = SetGlobalFloat
+local SetGlobalInt = SetGlobalInt
+local SetGlobalString = SetGlobalString
+local SetGlobalVector = SetGlobalVector
+local Sound = Sound
+local SoundDuration = SoundDuration
+local tobool = tobool
+local tonumber = tonumber
+local tostring = tostring
+local type = type
+local unpack = unpack
+local ValidPanel = ValidPanel
+local Vector = Vector
+local VectorRand = VectorRand
+local VGUIFrameTime = VGUIFrameTime
+local VGUIRect = VGUIRect
+local WorldToLocal = WorldToLocal
+
 local meta = FindMetaTable("Entity")
 if not meta then return end
 
@@ -34,10 +164,10 @@ function meta:ClipHullTraceHull(distance, size, start, dir)
 end
 
 function meta:ClipHullMeleeTrace(distance, size, filter, start)
-	local cliphullpretrace = self:ClipHullTraceHull(distance, size, start)
-	if cliphullpretrace and LASTHITCLIPHULL and cliphullpretrace.Entity ~= prehit then
-		return cliphullpretrace
-	end
+	-- local cliphullpretrace = self:ClipHullTraceHull(distance, size, start)
+	-- if cliphullpretrace and LASTHITCLIPHULL then
+		-- return cliphullpretrace
+	-- end
 
 	self:LagCompensation(true)
 	local t = self:MeleeTrace(distance, size, filter, start)
@@ -124,20 +254,20 @@ end
 
 function meta:ResetBones(onlyscale)
 	local v = Vector(1, 1, 1)
+	local bcount = self.BuildingBones or self:GetBoneCount() - 1
 	if onlyscale then
 		for i=0, self:GetBoneCount() - 1 do
 			self:ManipulateBoneScale(i, v)
 		end
 	else
 		local a = Angle(0, 0, 0)
-		for i=0, self:GetBoneCount() - 1 do
+		for i=0, bcount do
 			self:ManipulateBoneScale(i, v)
 			self:ManipulateBoneAngles(i, a)
 			self:ManipulateBonePosition(i, vector_origin)
 		end
 	end
 end
-
 function meta:SetBarricadeHealth(m)
 	self:SetDTFloat(1, m)
 end
@@ -236,6 +366,29 @@ function meta:TemporaryBarricadeObject()
 	end
 end
 
+function meta:RecalculateNailBonuses()
+	local max_health = self:GetMaxBarricadeHealth()
+	if max_health == 0 then return end
+
+	local num_extra_nails = math.Clamp(self:NumLivingNails() - 1, 0, 2)
+	local repairs_frac = self:GetBarricadeRepairs() / self:GetMaxBarricadeRepairs()
+
+	self.OriginalMaxHealth = self.OriginalMaxHealth or max_health
+	self.OriginalMaxBarricadeRepairs = self.OriginalMaxBarricadeRepairs or max_repairs
+
+	local health = self:GetBarricadeHealth()
+	if !(self.DefaultCadeHealth) then
+		self.DefaultCadeHealth = self:GetDefaultBarricadeHealth()
+	end
+
+	local new_max_health = self.OriginalMaxHealth + self.DefaultCadeHealth * 0.25 * num_extra_nails
+	self:SetMaxBarricadeHealth(new_max_health)
+	self:SetBarricadeHealth(health / max_health * new_max_health)
+
+	self:SetBarricadeRepairs(repairs_frac * self:GetMaxBarricadeRepairs())
+end
+
+
 function meta:IsBarricadeProp()
 	return self.IsBarricadeObject or self:IsNailed()
 end
@@ -285,8 +438,13 @@ function meta:ThrowFromPositionSetZ(pos, force, zmul, noknockdown)
 	if force == 0 or self:IsProjectile() or self.NoThrowFromPosition then return false end
 	zmul = zmul or 0.7
 
-	if self:IsPlayer() and self:ActiveBarricadeGhosting() then return false end
-
+	if self:IsPlayer() then
+		if self:ActiveBarricadeGhosting() then return false end
+		if (self:Team() == TEAM_HUMAN and self.KnockBackResistScale) then
+			force = force * self.KnockBackResistScale
+		end
+	end
+	
 	if self:GetMoveType() == MOVETYPE_VPHYSICS then
 		local phys = self:GetPhysicsObject()
 		if phys:IsValid() and phys:IsMoveable() then
@@ -321,7 +479,7 @@ end
 util.PrecacheSound("player/pl_pain5.wav")
 util.PrecacheSound("player/pl_pain6.wav")
 util.PrecacheSound("player/pl_pain7.wav")
-function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction)
+function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction, isblast)
 	damage = damage or 1
 
 	local dmginfo = DamageInfo()
@@ -332,7 +490,9 @@ function meta:PoisonDamage(damage, attacker, inflictor, hitpos, noreduction)
 		if self.BuffResistant then
 			damage = damage / 2
 		end
-
+		if self.ExplosiveResistance and isblast then
+			damage = damage * (1 - self.ExplosiveResistance)
+		end
 		self:ViewPunch(Angle(math.random(-10, 10), math.random(-10, 10), math.random(-20, 20)))
 		self:EmitSound("player/pl_pain"..math.random(5, 7)..".wav")
 
@@ -390,7 +550,7 @@ if CLIENT then
 	end
 end
 
-local OldSequenceDuration = meta.OldSequenceDuration or meta.SequenceDuration
+local OldSequenceDuration = meta.SequenceDuration
 function meta:SequenceDuration(seqid)
 	return OldSequenceDuration(self, seqid) or 0
 end

@@ -14,6 +14,33 @@ function SWEP:Deploy()
 	return true
 end
 
+local Color = Color
+local render = render
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local ScrW = ScrW
+local ScrH = ScrH
+local cam = cam
+local GetGlobalBool = GetGlobalBool
+local Material = Material
+local draw = draw
+local IsValid = IsValid
+local pairs = pairs
+local ipairs = ipairs
+local table = table
+local type = type
+local Matrix = Matrix
+local Vector = Vector
+local Angle = Angle
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local ClientsideModel = ClientsideModel
+local tostring = tostring
+local tonumber = tonumber
+
 function SWEP:DrawWorldModel()
 	local owner = self.Owner
 	if owner:IsValid() and self:GetReplicatedAmmo() > 0 then

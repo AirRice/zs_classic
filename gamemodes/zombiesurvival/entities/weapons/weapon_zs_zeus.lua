@@ -38,7 +38,6 @@ SWEP.Primary.Damage = 80
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.38
 SWEP.ReloadDelay = SWEP.Primary.Delay
-SWEP.Primary.Recoil = 10
 
 SWEP.Primary.ClipSize = 10
 SWEP.Primary.Automatic = true
@@ -49,9 +48,9 @@ SWEP.Primary.KnockbackScale = 0.1
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
 
-SWEP.ConeMax = 0.452
-SWEP.ConeMin = 0.0001
-SWEP.IronSightsPos = Vector(5.015, -4, 2.52)
+SWEP.ConeMax = 0.11
+SWEP.ConeMin = 0
+SWEP.IronSightsPos = Vector(5.427, -5.026, 2.21)
 SWEP.IronSightsAng = Vector(0, 0, 0)
 
 SWEP.WalkSpeed = SPEED_SLOWER

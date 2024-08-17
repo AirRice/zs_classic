@@ -28,7 +28,7 @@ SWEP.Primary.Sound = Sound("Weapon_SG550.Single")
 SWEP.Primary.Damage = 30
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.25
-SWEP.Primary.Recoil = 10
+SWEP.Recoil = 3.5
 
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.Automatic = true
@@ -38,8 +38,8 @@ SWEP.Primary.DefaultClip = 20
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
 
-SWEP.ConeMax = 0.05
-SWEP.ConeMin = 0.02
+SWEP.ConeMax = 0.005
+SWEP.ConeMin = 0.002
 
 SWEP.IronSightsPos = Vector(5.559, -8.633, 0)
 SWEP.IronSightsAng = Vector(0, 0, 0)
@@ -54,13 +54,22 @@ function SWEP:IsScoped()
 end
 function SWEP:Think()
 	if self.Owner:Crouching() then
-		self.Primary.Recoil = 0.8
+		self.Recoil = 0.8
 	else
-		self.Primary.Recoil = 10
+		self.Recoil = 3.5
 	end
 	
 	self.BaseClass.Think(self)
 end
+
+function SWEP:GetWalkSpeed()
+	if self.Owner:Crouching() then
+		return self.WalkSpeed * 0.1
+	else
+		return self.WalkSpeed
+	end
+end
+
 function BulletCallback(attacker, tr, dmginfo)
 	local ent = tr.Entity
 	if ent:IsPlayer() and ent:Team() == TEAM_UNDEAD and tr.HitPos:Distance(attacker:GetPos()) > 300 then

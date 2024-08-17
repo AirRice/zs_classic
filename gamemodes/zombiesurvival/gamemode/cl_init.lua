@@ -1,3 +1,93 @@
+local bit = bit
+local cam = cam
+local chat = chat
+local concommand = concommand
+local constraint = constraint
+local cvars = cvars
+local derma = derma
+local draw = draw
+local effects = effects
+local ents = ents
+local file = file
+local game = game
+local gamemode = gamemode
+local gmod = gmod
+local gui = gui
+local hook = hook
+local input = input
+local killicon = killicon
+local language = language
+local list = list
+local math = math
+local mesh = mesh
+local net = net
+local os = os
+local physenv = physenv
+local player = player
+local player_manager = player_manager
+local render = render
+local scripted_ents = scripted_ents
+local sound = sound
+local string = string
+local surface = surface
+local table = table
+local team = team
+local timer = timer
+local util = util
+local vgui = vgui
+local weapons = weapons
+local AccessorFunc = AccessorFunc
+local Angle = Angle
+local AngleRand = AngleRand
+local ClientsideModel = ClientsideModel
+local Color = Color
+local CreateClientConVar = CreateClientConVar
+local CreateConVar = CreateConVar
+local CurTime = CurTime
+local DamageInfo = DamageInfo
+local DisableClipping = DisableClipping
+local DynamicLight = DynamicLight
+local EffectData = EffectData
+local EmitSound = EmitSound
+local EyeAngles = EyeAngles
+local EyePos = EyePos
+local FrameTime = FrameTime
+local GetConVar = GetConVar
+local GetConVarNumber = GetConVarNumber
+local GetConVarString = GetConVarString
+local GetGlobalAngle = GetGlobalAngle
+local GetGlobalBool = GetGlobalBool
+local GetGlobalEntity = GetGlobalEntity
+local GetGlobalFloat = GetGlobalFloat
+local GetGlobalInt = GetGlobalInt
+local GetGlobalString = GetGlobalString
+local GetGlobalVector = GetGlobalVector
+local ipairs = ipairs
+local isnumber = isnumber
+local IsValid = IsValid
+local LocalPlayer = LocalPlayer
+local LocalToWorld = LocalToWorld
+local Material = Material
+local Matrix = Matrix
+local pairs = pairs
+local ParticleEmitter = ParticleEmitter
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local ScrH = ScrH
+local ScrW = ScrW
+local SetGlobalAngle = SetGlobalAngle
+local SetGlobalBool = SetGlobalBool
+local SetGlobalEntity = SetGlobalEntity
+local SetGlobalFloat = SetGlobalFloat
+local SetGlobalInt = SetGlobalInt
+local SetGlobalString = SetGlobalString
+local SetGlobalVector = SetGlobalVector
+local tostring = tostring
+local type = type
+local unpack = unpack
+local Vector = Vector
+local VectorRand = VectorRand
+
 -- Sometimes persistent ones don't get created.
 -- Sometimes persistent ones don't get created.
 local dummy = CreateClientConVar("_zs_dummyconvar", 1, false, false)
@@ -21,6 +111,7 @@ include("vgui/dmodelpanelex.lua")
 include("vgui/dammocounter.lua")
 include("vgui/dteamheading.lua")
 include("vgui/dmodelkillicon.lua")
+include("vgui/dtooltip.lua")
 
 include("vgui/dexroundedpanel.lua")
 include("vgui/dexroundedframe.lua")
@@ -64,42 +155,13 @@ function util.Decal()
 end
 
 -- Save on global lookup time.
-local render = render
-local surface = surface
-local draw = draw
-local cam = cam
-local player = player
-local ents = ents
-local util = util
-local math = math
-local string = string
-local bit = bit
-local gamemode = gamemode
-local hook = hook
-local Vector = Vector
-local VectorRand = VectorRand
-local Angle = Angle
-local AngleRand = AngleRand
-local Entity = Entity
-local Color = Color
-local FrameTime = FrameTime
-local RealTime = RealTime
-local CurTime = CurTime
-local SysTime = SysTime
-local EyePos = EyePos
-local EyeAngles = EyeAngles
-local pairs = pairs
-local ipairs = ipairs
-local tostring = tostring
-local tonumber = tonumber
-local type = type
-local ScrW = ScrW
-local ScrH = ScrH
 local TEXT_ALIGN_CENTER = TEXT_ALIGN_CENTER
 local TEXT_ALIGN_LEFT = TEXT_ALIGN_LEFT
 local TEXT_ALIGN_RIGHT = TEXT_ALIGN_RIGHT
 local TEXT_ALIGN_TOP = TEXT_ALIGN_TOP
 local TEXT_ALIGN_BOTTOM = TEXT_ALIGN_BOTTOM
+
+
 
 local TEAM_HUMAN = TEAM_HUMAN
 local TEAM_UNDEAD = TEAM_UNDEAD
@@ -466,11 +528,10 @@ function GM:PostRender()
 	if self.m_ZombieVision and MySelf:IsValid() and MySelf:Team() == TEAM_UNDEAD then
 		local eyepos = EyePos()
 		local eyedir = EyeAngles():Forward()
-		local tr = util.TraceLine({start = eyepos, endpos = eyepos + eyedir * 128, mask = MASK_SOLID_BRUSHONLY})
+		--local tr = util.TraceLine({start = eyepos, endpos = eyepos + eyedir * 128, mask = MASK_SOLID_BRUSHONLY})
 		
 		local dlight = DynamicLight(MySelf:EntIndex())
 		if dlight then
-		
 			dlight.Pos = MySelf:GetShootPos()
 			dlight.r = 10
 			dlight.g = 255
@@ -506,7 +567,7 @@ function GM:_Think()
 				particle:SetVelocity(randdir * math.Rand(8, 256))
 				particle:SetAirResistance(16)
 				particle:SetDieTime(math.Rand(2.2, 3.5))
-				particle:SetStartAlpha(math.Rand(80, 115))
+				particle:SetStartAlpha(math.Rand(70, 90))
 				particle:SetEndAlpha(0)
 				particle:SetStartSize(1)
 				particle:SetEndSize(math.Rand(150, 325))
@@ -569,7 +630,10 @@ function GM:_Think()
 		if pl:Team() == TEAM_UNDEAD then
 			local tab = pl:GetZombieClassTable()
 			if tab.BuildBonePositions then
-				pl.WasBuildingBonePositions = true
+				if not pl.WasBuildingBonePositions then
+					pl.BuildingBones = pl:GetBoneCount() - 1
+					pl.WasBuildingBonePositions = true
+				end
 				pl:ResetBones()
 				tab.BuildBonePositions(tab, pl)
 			elseif pl.WasBuildingBonePositions then
@@ -598,7 +662,7 @@ function GM:PlayBeats(teamid, fear)
 		NextBeat = RealTime() + (self.SoundDuration[snd] or SoundDuration(self.LastHumanSound)) - 0.025
 		return
 	end
-
+	
 	if fear <= 0 or not self.BeatsEnabled then return end
 
 	local beats = self.Beats[teamid == TEAM_HUMAN and self.BeatSetHuman or self.BeatSetZombie]
@@ -632,6 +696,38 @@ function GM:DrawPackUpBar(x, y, fraction, notowner, screenscale)
 	draw_SimpleText(notowner and CurTime() % 2 < 1 and translate.Format("requires_x_people", 4) or notowner and translate.Get("packing_others_object") or translate.Get("packing"), "ZSHUDFontSmall", x, y - draw_GetFontHeight("ZSHUDFontSmall") - 2, col, TEXT_ALIGN_CENTER)
 end
 
+local colHealth = Color(0, 130, 0, 200)
+local colPoison = Color(220, 220, 0, 200)
+function GM:DrawHealthBar(x, y, health, maxhealth, bartexture, screenscale, poisondamage)
+	health = math.max(0, health)
+
+	local wid, hei = 512 * screenscale, 256 * screenscale
+
+	if health > 0 then
+		local healthfrac = math.min(1, health / maxhealth)
+		local barx = x + screenscale * 72
+		local bary = y + screenscale * 100
+		local maxbarwidth = screenscale * 402
+		local barwidth = maxbarwidth * healthfrac
+		colHealth.g = 130 * healthfrac
+		colHealth.r = 130 - colHealth.g
+		surface.SetDrawColor(colHealth)
+		surface.DrawRect(barx, bary, barwidth, screenscale * 24)
+		if poisondamage then
+			surface.SetDrawColor(colPoison)
+			local poisonbarwidth = maxbarwidth * (poisondamage / maxhealth)
+			surface.DrawRect(barx + barwidth, bary, math.min(poisonbarwidth, maxbarwidth - barwidth), screenscale * 24)
+		end
+	end
+
+	surface.SetTexture(bartexture)
+	surface.SetDrawColor(150, 150, 150, 200)
+	surface.DrawTexturedRect(x, y, wid, hei)
+
+	draw.SimpleText(health, "ZSHUDFont", x + screenscale * 144, y + screenscale * 132, colHealth, TEXT_ALIGN_LEFT)
+end
+
+local texHealthBar = surface.GetTextureID("zombiesurvival/healthbar__human")
 function GM:HumanHUD(screenscale)
 	local curtime = CurTime()
 	local w, h = ScrW(), ScrH()
@@ -640,18 +736,38 @@ function GM:HumanHUD(screenscale)
 	if packup and packup:IsValid() then
 		self:DrawPackUpBar(w * 0.5, h * 0.55, 1 - packup:GetTimeRemaining() / packup:GetMaxTime(), packup:GetNotOwner(), screenscale)
 	end
+	if self.OldHealthBar then
+		if self.HealthHUD and self.HealthHUD:Valid() then
+			self.HealthHUD:SetVisible(false)
+		end
+		self:DrawHealthBar(screenscale * 12, h - 272 * screenscale, LocalPlayer():Health(), LocalPlayer():GetMaxHealthEx(), texHealthBar, screenscale, LocalPlayer():GetPoisonDamage())
+	else
+		if self.HealthHUD and self.HealthHUD:Valid() then
+			self.HealthHUD:SetVisible(true)
+		end
+	end
+	local roundend = self.RoundEnded
+	local translateGet = translate.Get
+	local translateFormat = translate.Format
+	local selfArsenalCrateDiscountPercentage = self.ArsenalCrateDiscountPercentage
+	local COLOR_GRAY = COLOR_GRAY
+	local wave = self:GetWave()
+	local active = self:GetWaveActive()
+	local utilToMinutesSeconds = util.ToMinutesSeconds
+	local selfWaveOneZombies = self.WaveOneZombies
+	local TEXT_ALIGN_CENTER = TEXT_ALIGN_CENTER
 
-	if not self.RoundEnded then
-		if self:GetWave() == 0 and not self:GetWaveActive() then
+	if not roundend then
+		if wave == 0 and not active then
 			local txth = draw_GetFontHeight("ZSHUDFontSmall")
-			draw_SimpleTextBlurry(translate.Get("waiting_for_players").." "..util.ToMinutesSeconds(math.max(0, self:GetWaveStart() - curtime)), "ZSHUDFontSmall", w * 0.5, h * 0.25, COLOR_GRAY, TEXT_ALIGN_CENTER)
-			draw_SimpleTextBlurry(translate.Get("humans_closest_to_spawns_are_zombies"), "ZSHUDFontSmall", w * 0.5, h * 0.25 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateGet("waiting_for_players").." "..utilToMinutesSeconds(math.max(0, self:GetWaveStart() - curtime)), "ZSHUDFontSmall", w * 0.5, h * 0.25, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateGet("humans_closest_to_spawns_are_zombies"), "ZSHUDFontSmall", w * 0.5, h * 0.25 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
 
 			local desiredzombies = self:GetDesiredStartingZombies()
 
-			draw_SimpleTextBlurry(translate.Format("number_of_initial_zombies_this_game", self.WaveOneZombies * 100, desiredzombies), "ZSHUDFontSmall", w * 0.5, h * 0.75, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateFormat("number_of_initial_zombies_this_game", selfWaveOneZombies * 100, desiredzombies), "ZSHUDFontSmall", w * 0.5, h * 0.75, COLOR_GRAY, TEXT_ALIGN_CENTER)
 
-			draw_SimpleTextBlurry(translate.Get("zombie_volunteers"), "ZSHUDFontSmall", w * 0.5, h * 0.75 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateGet("zombie_volunteers"), "ZSHUDFontSmall", w * 0.5, h * 0.75 + txth, COLOR_GRAY, TEXT_ALIGN_CENTER)
 			local y = h * 0.75 + txth * 2
 
 			txth = draw_GetFontHeight("ZSHUDFontTiny")
@@ -670,17 +786,17 @@ function GM:HumanHUD(screenscale)
 			surface_SetDrawColor(30, 30, 230, 180)
 			surface_DrawOutlinedRect(w * 0.4, h * 0.35, w * 0.2, 12)
 			surface_DrawRect(w * 0.4, h * 0.35, w * 0.2 * (1 - drown:GetDrown()), 12)
-			draw_SimpleTextBlurry(translate.Get("breath").." ", "ZSHUDFontSmall", w * 0.4, h * 0.35 + 6, COLOR_BLUE, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateGet("breath").." ", "ZSHUDFontSmall", w * 0.4, h * 0.35 + 6, COLOR_BLUE, TEXT_ALIGN_RIGHT, TEXT_ALIGN_CENTER)
 		end
 	end
 
 	if gamemode.Call("PlayerCanPurchase", MySelf) then
-		if self:GetWaveActive() then
-			draw_SimpleTextBlurry(translate.Get("press_f2_for_the_points_shop"), "ZSHUDFontSmall", w * 0.5, 8, COLOR_GRAY, TEXT_ALIGN_CENTER)
+		if active then
+			draw_SimpleTextBlurry(translateGet("press_f2_for_the_points_shop"), "ZSHUDFontSmall", w * 0.5, 8, COLOR_GRAY, TEXT_ALIGN_CENTER)
 		else
 			local th = draw_GetFontHeight("ZSHUDFontSmall")
-			draw_SimpleTextBlurry(translate.Get("press_f2_for_the_points_shop"), "ZSHUDFontSmall", w * 0.5, 8, COLOR_GRAY, TEXT_ALIGN_CENTER)
-			draw_SimpleTextBlurry(translate.Format("x_discount_for_buying_between_waves", self.ArsenalCrateDiscountPercentage), "ZSHUDFontSmall", w * 0.5, 9 + th, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateGet("press_f2_for_the_points_shop"), "ZSHUDFontSmall", w * 0.5, 8, COLOR_GRAY, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlurry(translateFormat("x_discount_for_buying_between_waves", selfArsenalCrateDiscountPercentage), "ZSHUDFontSmall", w * 0.5, 9 + th, COLOR_GRAY, TEXT_ALIGN_CENTER)
 		end
 	end
 end
@@ -740,7 +856,7 @@ function GM:ZombieObserverHUD(obsmode)
 
 	for _, ent in pairs(ents.FindByClass("prop_thrownbaby")) do
 		if ent:GetSettled() then
-			draw_SimpleTextBlur(translate.Format("press_walk_to_spawn_as_x", "좀비화된 태아"), "ZSHUDFontSmall", w * 0.5, h * 0.75 + space * 3, COLOR_DARKRED, TEXT_ALIGN_CENTER)
+			draw_SimpleTextBlur(translate.Format("press_walk_to_spawn_as_x", self.ZombieClasses["Gore Child"].Name), "ZSHUDFontSmall", w * 0.5, h * 0.75 + space * 3, COLOR_DARKRED, TEXT_ALIGN_CENTER)
 			break
 		end
 	end
@@ -750,26 +866,48 @@ local matHumanHeadID = Material("zombiesurvival/humanhead")
 local matZombieHeadID = Material("zombiesurvival/zombiehead")
 local colLifeStats = Color(255, 0, 0, 255)
 function GM:ZombieHUD()
-	if self.LifeStatsEndTime and CurTime() < self.LifeStatsEndTime and (self.LifeStatsBarricadeDamage > 0 or self.LifeStatsHumanDamage > 0 or self.LifeStatsBrainsEaten > 0) then
-		colLifeStats.a = math.Clamp((self.LifeStatsEndTime - CurTime()) / (self.LifeStatsLifeTime * 0.33), 0, 1) * 255
+	local ct = CurTime()
+	local selfLifeStatsEndTime = self.LifeStatsEndTime
+	local selfLifeStatsHumanDamage = self.LifeStatsHumanDamage
+	local selfLifeStatsBrainsEaten = self.LifeStatsBrainsEaten
+	local selfLifeStatsBarricadeDamage = self.LifeStatsBarricadeDamage
+	local TEXT_ALIGN_LEFT = TEXT_ALIGN_LEFT
+	local TEXT_ALIGN_CENTER = TEXT_ALIGN_CENTER
+	local OBS_MODE_NONE = OBS_MODE_NONE
+	local translateGet = translate.Get
+	local translateFormat = translate.Format
+	local screenscale = BetterScreenScale()
+	if self.OldHealthBar then
+		if self.HealthHUD and self.HealthHUD:Valid() then
+			self.HealthHUD:SetVisible(false)
+		end
+		self:DrawHealthBar(screenscale * 12, h - 272 * screenscale, LocalPlayer():Health(), LocalPlayer():GetMaxHealthEx(), texHealthBar, screenscale, 0)
+	else
+		if self.HealthHUD and self.HealthHUD:Valid() then
+			self.HealthHUD:SetVisible(true)
+		end
+	end
+	
+	if selfLifeStatsEndTime and ct < selfLifeStatsEndTime and (selfLifeStatsBarricadeDamage > 0 or selfLifeStatsHumanDamage > 0 or selfLifeStatsBrainsEaten > 0) then
+		colLifeStats.a = math.Clamp((selfLifeStatsEndTime - ct) / (self.LifeStatsLifeTime * 0.33), 0, 1) * 255
 
 		local th = draw_GetFontHeight("ZSHUDFontSmall")
 		local x = ScrW() * 0.75
 		local y = ScrH() * 0.75
 
-		draw_SimpleTextBlur(translate.Get("that_life"), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
+		draw_SimpleTextBlur(translateGet("that_life"), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
 		y = y + th
 
-		if self.LifeStatsBarricadeDamage > 0 then
-			draw_SimpleTextBlur(translate.Format("x_damage_to_barricades", self.LifeStatsBarricadeDamage), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
+		if selfLifeStatsBarricadeDamage > 0 then
+			draw_SimpleTextBlur(translateFormat("x_damage_to_barricades", selfLifeStatsBarricadeDamage), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
 			y = y + th
 		end
-		if self.LifeStatsHumanDamage > 0 then
-			draw_SimpleTextBlur(translate.Format("x_damage_to_humans", self.LifeStatsHumanDamage), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
+		if selfLifeStatsHumanDamage > 0 then
+			draw_SimpleTextBlur(translateFormat("x_damage_to_humans", selfLifeStatsHumanDamage), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
 			y = y + th
 		end
-		if self.LifeStatsBrainsEaten > 0 then
-			draw_SimpleTextBlur(translate.Format("x_brains_eaten", self.LifeStatsBrainsEaten), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
+		if selfLifeStatsBrainsEaten > 0 then
+			draw_SimpleTextBlur(translateFormat("x_brains_eaten", selfLifeStatsBrainsEaten), "ZSHUDFontSmall", x, y, colLifeStats, TEXT_ALIGN_LEFT)
 			y = y + th
 		end
 	end
@@ -781,20 +919,20 @@ function GM:ZombieHUD()
 		local th = draw_GetFontHeight("ZSHUDFont")
 		local x = ScrW() * 0.5
 		local y = ScrH() * 0.3
-		draw_SimpleTextBlur(translate.Get("waiting_for_next_wave"), "ZSHUDFont", x, y, COLOR_DARKRED, TEXT_ALIGN_CENTER)
+		draw_SimpleTextBlur(translateGet("waiting_for_next_wave"), "ZSHUDFont", x, y, COLOR_DARKRED, TEXT_ALIGN_CENTER)
 		local pl = GAMEMODE.NextBossZombie
 		local bossname = GAMEMODE.NextBossZombieClass
 		if pl and pl:IsValid() then
 			if pl == MySelf then 
-				draw_SimpleTextBlur(translate.Format("you_will_be_x_soon", "'"..translate.Get(bossname).."'"), "ZSHUDFont", x, y+th, COLOR_RED, TEXT_ALIGN_CENTER)
+				draw_SimpleTextBlur(translateFormat("you_will_be_x_soon", "'"..bossname.."'"), "ZSHUDFont", x, y+th, COLOR_RED, TEXT_ALIGN_CENTER)
 			else 
-				draw_SimpleTextBlur(translate.Format("x_will_be_y_soon", pl:Name(), "'"..translate.Get(bossname).."'"), "ZSHUDFont", x, y+th, COLOR_GRAY, TEXT_ALIGN_CENTER)
+				draw_SimpleTextBlur(translateFormat("x_will_be_y_soon", pl:Name(), "'"..bossname.."'"), "ZSHUDFont", x, y+th, COLOR_GRAY, TEXT_ALIGN_CENTER)
 			end
 		end
 		if MySelf:GetZombieClassTable().NeverAlive then
 			for _, ent in pairs(ents.FindByClass("prop_thrownbaby")) do
 				if ent:GetSettled() then
-					draw_SimpleTextBlur(translate.Format("press_walk_to_spawn_as_x", self.ZombieClasses["Gore Child"].Name), "ZSHUDFontSmall", w * 0.5, h * 0.75, COLOR_DARKRED, TEXT_ALIGN_CENTER)
+					draw_SimpleTextBlur(translateFormat("press_walk_to_spawn_as_x", self.ZombieClasses["Gore Child"].Name), "ZSHUDFontSmall", w * 0.5, h * 0.75, COLOR_DARKRED, TEXT_ALIGN_CENTER)
 					break
 				end
 			end
@@ -866,8 +1004,8 @@ function surface.CreateLegacyFont(font, size, weight, antialias, additive, name,
 end
 
 function GM:CreateFonts()
-	local fontfamily = "Typenoksidi"
-	local fontfamily3d = "hidden"
+	local fontfamily = "Typenoksidi_v2"
+	local fontfamily3d = "hidden_v2"
 	local fontweight = 0
 	local fontweight3D = 0
 	local fontaa = true
@@ -1255,7 +1393,8 @@ function GM:_CreateMove(cmd)
 		return
 	end
 
-	-- Disables bunny hopping to an extent.
+	local curTime = CurTime()
+	
 	local map = game.GetMap()
 	if string.find(map, "_obj_") or string.find(map, "objective") or (MySelf.buffRevolution and MySelf:Team() == TEAM_HUMAN) then
 		if MySelf:GetLegDamage() >= 0.5 then
@@ -1280,6 +1419,7 @@ function GM:_CreateMove(cmd)
 		end
 	end
 
+	local frameTime = FrameTime()
 	local myteam = MySelf:Team()
 	if myteam == TEAM_HUMAN then
 		if MySelf:Alive() then
@@ -1289,7 +1429,7 @@ function GM:_CreateMove(cmd)
 					local oldang = cmd:GetViewAngles()
 					local newang = (lockon:EyePos() - EyePos()):Angle()
 					--oldang.pitch = math.ApproachAngle(oldang.pitch, newang.pitch, FrameTime() * math.max(45, math.abs(math.AngleDifference(oldang.pitch, newang.pitch)) ^ 1.3))
-					oldang.yaw = math.ApproachAngle(oldang.yaw, newang.yaw, FrameTime() * math.max(45, math.abs(math.AngleDifference(oldang.yaw, newang.yaw)) ^ 1.3))
+					oldang.yaw = math.ApproachAngle(oldang.yaw, newang.yaw, frameTime * math.max(45, math.abs(math.AngleDifference(oldang.yaw, newang.yaw)) ^ 1.3))
 					cmd:SetViewAngles(oldang)
 				else
 					self.HumanMenuLockOn = nil
@@ -1299,7 +1439,7 @@ function GM:_CreateMove(cmd)
 				local threshold = MySelf:GetPalsy() and maxhealth - 1 or maxhealth * 0.25
 				local health = MySelf:Health()
 				if health <= threshold then
-					local ft = FrameTime()
+					local ft = frameTime
 
 					staggerdir = (staggerdir + ft * 8 * VectorRand()):GetNormalized()
 
@@ -1762,7 +1902,7 @@ net.Receive("zs_wavestart", function(length)
 end)
 
 net.Receive("zs_classunlock", function(length)
-	GAMEMODE:CenterNotify(COLOR_GREEN, net.ReadString())
+	GAMEMODE:CenterNotify(COLOR_GREEN, translate.Format("x_unlocked", net.ReadString()))
 end)
 
 net.Receive("zs_waveend", function(length)

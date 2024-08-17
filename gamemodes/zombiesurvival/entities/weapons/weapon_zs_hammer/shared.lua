@@ -28,7 +28,7 @@ SWEP.NoPropThrowing = true
 SWEP.HitGesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE
 SWEP.MissGesture = SWEP.HitGesture
 
-SWEP.SwingTime = 0.25
+SWEP.SwingTime = 0.5
 SWEP.SwingRotation = Angle(30, -30, -30)
 SWEP.SwingOffset = Vector(0, -30, 0)
 SWEP.SwingHoldType = "grenade"
@@ -36,10 +36,6 @@ SWEP.SwingHoldType = "grenade"
 SWEP.HealStrength = 1
 
 SWEP.NoHolsterOnCarry = true
-
-function SWEP:SetupDataTables()
-	self:NetworkVar("Bool", 0, "CarbonHammer")
-end
 
 function SWEP:PlayHitSound()
 	self:EmitSound("weapons/melee/crowbar/crowbar_hit-"..math.random(4)..".ogg", 75, math.random(110, 115))
@@ -49,28 +45,3 @@ function SWEP:PlayRepairSound(hitent)
 	hitent:EmitSound("npc/dog/dog_servo"..math.random(7, 8)..".wav", 70, math.random(100, 105))
 end
 
-function SWEP:Think()
-	local owner = self.Owner
-	if SERVER then
-		if owner.carbonHammer and !self:GetCarbonHammer() then
-			self:SetCarbonHammer(true)
-			self.Primary.Delay = self.Primary.Delay * 0.75
-			self.Primary.SwingTime = self.SwingTime * 0.75
-		elseif !owner.carbonHammer and self:GetCarbonHammer() then
-			self:SetCarbonHammer(false)
-			self.Primary.Delay = self.Primary.Delay / 0.75
-			self.Primary.SwingTime = self.SwingTime / 0.75
-		end
-	else
-		local carbonHammer = self:GetCarbonHammer()
-		if carbonHammer then
-			self.Primary.Delay = self.Primary.Delay * 0.75
-			self.Primary.SwingTime = self.SwingTime * 0.75
-		elseif !carbonHammer then
-			self.Primary.Delay = self.Primary.Delay / 0.75
-			self.Primary.SwingTime = self.SwingTime / 0.75
-		end
-	end
-	
-	self.BaseClass.Think(self)
-end

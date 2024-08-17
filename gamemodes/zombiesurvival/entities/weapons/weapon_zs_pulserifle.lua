@@ -26,18 +26,19 @@ SWEP.CSMuzzleFlashes = false
 
 SWEP.ReloadSound = Sound("Weapon_SMG1.Reload")
 SWEP.Primary.Sound = Sound("Airboat.FireGunHeavy")
-SWEP.Primary.Damage = 32
+SWEP.Primary.Damage = 34
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Delay = 0.22
+SWEP.Primary.Delay = 0.2
 
 SWEP.Primary.ClipSize = 20
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "pulse"
-SWEP.Primary.Recoil = 3.98
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.313
-SWEP.ConeMin = 0.02
+SWEP.ConeMax = 0.023
+SWEP.ConeMin = 0.008
+
+SWEP.Recoil = 0.45
 
 SWEP.WalkSpeed = SPEED_SLOW
 

@@ -6,7 +6,7 @@ if CLIENT then
 	SWEP.PrintName = "퓨크 퍼스"
 end
 
-SWEP.Primary.Delay = 3.5
+SWEP.Primary.Delay = 4.5
 
 SWEP.ViewModel = "models/weapons/v_crowbar.mdl"
 SWEP.WorldModel = "models/weapons/w_crowbar.mdl"
@@ -24,7 +24,7 @@ function SWEP:PrimaryAttack()
 	if CurTime() < self:GetNextPrimaryFire() then return end
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
-	self.PukeLeft = 40
+	self.PukeLeft = 45 + math.random(10)
 
 	self.Owner:EmitSound("npc/barnacle/barnacle_die2.wav")
 	self.Owner:EmitSound("npc/barnacle/barnacle_digesting1.wav")
@@ -41,9 +41,10 @@ if not SERVER then return end
 
 function SWEP:Think()
 	local pl = self.Owner
+
 	if self.PukeLeft > 0 and CurTime() >= self.NextPuke then
 		self.PukeLeft = self.PukeLeft - 1
-		self.NextEmit = CurTime() + 0.1
+		self.NextEmit = CurTime() + 0.075
 
 		local ent = ents.Create("projectile_poisonpuke")
 		if ent:IsValid() then
@@ -51,16 +52,13 @@ function SWEP:Think()
 			ent:SetOwner(pl)
 			ent:Spawn()
 
-			ent:SetTeamID(TEAM_UNDEAD)
-
 			local phys = ent:GetPhysicsObject()
 			if phys:IsValid() then
 				local ang = pl:EyeAngles()
-				if math.random(100) < 95 then
-					ang:RotateAroundAxis(ang:Forward(), math.Rand(-30, 30))
-					ang:RotateAroundAxis(ang:Up(), math.Rand(-30, 30))
-				end
-				phys:SetVelocityInstantaneous(ang:Forward() * math.Rand(475, 750) + self.Owner:GetVelocity())
+				local mul = 1
+				ang:RotateAroundAxis(ang:Forward(), math.Rand(-30 * mul, 30 * mul))
+				ang:RotateAroundAxis(ang:Up(), math.Rand(-30 * mul, 30 * mul))
+				phys:SetVelocityInstantaneous(ang:Forward() * math.Rand(475, 750) + pl:GetVelocity())
 			end
 		end
 	end

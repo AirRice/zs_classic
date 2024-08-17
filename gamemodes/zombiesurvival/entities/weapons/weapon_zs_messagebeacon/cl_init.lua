@@ -1,7 +1,7 @@
 include("shared.lua")
 
 SWEP.PrintName = "메세지 비콘"
-SWEP.Description = "먼 거리에 있는 생존자에게 메세지를 보여줄 수 있다.\n보조 공격 버튼: 메세지 선택\n주 공격 버튼: 설치\n달리기 버튼: 회수"
+SWEP.Description = "범위 안의 다른 아군에게 메세지를 전송한다.\n보조 공격 버튼으로 다른 메세지 선택\n주 공격 버튼으로 설치\n달리기 버튼으로 회수 가능"
 SWEP.DrawCrosshair = false
 
 SWEP.Slot = 4
@@ -12,6 +12,17 @@ function SWEP:Deploy()
 
 	return true
 end
+
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local GetGlobalBool = GetGlobalBool
+local ScrW = ScrW
+local ScrH = ScrH
+local Material = Material
+local draw = draw
 
 function SWEP:DrawHUD()
 	if GetConVarNumber("crosshair") ~= 1 then return end
@@ -47,7 +58,7 @@ function SWEP:SecondaryAttack()
 	Menu = vgui.Create("DFrame")
 	Menu:SetDeleteOnClose(false)
 	Menu:SetSize(200, 100)
-	Menu:SetTitle("Select a message")
+	Menu:SetTitle("메세지 선택")
 	Menu:Center()
 	Menu.Choice = 1
 

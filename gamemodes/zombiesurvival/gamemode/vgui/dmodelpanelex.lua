@@ -1,3 +1,7 @@
+local IsValid = IsValid
+local ClientsideModel = ClientsideModel
+local Vector = Vector
+
 local PANEL = {}
 
 function PANEL:SetModel(strModelName)

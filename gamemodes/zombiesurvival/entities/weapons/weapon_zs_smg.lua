@@ -5,7 +5,6 @@ if CLIENT then
 	SWEP.Slot = 2
 	SWEP.SlotPos = 0
 
-	SWEP.Description = "반동이 매우 적고 저렴한 SMG."
 	SWEP.ViewModelFlip = false
 	SWEP.ViewModelFOV = 50
 
@@ -27,7 +26,6 @@ SWEP.Primary.Sound = Sound("Weapon_MP5Navy.Single")
 SWEP.Primary.Damage = 18
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.09
-SWEP.Primary.Recoil = 1.1
 
 SWEP.Primary.ClipSize = 30
 SWEP.Primary.Automatic = true
@@ -37,8 +35,10 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SHOTGUN
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
 
-SWEP.ConeMax = 0.214
-SWEP.ConeMin = 0.131
+SWEP.ConeMax = 0.085
+SWEP.ConeMin = 0.00452
+
+SWEP.Recoil = 0.48
 
 SWEP.WalkSpeed = SPEED_SLOW
 

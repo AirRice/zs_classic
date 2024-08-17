@@ -1,5 +1,32 @@
 AddCSLuaFile()
 
+local Color = Color
+local render = render
+local surface = surface
+local RealTime = RealTime
+local RunConsoleCommand = RunConsoleCommand
+local math = math
+local GetConVarNumber = GetConVarNumber
+local ScrW = ScrW
+local ScrH = ScrH
+local cam = cam
+local GetGlobalBool = GetGlobalBool
+local Material = Material
+local draw = draw
+local IsValid = IsValid
+local pairs = pairs
+local ipairs = ipairs
+local table = table
+local type = type
+local Matrix = Matrix
+local Vector = Vector
+local Angle = Angle
+local EyePos = EyePos
+local EyeAngles = EyeAngles
+local ClientsideModel = ClientsideModel
+local tostring = tostring
+local tonumber = tonumber
+
 SWEP.PrintName = "주먹"
 
 if GAMEMODE.ZombieEscape then
@@ -73,7 +100,7 @@ function SWEP:PrimaryAttack(right)
 	self:EmitSound( SwingSound )
 
 	self:UpdateNextIdle()
-	self:SetNextMeleeAttack( CurTime() + 0.1 )
+	self:SetNextMeleeAttack( CurTime() + 0.2 )
 	
 	self:SetNextPrimaryFire( CurTime() + 0.9 )
 	self:SetNextSecondaryFire( CurTime() + 0.9 )
@@ -132,7 +159,7 @@ function SWEP:DealDamage()
 			dmginfo:SetDamage(self.Damage)
 		end
 
-		if hitent:IsPlayer()  then
+		if hitent:IsPlayer() and hitent:WouldDieFrom(dmginfo:GetDamage(), dmginfo:GetDamagePosition()) then
 			if anim == "fists_left" then
 				dmginfo:SetDamageForce(owner:GetRight() * 4912 + owner:GetForward() * 9998)
 			elseif anim == "fists_right" then
@@ -142,19 +169,11 @@ function SWEP:DealDamage()
 			end
 		end
 		
-		if owner.buffPunch then
+		if owner.BuffPunch then
 			dmginfo:ScaleDamage(4)
 			local rand = math.Rand(10000, 11000) 
-			if rand >= 10450 and rand < 10500 and hitent:IsPlayer() and hitent:Team() ~= owner:Team() then
-				timer.Simple(0, function()
-					hitent:SetSpeed(1)
-					hitent:SetJumpPower(0)
-					
-					timer.Create("buffPunch" .. tostring(hitent:EntIndex()), (hitent:GetZombieClassTable().Boss and 1 or 3), 1, function()
-						hitent:ResetSpeed()
-						hitent:ResetJumpPower()
-					end)
-				end)
+			if rand >= 10400 and rand < 10500 and hitent:IsPlayer() and hitent:Team() ~= owner:Team() then
+				hitent:AddLegDamage(10)
 			end
 		end
 

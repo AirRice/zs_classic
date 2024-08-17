@@ -25,16 +25,16 @@ SWEP.ReloadSound = Sound("Weapon_FAMAS.Clipout")
 SWEP.Primary.Sound = Sound("Weapon_FAMAS.Single")
 SWEP.Primary.Damage = 12
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Delay = 0.3
-SWEP.Primary.Recoil = 3.2
+SWEP.Primary.Delay = 0.5
 
 SWEP.Primary.ClipSize = 24
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "ar2"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.28
-SWEP.ConeMin = 0.15
+SWEP.ConeMax = 0.026
+SWEP.ConeMin = 0.016
+SWEP.Recoil = 0.74
 
 SWEP.WalkSpeed = SPEED_SLOW
 
@@ -43,7 +43,7 @@ SWEP.IronSightsPos = Vector(-3, 3, 2)
 function SWEP:PrimaryAttack()
 	if not self:CanPrimaryAttack() then return end
 	for i = 0, 2 do
-		timer.Create("cracler" .. self:EntIndex() .. CurTime() .. i, 0.05 * i, 1, function()
+		timer.Create("crackler" .. self:EntIndex() .. CurTime() .. i, 0.08 * i, 1, function()
 			self:EmitFireSound()
 			self:TakeAmmo()
 			if self:Clip1() > 0 then

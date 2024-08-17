@@ -20,13 +20,13 @@ SWEP.FullWalkSpeed = SPEED_SLOWEST
 
 // 넓적판자 확률증가 딜레이
 SWEP.INCREASE_BOARD_DELAY_KEY = "IncreaseBoardDelay"
-SWEP.INCREASE_BOARD_DELAY = 45
+SWEP.INCREASE_BOARD_DELAY = 20
 // 마지막 판자 소환 시간
 SWEP.LAST_BOARD_TIME_KEY = "LastBoardTime"
 
 function SWEP:SetupDataTables()
-	self:NetworkVar("Float", 0, "IncreaseBoardDelay")
-	self:NetworkVar("Float", 1, "LastBoardTime")
+	self:NetworkVar("Float", 5, self.INCREASE_BOARD_DELAY_KEY)
+	self:NetworkVar("Float", 6, self.LAST_BOARD_TIME_KEY)
 end
 
 SWEP.JunkModels = {
@@ -118,6 +118,10 @@ function SWEP:CanPrimaryAttack()
 end
 
 function SWEP:Think()
+	if (self:GetIncreaseBoardDelay() == 0) then
+		self:SetIncreaseBoardDelay(self.INCREASE_BOARD_DELAY)
+	end
+
 	if self.IdleAnimation and self.IdleAnimation <= CurTime() then
 		self.IdleAnimation = nil
 		self:SendWeaponAnim(ACT_VM_IDLE)
@@ -143,7 +147,7 @@ function SWEP:Think()
 			end
 			
 			self:SetLastBoardTime(CurTime())
-		end		
+		end
 	end
 end
 
