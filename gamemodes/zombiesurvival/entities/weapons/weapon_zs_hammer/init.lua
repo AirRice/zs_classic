@@ -84,9 +84,6 @@ function SWEP:OnMeleeHit(hitent, hitflesh, tr)
 			util.Effect("nailrepaired", effectdata, true, true)
 
 			return true
-					end
-				end
-			end
 		end
 	end
 end
