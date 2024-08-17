@@ -178,7 +178,7 @@ GM:AddStartingTrait("bfzacinamsterville", "암스테르빌의 폭파병", "폭�
 		GAMEMODE:RegisterProperty(pl, "ExplosiveDamageScale", 1.25)
 	end, nil, "models/weapons/w_c4.mdl")
 
-GM:AddStartingItem("bfholylight", "빛으로 강타해요!", "자신의 손전등이 셰이드에게 50% 추가 데미지를 가한다.",
+GM:AddStartingTrait("bfholylight", "빛으로 강타해요!", "자신의 손전등이 셰이드에게 50% 추가 데미지를 가한다.",
 	10, "BuffHolyLight", true, "models/maxofs2d/lamp_flashlight.mdl")
 
 GM:AddStartingTrait("bfshockabsorber", "충격 완화", "좀비 공격 넉백에 50% 저항을 가지게 된다.", 10, "KnockBackResistScale", 0.5, "models/xqm/pistontype1.mdl")

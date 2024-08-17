@@ -170,19 +170,28 @@ Callback is a function called. Model is a display model. If model isn't defined 
 swep, callback, and model can all be nil or empty
 ]]
 GM.Items = {}
-function GM:AddItem(signature, name, desc, category, worth, swep, callback, model, worthshop, pointshop)
-	local tab = {Signature = signature, Name = name, Description = desc, Category = category, Worth = worth or 0, SWEP = swep, Callback = callback, Model = model, WorthShop = worthshop, PointShop = pointshop}
+function GM:AddItem(signature, name, desc, category, price, swep, callback, model, worthshop, pointshop)
+	local tab = {Signature = signature, Name = name, Description = desc, Category = category, Price = price or 0, SWEP = swep, Callback = callback, Model = model}
+	tab.Worth = tab.Price -- compat
+
 	self.Items[#self.Items + 1] = tab
+	self.Items[signature] = tab
 
 	return tab
 end
 
-function GM:AddStartingItem(signature, name, desc, category, points, worth, callback, model)
-	return self:AddItem(signature, name, desc, category, points, worth, callback, model, true, false)
+function GM:AddStartingItem(signature, name, desc, category, price, swep, callback, model)
+	local item = self:AddItem(signature, name, desc, category, price, swep, callback, model, true, false)
+	item.WorthShop = true
+
+	return item
 end
 
-function GM:AddPointShopItem(signature, name, desc, category, points, worth, callback, model)
-	return self:AddItem("ps_"..signature, name, desc, category, points, worth, callback, model, false, true)
+function GM:AddPointShopItem(signature, name, desc, category, price, swep, callback, model)
+	local item = self:AddItem("ps_"..signature, name, desc, category, price, swep, callback, model, false, true)
+	item.PointShop = true
+
+	return item
 end
 
 -- Weapons are registered after the gamemode.
@@ -407,7 +416,6 @@ GM:AddPointShopItem("defenceprojectile", "'Twister' 국지방어기", nil, ITEMC
 local item = GM:AddPointShopItem("infturret", "적외선 레이저 터렛", nil, ITEMCAT_TOOLS, 65, nil, function(pl)
 	pl:GiveEmptyWeapon("weapon_zs_gunturret")
 	pl:GiveAmmo(1, "thumper")
-	pl:GiveAmmo(300, "smg1")
 end)
 item.NoClassicMode = true
 GM:AddPointShopItem("manhack", "맨핵", nil, ITEMCAT_TOOLS, 45, "weapon_zs_manhack")

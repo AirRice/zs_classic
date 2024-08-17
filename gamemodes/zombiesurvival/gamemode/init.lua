@@ -884,42 +884,6 @@ function GM:PlayerSelectSpawn(pl)
 							local owner = dyn.Owner
 							if owner and owner:IsValid() and owner:Team() == TEAM_UNDEAD then
 								owner.NestSpawns = owner.NestSpawns + 1
-								
-								dyn.LastNestBonus = (dyn.LastNestBonus or 0)
-								
-								local curtime = CurTime()
-								
-								if (dyn.LastNestBonus + 60 <= curtime) then
-									dyn.NestBrains = (dyn.NestBrains or 0) + 1
-									
-									if (owner != pl) then
-										owner.DamageDealt[TEAM_UNDEAD] = owner.DamageDealt[TEAM_UNDEAD] + 2
-									end
-									
-									if (dyn.NestBrains > 40) then
-										hook.Add("EntityTakeDamage", "NestSpawnBonus_" .. dyn:EntIndex() .. "_" .. pl:UniqueID(), function(target, dmginfo)
-											local attacker = dmginfo:GetAttacker()
-											if (IsValid(target) and IsValid(attacker) and attacker == pl) then
-												if (target:IsPlayer() and target:Team() == TEAM_HUMAN) then
-													dmginfo:ScaleDamage(1.15)
-												end
-												 
-												if (target:IsNailed()) then
-													dmginfo:ScaleDamage(1.2)
-												end
-											end
-										end)
-									end
-									
-									if (dyn.NestBrains >= 50) then
-										dyn.NestBrains = 0
-										for i, pl in pairs(player.GetAll()) do
-											hook.Remove("EntityTakeDamage", "NestSpawnBonus_" .. dyn:EntIndex() .. "_" .. pl:UniqueID())
-										end
-										
-										dyn.LastNestBonus = curtime
-									end
-								end
 							end
 						end
 
@@ -1163,7 +1127,7 @@ function GM:CalculateNextBoss()
 	for _, ent in pairs(team.GetPlayers(TEAM_UNDEAD)) do
 		if ent:GetZombieClassTable().Boss and ent:Alive() then
 			livingbosses = livingbosses + 1
-			if livingbosses >= 3 then return end
+			if livingbosses >= 6 then return end
 		else
 			if ent:GetInfo("zs_nobosspick") == "0" then 
 				table.insert(zombies, ent)
@@ -1174,7 +1138,10 @@ function GM:CalculateNextBoss()
 	local newboss = zombies[1]
 	local newbossclass = ""
 	
-	if newboss and newboss:IsValid() then newbossclass = GAMEMODE.ZombieClasses[newboss:GetBossZombieIndex()].TranslationName end
+	if newboss and newboss:IsValid() then 
+		local bossname = GAMEMODE.ZombieClasses[newboss:GetBossZombieIndex()].TranslationName
+		newbossclass = translate.Get(bossname) 
+	end
 	net.Start("zs_nextboss")
 	net.WriteEntity(newboss)
 	net.WriteString(newbossclass)

@@ -40,7 +40,10 @@ function ENT:Move(pl, move)
 		move:SetMaxClientSpeed(move:GetMaxClientSpeed()*0.5)
 	end
 end
-
+function ENT:OnRemove()
+	local owner = self:GetOwner()
+	owner:ResetSpeed()
+end
 function ENT:PostPlayerDeath(pl)
 	if pl ~= self:GetOwner() then return end
 	self:Remove()
