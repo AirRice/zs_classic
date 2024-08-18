@@ -26,7 +26,7 @@ local function ContentsPaint(self)
 
 		draw.SimpleTextBlurry(health, "ZSHUDFont", 8, self:GetTall() - 48, colHealth, TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)
 		
-		local bodyarmor = lp.bodyarmor
+		local bodyarmor = lp:GetBodyArmor()
 		if bodyarmor and bodyarmor > 0 then
 			bodyarmor = math.floor(bodyarmor)
 			draw.SimpleTextBlurry(bodyarmor, "ZSHUDFont", 128, self:GetTall() - 48, Color(0, 0, 255, 100 + (155 * (bodyarmor / 100))), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP)

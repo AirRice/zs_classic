@@ -329,10 +329,6 @@ local function MuteDoClick(self)
 	if pl:IsValid() then
 		pl:SetMuted(not pl:IsMuted())
 		self:GetParent().NextRefresh = RealTime()
-		net.Start("MutePlayer")
-			net.WriteEntity(pl)
-			net.WriteBool(pl:IsMuted())
-		net.SendToServer()
 	end
 end
 
@@ -388,10 +384,6 @@ function PANEL:Paint()
 	local pl = self:GetPlayer()
 	if pl:IsValid() then
 		col = team.GetColor(pl:Team())
-
-		--[[if pl:SteamID() == "fads" then
-			mul = 0.6 + math.abs(math.sin(RealTime() * 6)) * 0.4
-		else]]
 		if pl == MySelf then
 			mul = 0.8
 		end

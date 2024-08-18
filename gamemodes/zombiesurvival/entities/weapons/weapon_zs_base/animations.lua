@@ -507,7 +507,7 @@ if CLIENT then
 		
 		if self.ViewModelBoneMods then
 			
-			if (!vm:GetBoneCount()) then return end
+			if (vm:GetBoneCount() == -1) then return end
 			
 			// !! WORKAROUND !! //
 			// We need to check all model names :/
@@ -573,7 +573,7 @@ if CLIENT then
 		vm:SetMaterial("")
 		--------
 
-		if (!vm:GetBoneCount()) then return end
+		if (vm:GetBoneCount() == -1) then return end
 		for i=0, vm:GetBoneCount() do
 			vm:ManipulateBoneScale( i, Vector(1, 1, 1) )
 			vm:ManipulateBoneAngles( i, Angle(0, 0, 0) )

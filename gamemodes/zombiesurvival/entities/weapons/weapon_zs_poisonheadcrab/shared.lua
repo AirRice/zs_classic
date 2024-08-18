@@ -35,6 +35,7 @@ function SWEP:SetupDataTables()
 	end
 	
 	self:NetworkVar("Bool", 16, "Charged")
+	self:NetworkVar("Float", 17, "Charging")
 end
 
 function SWEP:Initialize()
@@ -48,14 +49,6 @@ local function DoPoisoned(hitent, owner, damage, timername)
 	end
 
 	hitent:PoisonDamage(damage, owner)
-end
-
-function SWEP:GetCharging()
-	return self.Charging
-end
-
-function SWEP:SetCharging(val) 
-	self.Charging = val
 end
 
 function SWEP:Think()

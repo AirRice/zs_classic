@@ -367,7 +367,9 @@ function meta:ResetLastBarricadeAttacker(attacker, dmginfo)
 
 		if self:HumanNearby() then
 			local dmg = math.ceil(dmginfo:GetDamage())
+			local prev = attacker.BarricadeDamage
 			attacker.BarricadeDamage = attacker.BarricadeDamage + dmg
+			gamemode.Call("PlayerBarricadeDamageChanged", attacker, prev, attacker.BarricadeDamage)
 			if attacker.LifeBarricadeDamage ~= nil then
 				attacker:AddLifeBarricadeDamage(dmg)
 			end

@@ -212,7 +212,7 @@ GM.AmmoCache["ar2"] = 30 -- Assault rifles.
 GM.AmmoCache["alyxgun"] = 24 -- Not used.
 GM.AmmoCache["pistol"] = 12 -- Pistols.
 GM.AmmoCache["smg1"] = 30 -- SMG's and some rifles.
-GM.AmmoCache["357"] = 10 -- Rifles, especially of the sniper variety.
+GM.AmmoCache["357"] = 6 -- Rifles, especially of the sniper variety.
 GM.AmmoCache["xbowbolt"] = 4 -- Crossbows
 GM.AmmoCache["buckshot"] = 8 -- Shotguns
 GM.AmmoCache["ar2altfire"] = 1 -- Not used.
@@ -239,17 +239,16 @@ GM.AmmoCache["rpg"] = 1
 -- The amount is the ammo to give them.
 -- If the player isn't holding a weapon that uses one of these then they will get smg1 ammo.
 GM.AmmoResupply = {}
-GM.AmmoResupply["ar2"] = GM.AmmoCache["ar2"] 
+GM.AmmoResupply["ar2"] = 20
 GM.AmmoResupply["alyxgun"] = GM.AmmoCache["alyxgun"]
 GM.AmmoResupply["pistol"] = GM.AmmoCache["pistol"]
-GM.AmmoResupply["smg1"] = GM.AmmoCache["smg1"] 
+GM.AmmoResupply["smg1"] = 20
 GM.AmmoResupply["357"] = GM.AmmoCache["357"]
 GM.AmmoResupply["xbowbolt"] = GM.AmmoCache["xbowbolt"]
 GM.AmmoResupply["buckshot"] = GM.AmmoCache["buckshot"]
 GM.AmmoResupply["battery"] = 30
 GM.AmmoResupply["pulse"] = GM.AmmoCache["pulse"]
 GM.AmmoResupply["gravity"] = GM.AmmoCache["gravity"]
-GM.AmmoResupply["combinecannon"] = GM.AmmoCache["combinecannon"]
 -----------
 -- Worth --
 -----------
@@ -435,6 +434,8 @@ end, "models/Items/hevsuit.mdl")
 
 GM:AddPointShopItem("grenade", "수류탄", nil, ITEMCAT_OTHER, 55, "weapon_zs_grenade")
 GM:AddPointShopItem("detpck", "원격 폭발물 팩", nil, ITEMCAT_OTHER, 75, "weapon_zs_detpack")
+GM:AddPointShopItem("healingfactorpoint", "힐링 팩터", nil, ITEMCAT_TOOLS, 25, "weapon_zs_healingfactor")
+
 -- These are the honorable mentions that come at the end of the round.
 
 local function genericcallback(pl, magnitude) return pl:Name(), magnitude end

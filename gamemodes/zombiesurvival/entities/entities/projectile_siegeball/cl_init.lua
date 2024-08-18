@@ -1,6 +1,6 @@
 include("shared.lua")
 
-local matTrail = Material("Effects/laser1.vmt")
+local matTrail = Material("trails/laser.vmt")
 local colTrail = Color(0, 255, 0, 80)
 
 function ENT:Draw()
@@ -51,7 +51,7 @@ function ENT:Think()
 			
 			if (ct + 1 <= CurTime()) then
 				hook.Remove("PreDrawTranslucentRenderables", "SIEGEBALL_" .. tostring(ct))
-		end
+			end
 		end)
 	end
 end

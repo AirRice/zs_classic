@@ -152,6 +152,13 @@ function PopulateBoneList( choicelist, ent )
 		return true
 	else
 		local hasfirstoption
+		local bc = ent:GetBoneCount()
+		
+		if (bc == -1) then
+			error("Could not populate bone list to " .. tostring(self) .. "!")
+			return
+		end
+		
 		for i = 0, ent:GetBoneCount() - 1 do
 			local name = ent:GetBoneName(i)
 			if (ent:LookupBone(name)) then // filter out invalid bones
@@ -370,7 +377,7 @@ function SWEP:UpdateBonePositions(vm)
 	
 	if self.v_bonemods then
 		
-		if (!vm:GetBoneCount()) then return end
+		if (vm:GetBoneCount() == -1) then return end
 		
 		// !! WORKAROUND !! //
 		// We need to check all model names :/
@@ -440,7 +447,7 @@ end
  
 function SWEP:ResetBonePositions(vm)
 	
-	if (!vm:GetBoneCount()) then return end
+	if (vm:GetBoneCount() == -1) then return end
 	
 	for i=0, vm:GetBoneCount() do
 		vm:ManipulateBoneScale( i, Vector(1, 1, 1) )
@@ -757,8 +764,10 @@ end
 
 SWEP.FirstTimeOpen = true
 
+local ScrW = ScrW
+local ScrH = ScrH
+
 function SWEP:DrawHUD()
-	
 	DrawDot( ScrW()/2, ScrH()/2 )
 	DrawDot( ScrW()/2 + 10, ScrH()/2 )
 	DrawDot( ScrW()/2 - 10, ScrH()/2 )

@@ -201,12 +201,27 @@ if SERVER then
 		pl:CreateAmbience("butcherambience")
 	end
 
+	local function MakeButcherKnife(pos)
+		local ent = ents.Create("prop_weapon")
+		if ent:IsValid() then
+			ent:SetPos(pos)
+			ent:SetAngles(AngleRand())
+			ent:SetWeaponType("weapon_zs_butcherknife")
+			ent:Spawn()
+
+			local phys = ent:GetPhysicsObject()
+			if phys:IsValid() then
+				phys:Wake()
+				phys:SetVelocityInstantaneous(VectorRand():GetNormalized() * math.Rand(24, 100))
+				phys:AddAngleVelocity(VectorRand() * 200)
+			end
+		end
+	end
+
 	function CLASS:OnKilled(pl, attacker, inflictor, suicide, headshot, dmginfo, assister)
 		local pos = pl:LocalToWorld(pl:OBBCenter())
 		timer.Simple(0, function()
-			if IsValid(attacker) and attacker:IsPlayer() and attacker:Team() == TEAM_HUMAN then
-				attacker:Give("weapon_zs_butcherknife")
-			end
+			MakeButcherKnife(pos)
 		end)
 	end
 end

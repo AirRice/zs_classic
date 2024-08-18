@@ -243,6 +243,7 @@ function GM:AddCustomAmmo()
 	game.AddAmmoType({name = "rpg"})
 	game.AddAmmoType({name = "charger"})
 	game.AddAmmoType({name = "defenceprojectile"})
+	game.AddAmmoType({name = "healingfactor"})
 end
 
 function GM:CanRemoveOthersNail(pl, nailowner, ent)

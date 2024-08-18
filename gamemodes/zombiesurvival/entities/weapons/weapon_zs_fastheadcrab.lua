@@ -11,10 +11,6 @@ SWEP.PounceDamage = 6
 SWEP.NoHitRecovery = 0.6
 SWEP.HitRecovery = 0.75
 
-function SWEP:Think()
-	self.BaseClass.Think(self)
-end
-
 function SWEP:EmitBiteSound()
 	self.Owner:EmitSound("NPC_FastHeadcrab.Bite")
 end
@@ -29,3 +25,4 @@ end
 
 function SWEP:Reload()
 end
+ 
