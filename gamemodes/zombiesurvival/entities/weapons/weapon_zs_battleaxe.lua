@@ -33,7 +33,9 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
 SWEP.IronSightsPos = Vector(-5.9, 12, 2.3)
 
-SWEP.ConeMax = 0.05
-SWEP.ConeMin = 0.015
+SWEP.ConeMax = 0.0033
+SWEP.ConeMin = 0.0011
 
 SWEP.Recoil = 1.25
+
+SWEP.SideRecoil = 0.84

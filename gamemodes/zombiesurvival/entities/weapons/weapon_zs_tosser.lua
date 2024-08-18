@@ -29,7 +29,7 @@ SWEP.Primary.Damage = 10
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.133
 
-SWEP.Primary.ClipSize = 35
+SWEP.Primary.ClipSize = 25
 SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "smg1"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
@@ -37,11 +37,12 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
 
-SWEP.ConeMax = 0.0302
+SWEP.ConeMax = 0.00802
 SWEP.ConeMin = 0.0011
 
-SWEP.Recoil = 0.75
-
+SWEP.Recoil = 0.99
+SWEP.SideRecoil = 0.77
+ 
 SWEP.WalkSpeed = SPEED_NORMAL
 
 --SWEP.IronSightsPos = Vector(-6.42, 4, 2.53)

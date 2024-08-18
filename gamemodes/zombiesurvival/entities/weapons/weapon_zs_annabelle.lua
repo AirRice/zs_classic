@@ -34,10 +34,12 @@ SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "357"
 SWEP.Primary.DefaultClip = 24
 
-SWEP.ConeMax = 0.085
-SWEP.ConeMin = 0.015
+SWEP.ConeMax = 0.0085
+SWEP.ConeMin = 0.0015
 
 SWEP.Recoil = 2
+
+SWEP.SideRecoil = 1.8
 
 SWEP.WalkSpeed = SPEED_SLOW
 
@@ -62,70 +64,72 @@ function SWEP:Reload()
 end
 
 if SERVER then
-function SWEP:Think()
-	if self.reloading and self.reloadtimer < CurTime() then
-		self.reloadtimer = CurTime() + self.ReloadDelay
-		self:SendWeaponAnim(ACT_VM_RELOAD)
+	function SWEP:Think()
+		if self.reloading and self.reloadtimer < CurTime() then
+			self.reloadtimer = CurTime() + self.ReloadDelay
+			self:SendWeaponAnim(ACT_VM_RELOAD)
 
-		self.Owner:RemoveAmmo(1, self.Primary.Ammo, false)
-		self:SetClip1(self:Clip1() + 1)
-		self:EmitSound("Weapon_Shotgun.Reload")
+			self.Owner:RemoveAmmo(1, self.Primary.Ammo, false)
+			self:SetClip1(self:Clip1() + 1)
+			self:EmitSound("Weapon_Shotgun.Reload")
 
-		if self.Primary.ClipSize <= self:Clip1() or self.Owner:GetAmmoCount(self.Primary.Ammo) <= 0 then
-			self.nextreloadfinish = CurTime() + self.ReloadDelay
-			self.reloading = false
-			self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+			if self.Primary.ClipSize <= self:Clip1() or self.Owner:GetAmmoCount(self.Primary.Ammo) <= 0 then
+				self.nextreloadfinish = CurTime() + self.ReloadDelay
+				self.reloading = false
+				self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+			end
 		end
-	end
 
-	local nextreloadfinish = self.nextreloadfinish
-	if nextreloadfinish ~= 0 and nextreloadfinish < CurTime() then
-		self:SendWeaponAnim(ACT_SHOTGUN_PUMP)
-		self:EmitSound("Weapon_Shotgun.Special1")
-		self.nextreloadfinish = 0
-	end
+		local nextreloadfinish = self.nextreloadfinish
+		if nextreloadfinish ~= 0 and nextreloadfinish < CurTime() then
+			self:SendWeaponAnim(ACT_SHOTGUN_PUMP)
+			self:EmitSound("Weapon_Shotgun.Special1")
+			self.nextreloadfinish = 0
+		end
 
-	if self.IdleAnimation and self.IdleAnimation <= CurTime() then
-		self.IdleAnimation = nil
-		self:SendWeaponAnim(ACT_VM_IDLE)
-	end
+		if self.IdleAnimation and self.IdleAnimation <= CurTime() then
+			self.IdleAnimation = nil
+			self:SendWeaponAnim(ACT_VM_IDLE)
+		end
 
-	if self:GetIronsights() and not self.Owner:KeyDown(IN_ATTACK2) then
-		self:SetIronsights(false)
+		if self:GetIronsights() and not self.Owner:KeyDown(IN_ATTACK2) then
+			self:SetIronsights(false)
+		end
+		
+		self:DevineConeAdder()
 	end
-
-end
 end
 
 if CLIENT then
-function SWEP:Think()
-	if self.reloading and self.reloadtimer < CurTime() then
-		self.reloadtimer = CurTime() + self.ReloadDelay
-		self:SendWeaponAnim(ACT_VM_RELOAD)
+	function SWEP:Think()
+		if self.reloading and self.reloadtimer < CurTime() then
+			self.reloadtimer = CurTime() + self.ReloadDelay
+			self:SendWeaponAnim(ACT_VM_RELOAD)
 
-		self.Owner:RemoveAmmo(1, self.Primary.Ammo, false)
-		self:SetClip1(self:Clip1() + 1)
-		self:EmitSound("Weapon_Shotgun.Reload")
+			self.Owner:RemoveAmmo(1, self.Primary.Ammo, false)
+			self:SetClip1(self:Clip1() + 1)
+			self:EmitSound("Weapon_Shotgun.Reload")
 
-		if self.Primary.ClipSize <= self:Clip1() or self.Owner:GetAmmoCount(self.Primary.Ammo) <= 0 then
-			self.nextreloadfinish = CurTime() + self.ReloadDelay
-			self.reloading = false
-			self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+			if self.Primary.ClipSize <= self:Clip1() or self.Owner:GetAmmoCount(self.Primary.Ammo) <= 0 then
+				self.nextreloadfinish = CurTime() + self.ReloadDelay
+				self.reloading = false
+				self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
+			end
 		end
-	end
 
-	local nextreloadfinish = self.nextreloadfinish
-	if nextreloadfinish ~= 0 and nextreloadfinish < CurTime() then
-		self:SendWeaponAnim(ACT_SHOTGUN_PUMP)
-		self:EmitSound("Weapon_Shotgun.Special1")
-		self.nextreloadfinish = 0
-	end
+		local nextreloadfinish = self.nextreloadfinish
+		if nextreloadfinish ~= 0 and nextreloadfinish < CurTime() then
+			self:SendWeaponAnim(ACT_SHOTGUN_PUMP)
+			self:EmitSound("Weapon_Shotgun.Special1")
+			self.nextreloadfinish = 0
+		end
 
-	if self:GetIronsights() and not self.Owner:KeyDown(IN_ATTACK2) then
-		self:SetIronsights(false)
+		if self:GetIronsights() and not self.Owner:KeyDown(IN_ATTACK2) then
+			self:SetIronsights(false)
+		end
+		
+		self:DevineConeAdder()
 	end
-	
-end
 end
 
 function SWEP:CanPrimaryAttack()

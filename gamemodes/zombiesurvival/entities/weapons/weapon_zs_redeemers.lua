@@ -1,7 +1,7 @@
 AddCSLuaFile()
 
 if CLIENT then
-	SWEP.PrintName = "'Redeemers' 쌍권총"
+	SWEP.PrintName = "'부활자들' 듀얼 핸드건"
 	SWEP.Slot = 1
 	SWEP.SlotPos = 0
 
@@ -31,42 +31,17 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.DefaultClip = 150
 
-SWEP.ConeMax = 0.055
+SWEP.ConeMax = 0.0055
 SWEP.ConeMin = 0.005
-SWEP.Recoil = 0.255
+
+SWEP.Recoil = 0.742
+SWEP.SideRecoil = 0.56974
 
 function SWEP:Deploy()
-	self:SetNextReload(0)
-	if server then
+	if SERVER then
 		self.Primary.Damage = GAMEMODE:GetWave() * 5
 	end
-	gamemode.Call("WeaponDeployed", self.Owner, self)
-	self:SetIronsights(false)
-
-	if self.PreHolsterClip1 then
-		local diff = self:Clip1() - self.PreHolsterClip1
-		self:SetClip1(self.PreHolsterClip1)
-		if SERVER then
-			self.Owner:GiveAmmo(diff, self.Primary.Ammo, true)
-		end
-		self.PreHolsterClip1 = nil
-	end
-	if self.PreHolsterClip2 then
-		local diff = self:Clip2() - self.PreHolsterClip2
-		self:SetClip2(self.PreHolsterClip2)
-		if SERVER then
-			self.Owner:GiveAmmo(diff, self.Secondary.Ammo, true)
-		end
-		self.PreHolsterClip2 = nil
-	end
-
-	self.IdleAnimation = CurTime() + self:SequenceDuration()
-
-	if CLIENT then
-		self:CheckCustomIronSights()
-	end
-
-	return true
+	return self.BaseClass.Deploy(self)
 end
 
 function SWEP:SecondaryAttack()

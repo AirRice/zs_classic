@@ -35,10 +35,12 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_AR2
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_AR2
 
-SWEP.ConeMax = 0.075
-SWEP.ConeMin = 0.0095
+SWEP.ConeMax = 0.002
+SWEP.ConeMin = 0.0008
 
-SWEP.Recoil = 0.115
+SWEP.Recoil = 1.4
+
+SWEP.SideRecoil = 0.6
 
 SWEP.WalkSpeed = SPEED_SLOW
 

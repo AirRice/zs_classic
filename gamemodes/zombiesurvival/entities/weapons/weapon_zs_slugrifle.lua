@@ -38,13 +38,13 @@ SWEP.UseHands = true
 SWEP.Primary.Sound = Sound("Weapon_AWP.Single")
 SWEP.Primary.Damage = 135
 SWEP.Primary.NumShots = 1
-SWEP.Primary.Delay = 1.2
-SWEP.ReloadDelay = SWEP.Primary.Delay * (3 / 5)
+SWEP.Primary.Delay = 1.4
+SWEP.ReloadDelay = SWEP.Primary.Delay * 0.5
 
 SWEP.Primary.ClipSize = 4
 SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "357"
-SWEP.Primary.DefaultClip = 14
+SWEP.Primary.DefaultClip = 12
 
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
@@ -203,6 +203,7 @@ function SWEP.BulletCallback(attacker, tr, dmginfo)
 		end
 
 		if gamemode.Call("PlayerShouldTakeDamage", ent, attacker) then
+			INFDAMAGEFLOATER = true
 			ent:SetHealth(math.max(ent:Health() - 400, 1))
 		end
 	end

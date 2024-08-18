@@ -36,10 +36,12 @@ SWEP.Primary.DefaultClip = 25
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
 
-SWEP.ConeMax = 0.03
+SWEP.ConeMax = 0.025
 SWEP.ConeMin = 0
 
 SWEP.Recoil = 5
+
+SWEP.SideRecoil = 3
 
 SWEP.IronSightsPos = Vector(5.015, -8, 2.52)
 SWEP.IronSightsAng = Vector(0, 0, 0)

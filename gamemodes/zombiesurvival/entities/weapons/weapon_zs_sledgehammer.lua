@@ -15,7 +15,7 @@ SWEP.ViewModel = "models/weapons/v_sledgehammer/v_sledgehammer.mdl"
 SWEP.WorldModel = "models/weapons/w_sledgehammer.mdl"
 
 SWEP.MeleeDamage = 75
-SWEP.MeleeRange = 64
+SWEP.MeleeRange = 96
 SWEP.MeleeSize = 1.75
 SWEP.MeleeKnockBack = 70
 

@@ -32,9 +32,10 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "smg1"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.036
-SWEP.ConeMin = 0.025
+SWEP.ConeMax = 0.0076
+SWEP.ConeMin = 0.0045
 
+SWEP.SideRecoil = 0.22
 SWEP.Recoil = 0.48
 
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1

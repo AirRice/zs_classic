@@ -31,7 +31,8 @@ SWEP.Primary.Ammo = "XBowBolt"
 SWEP.Primary.Delay = 2.0
 SWEP.Primary.DefaultClip = 15
 
-SWEP.Recoil = 10
+SWEP.Recoil = 20
+SWEP.SideRecoil = 2
 
 SWEP.SecondaryDelay = 0.25
 

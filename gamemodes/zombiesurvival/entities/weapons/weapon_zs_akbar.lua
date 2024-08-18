@@ -2,7 +2,7 @@ AddCSLuaFile()
 
 if CLIENT then
 	SWEP.PrintName = "'Akbar' 돌격소총"
-	SWEP.Description = "이 총의 특수 탄환은 피해를 이미 입은 대상에게 그만큼 높은 피해를 입힌다.\n단 특히 강한 보스 좀비에게는 특수탄 효과가 없다."
+	SWEP.Description = "이 총의 특수 탄환은 피해를 이미 입은 대상에게 그만큼 높은 피해를 입힌다.\n단 보스 좀비에게는 특수탄 효과가 없다."
 	SWEP.Slot = 2
 	SWEP.SlotPos = 0
 
@@ -34,10 +34,11 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "ar2"
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.055
-SWEP.ConeMin = 0.0195
+SWEP.ConeMax = 0.0055
+SWEP.ConeMin = 0.00195
 
-SWEP.Recoil = 0.42
+SWEP.Recoil = 0.84
+SWEP.SideRecoil = 0.8
 
 SWEP.WalkSpeed = SPEED_SLOW
 

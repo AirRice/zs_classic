@@ -67,7 +67,7 @@ sound.Add( {
 
 SWEP.ReloadSound = Sound("weapons/ar2/ar2_reload_push.wav")
 SWEP.Primary.Sound = Sound("Weapon_pulselmg.Single")
-SWEP.Recoil = 0.5
+
 SWEP.Primary.Damage = 10
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.17
@@ -77,8 +77,11 @@ SWEP.Primary.Automatic = true
 SWEP.Primary.Ammo = "pulse"
 SWEP.Primary.DefaultClip = 100
 
-SWEP.ConeMax = 0.2
-SWEP.ConeMin = 0.07
+SWEP.ConeMax = 0.006
+SWEP.ConeMin = 0.0015
+SWEP.MaxConeAdder = 0.25
+SWEP.Recoil = 0.55
+SWEP.SideRecoil = 0.325
 
 SWEP.WalkSpeed = SPEED_SLOWEST
 SWEP.TracerName = "Ar2Tracer"

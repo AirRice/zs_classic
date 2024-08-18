@@ -1,5 +1,4 @@
 AddCSLuaFile()
-
 if CLIENT then
 	SWEP.PrintName = "'Chainsaw' M249"
 	SWEP.Description = "빠른 연사속도와 괴랄한 대미지를 입히는 강력한 분대 지원 화기. 앉아서 쏠 시 발사속도가 늘어난다."
@@ -27,6 +26,7 @@ SWEP.Primary.Sound = Sound("Weapon_m249.Single")
 SWEP.Primary.Damage = 10
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.06
+SWEP.Primary.BaseDelay = 0.06
 SWEP.Primary.KnockbackScale = 10
 
 SWEP.Primary.ClipSize = 200
@@ -37,11 +37,13 @@ GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_SMG1
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SMG1
+SWEP.Primary.KnockbackScale = 10
 
-SWEP.ConeMax = 0.09
-SWEP.ConeMin = 0.0095
-SWEP.Recoil = 0.6
-
+SWEP.ConeMax = 0.007
+SWEP.ConeMin = 0.0025
+SWEP.Recoil = 1.25
+SWEP.SideRecoil = 0.625
+SWEP.CrouchingRecoilMulSubstractor = 0.3
 SWEP.WalkSpeed = 100
 SWEP.MaxConeAdder = 0.35
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
@@ -50,13 +52,11 @@ SWEP.IronSightsPos = Vector(-4.46, 15, 0)
 SWEP.IronSightsAng = Vector(3.2, 0, 0)
 
 function SWEP:Think()
-	if self.Owner:Crouching() then
-		self.Primary.Delay = 0.04
-	else
-		self.Primary.Delay = 0.06
+	local crouch = self.Owner:Crouching()
+	if (crouch != self.m_LastCrouchState)
+		self.m_LastCrouchState = self.Owner:Crouching()
+		self.Primary.Delay = SWEP.Primary.BaseDelay * (crouch and 0.6 or 1)
 	end
 	
 	self.BaseClass.Think(self)
 end
-
-

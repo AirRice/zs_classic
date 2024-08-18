@@ -36,10 +36,9 @@ SWEP.UseHands = true
 
 SWEP.ReloadSound = Sound("Weapon_AWP.ClipOut")
 SWEP.Primary.Sound = Sound("Weapon_Hunter.Single")
-SWEP.Primary.Damage = 130
+SWEP.Primary.Damage = 125
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 1.5
-SWEP.Primary.Recoil = 22
 SWEP.ReloadDelay = SWEP.Primary.Delay
 
 SWEP.Primary.ClipSize = 1
@@ -50,8 +49,9 @@ SWEP.Primary.DefaultClip = 15
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_CROSSBOW
 SWEP.ReloadGesture = ACT_HL2MP_GESTURE_RELOAD_SHOTGUN
 
-SWEP.ConeMax = 3
+SWEP.ConeMax = 0.25
 SWEP.ConeMin = 0
+SWEP.Recoil = 6
 
 SWEP.IronSightsPos = Vector(5.015, -8, 2.52)
 SWEP.IronSightsAng = Vector(0, 0, 0)

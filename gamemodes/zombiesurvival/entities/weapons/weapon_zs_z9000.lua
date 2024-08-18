@@ -32,7 +32,7 @@ SWEP.CSMuzzleFlashes = false
 
 SWEP.ReloadSound = Sound("Weapon_Alyx_Gun.Reload")
 SWEP.Primary.Sound = Sound("Weapon_Alyx_Gun.Single")
-SWEP.Primary.Damage = 18
+SWEP.Primary.Damage = 14
 SWEP.Primary.NumShots = 1
 SWEP.Primary.Delay = 0.2
 
@@ -41,8 +41,8 @@ SWEP.Primary.Automatic = false
 SWEP.Primary.Ammo = "pulse"
 SWEP.Primary.DefaultClip = 50
 
-SWEP.ConeMax = 0.03
-SWEP.ConeMin = 0.01
+SWEP.ConeMax = 0.01
+SWEP.ConeMin = 0.003333333333333
 
 SWEP.Recoil = 0.858
 

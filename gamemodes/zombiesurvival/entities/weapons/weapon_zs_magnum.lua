@@ -35,14 +35,15 @@ SWEP.Primary.Ammo = "pistol"
 SWEP.Primary.Gesture = ACT_HL2MP_GESTURE_RANGE_ATTACK_PISTOL
 GAMEMODE:SetupDefaultClip(SWEP.Primary)
 
-SWEP.ConeMax = 0.075
+SWEP.ConeMax = 0.0145
 SWEP.ConeMin = 0.0045
 
-SWEP.Recoil = 1.2
+SWEP.Recoil = 1.8
+SWEP.SideRecoil = 1.4
 
 SWEP.IronSightsPos = Vector(-4.65, 4, 0.25)
 SWEP.IronSightsAng = Vector(0, 0, 1)
-
+ 
 local function DoRicochet(attacker, hitpos, hitnormal, normal, damage)
 	attacker.RicochetBullet = true
 	attacker:FireBullets({Num = 1, Src = hitpos, Dir = 2 * hitnormal * hitnormal:Dot(normal * -1) + normal, Spread = Vector(0, 0, 0), Tracer = 1, TracerName = "rico_trace", Force = damage * 0.15, Damage = damage, Callback = GenericBulletCallback})

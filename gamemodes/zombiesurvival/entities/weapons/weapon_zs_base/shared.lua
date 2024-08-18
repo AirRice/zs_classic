@@ -190,6 +190,8 @@ function SWEP:DoRecoil()
 	
 	local recoil = self.Recoil
 	
+	local sideRecoil = self.SideRecoil or recoil * 0.35
+	
 	local mul = 1
 	
 	if (self.Owner:Crouching()) then
@@ -206,13 +208,14 @@ function SWEP:DoRecoil()
 	
 	recoil = recoil * mul
 	
+	sideRecoil = sideRecoil * mul
+	
 	if SERVER then
-		
-		self.Owner:ViewPunch(Angle(math.Rand(-recoil * 3, 0), math.Rand(-recoil, recoil), 0))
+		self.Owner:ViewPunch(Angle(math.Rand(-recoil * 0.333, 0), math.Rand(-sideRecoil * 0.333, sideRecoil * 0.333), 0))
 	else
 		local curAng = self.Owner:EyeAngles()
-		curAng.pitch = curAng.pitch - math.Rand(recoil * 3, 0)
-		curAng.yaw = curAng.yaw + math.Rand(-recoil, recoil)
+		curAng.pitch = curAng.pitch - math.Rand(recoil, 0)
+		curAng.yaw = curAng.yaw + math.Rand(-sideRecoil, sideRecoil)
 		curAng.Roll = 0
 		self.Owner:SetEyeAngles(curAng)
 	end
@@ -231,7 +234,7 @@ function SWEP:GetCone()
 	local multiplier = math.min(self.Owner:GetVelocity():Length() / self.WalkSpeed, 1) * 0.5
 	if not self.Owner:Crouching() then multiplier = multiplier + 0.25 end
 	if not self:GetIronsights() then multiplier = multiplier + 0.25 end
-	
+
 	-- if (SERVER) then
 	-- PrintMessage(3, tostring(basecone) .. "\t" .. tostring(self:GetConeAdderLength()) .. "\t" .. tostring(conedelta) .. "\t" .. tostring(multiplier) .. "\t" .. tostring(self.ConeRamp))
 	-- else
@@ -241,7 +244,7 @@ function SWEP:GetCone()
 end
 
 function SWEP:PrimaryAttack()
-	if not self:CanPrimaryAttack() then return end
+	if not self:CanPrimaryAttack() then return end 
 	self:SetNextPrimaryFire(CurTime() + self.Primary.Delay)
 
 	self:EmitFireSound()
@@ -401,14 +404,14 @@ function GenericBulletCallback(attacker, tr, dmginfo)
 			end
 		end
 	end
-end
+end 
 
 function SWEP:SendWeaponAnimation()
 	self:SendWeaponAnim(ACT_VM_PRIMARYATTACK)
 end
 
 SWEP.BulletCallback = GenericBulletCallback
-function SWEP:ShootBullets(dmg, numbul, cone)
+function SWEP:ShootBullets(dmg, numbul, cone)	
 	if SERVER then
 		self:SetConeAndFire()
 	end
